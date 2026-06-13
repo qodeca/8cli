@@ -1,0 +1,54 @@
+{
+  "name": "@qodeca/8cli",
+  "version": "0.1.0",
+  "description": "n8n remote management CLI – AI-first, JSON-native",
+  "type": "module",
+  "license": "GPL-3.0-only",
+  "author": "Qodeca",
+  "homepage": "https://github.com/qodeca/8cli#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/qodeca/8cli.git"
+  },
+  "bugs": {
+    "url": "https://github.com/qodeca/8cli/issues"
+  },
+  "keywords": [
+    "n8n",
+    "cli",
+    "automation",
+    "workflow",
+    "ai"
+  ],
+  "bin": {
+    "8cli": "./dist/bin/8cli.js"
+  },
+  "files": [
+    "dist",
+    "THIRD-PARTY-LICENSES.md"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "start": "tsx bin/8cli.ts",
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "npm run build"
+  },
+  "dependencies": {
+    "chalk": "^5.4",
+    "cli-table3": "^0.6.5",
+    "commander": "^13",
+    "diff": "^7"
+  },
+  "devDependencies": {
+    "@types/diff": "^7",
+    "@types/node": "^22",
+    "tsx": "^4.19",
+    "typescript": "^5.7"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}
