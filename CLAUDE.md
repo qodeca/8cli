@@ -8,7 +8,10 @@ AI-first n8n remote management CLI. JSON output by default, no interactive promp
 |--------|-------|
 | **Runtime** | Node.js 22+ (native fetch) |
 | **Language** | TypeScript (strict, nodenext) |
-| **Entry point** | `bin/8cli.ts` (`#!/usr/bin/env tsx`) |
+| **Package** | `@qodeca/8cli` (scoped npm); CLI command stays `8cli` |
+| **Entry point** | `bin/8cli.ts` (dev via `tsx`); built to `dist/bin/8cli.js` (`#!/usr/bin/env node`) |
+| **Build** | `tsc` → `dist/` (runs on `prepublishOnly`); not needed for local dev |
+| **License** | GPL-3.0-only – every `.ts` file carries an SPDX header (see Licensing) |
 | **Dependencies** | commander, chalk, cli-table3, diff |
 
 ## Quick start
@@ -153,12 +156,31 @@ export function registerFooCommands(program: Command): void {
 
 ```bash
 npm install                        # Install dependencies
-npx tsc --noEmit                   # Type check (no build step needed)
-npx tsx bin/8cli.ts --help         # Run CLI directly via tsx
+npm run typecheck                  # Type check (tsc --noEmit)
+npx tsx bin/8cli.ts --help         # Run raw TS directly via tsx (no build needed for dev)
 npx tsx bin/8cli.ts wf list        # Run a command
+npm run build                      # Compile to dist/ (tsc) – produces the published artifact
+node dist/bin/8cli.js --help       # Run the compiled CLI (what installed users get)
 ```
 
-No build step – tsx runs TypeScript directly. No test suite yet.
+Dev runs raw TypeScript via `tsx`; the published npm package ships compiled `dist/` only
+(`files: ["dist", "THIRD-PARTY-LICENSES.md"]`), so the build runs automatically on
+`prepublishOnly`. No test suite yet.
+
+## Licensing and headers
+
+GPL-3.0-only. Every source file under `bin/` and `src/` starts with an SPDX header – add it
+to any new file:
+
+```
+// SPDX-License-Identifier: GPL-3.0-only
+// SPDX-FileCopyrightText: 2026 Qodeca
+```
+
+In `bin/8cli.ts` the header sits immediately after the `#!/usr/bin/env node` shebang.
+Bundled third-party notices live in `THIRD-PARTY-LICENSES.md`; regenerate it with
+`npx license-checker --production` when dependencies change. End-user docs live in
+`README.md`; vulnerability-reporting policy in `SECURITY.md`.
 
 ## Style rules
 
