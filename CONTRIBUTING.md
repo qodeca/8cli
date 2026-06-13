@@ -71,3 +71,19 @@ npm run build         # compile to dist/
 
 Use the GitHub issue templates. For security vulnerabilities, follow
 [`SECURITY.md`](./SECURITY.md) – do not open a public issue.
+
+## Releasing (maintainers)
+
+Releases publish to npm automatically via **trusted publishing** (OIDC) – do not run
+`npm publish` by hand for normal releases. The flow:
+
+1. Bump `version` in `package.json` (follow [SemVer](https://semver.org)).
+2. Move the relevant `CHANGELOG.md` entries from `[Unreleased]` into the new version section.
+3. Commit, then create a matching tag and a **GitHub Release** (for example `v0.2.0`).
+4. Publishing the release triggers `.github/workflows/publish.yml`, which runs the tests and
+   then `npm publish` over OIDC – no token, with provenance attestation generated
+   automatically.
+
+Trusted publishing is configured for `@qodeca/8cli` against the `qodeca` GitHub org, the
+`8cli` repository, and the `publish.yml` workflow. The package is owned under the Qodeca
+npm organization, not a personal account.

@@ -30,6 +30,8 @@ designed for both AI agents (such as Claude Code) and humans.
 
 ## Install
 
+Published on npm as [`@qodeca/8cli`](https://www.npmjs.com/package/@qodeca/8cli):
+
 ```bash
 npm install -g @qodeca/8cli
 ```
