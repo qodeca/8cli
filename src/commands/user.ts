@@ -7,9 +7,7 @@ import { PublicApiClient } from '../client/public-api.js';
 import { output, outputError, outputJson } from '../formatters/index.js';
 
 export function registerUserCommands(program: Command): void {
-  const user = program
-    .command('user')
-    .description('Manage users');
+  const user = program.command('user').description('Manage users');
 
   // ── user list ────────────────────────────────────────────────────────────
 

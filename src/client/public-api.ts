@@ -14,7 +14,6 @@ import type {
   SourceControlStatus,
   DataTable,
   DataTableRow,
-  DataTableColumn,
 } from '../types.js';
 
 /**
@@ -31,7 +30,9 @@ export class PublicApiClient extends BaseClient {
 
   // ── Workflows ───────────────────────────────────────────────────────────
 
-  async listWorkflows(params?: Record<string, string | number | boolean | undefined>): Promise<Workflow[]> {
+  async listWorkflows(
+    params?: Record<string, string | number | boolean | undefined>,
+  ): Promise<Workflow[]> {
     return this.paginateAll<Workflow>('/api/v1/workflows', params);
   }
 
@@ -73,11 +74,16 @@ export class PublicApiClient extends BaseClient {
 
   // ── Executions ──────────────────────────────────────────────────────────
 
-  async listExecutions(params?: Record<string, string | number | boolean | undefined>): Promise<Execution[]> {
+  async listExecutions(
+    params?: Record<string, string | number | boolean | undefined>,
+  ): Promise<Execution[]> {
     return this.paginateAll<Execution>('/api/v1/executions', params);
   }
 
-  async getExecution(id: string, params?: Record<string, string | number | boolean | undefined>): Promise<Execution> {
+  async getExecution(
+    id: string,
+    params?: Record<string, string | number | boolean | undefined>,
+  ): Promise<Execution> {
     return this.get<Execution>(`/api/v1/executions/${id}`, { params });
   }
 
@@ -87,7 +93,9 @@ export class PublicApiClient extends BaseClient {
 
   // ── Credentials ─────────────────────────────────────────────────────────
 
-  async listCredentials(params?: Record<string, string | number | boolean | undefined>): Promise<Credential[]> {
+  async listCredentials(
+    params?: Record<string, string | number | boolean | undefined>,
+  ): Promise<Credential[]> {
     return this.paginateAll<Credential>('/api/v1/credentials', params);
   }
 
@@ -123,7 +131,9 @@ export class PublicApiClient extends BaseClient {
 
   // ── Variables ───────────────────────────────────────────────────────────
 
-  async listVariables(params?: Record<string, string | number | boolean | undefined>): Promise<Variable[]> {
+  async listVariables(
+    params?: Record<string, string | number | boolean | undefined>,
+  ): Promise<Variable[]> {
     return this.paginateAll<Variable>('/api/v1/variables', params);
   }
 
@@ -137,7 +147,9 @@ export class PublicApiClient extends BaseClient {
 
   // ── Projects ────────────────────────────────────────────────────────────
 
-  async listProjects(params?: Record<string, string | number | boolean | undefined>): Promise<Project[]> {
+  async listProjects(
+    params?: Record<string, string | number | boolean | undefined>,
+  ): Promise<Project[]> {
     return this.paginateAll<Project>('/api/v1/projects', params);
   }
 
@@ -190,7 +202,10 @@ export class PublicApiClient extends BaseClient {
     return this.get<DataTable>(`/api/v1/data-tables/${id}`);
   }
 
-  async createDataTable(data: { name: string; columns: Array<{ name: string; type: string }> }): Promise<DataTable> {
+  async createDataTable(data: {
+    name: string;
+    columns: Array<{ name: string; type: string }>;
+  }): Promise<DataTable> {
     return this.post<DataTable>('/api/v1/data-tables', data);
   }
 
@@ -198,11 +213,19 @@ export class PublicApiClient extends BaseClient {
     return this.delete<void>(`/api/v1/data-tables/${id}`);
   }
 
-  async listDataTableRows(id: string, params?: Record<string, string | number | boolean | undefined>): Promise<DataTableRow[]> {
+  async listDataTableRows(
+    id: string,
+    params?: Record<string, string | number | boolean | undefined>,
+  ): Promise<DataTableRow[]> {
     return this.paginateAll<DataTableRow>(`/api/v1/data-tables/${id}/rows`, params);
   }
 
-  async insertDataTableRows(id: string, rows: DataTableRow[]): Promise<{ success: boolean; insertedRows: number }> {
-    return this.post<{ success: boolean; insertedRows: number }>(`/api/v1/data-tables/${id}/rows`, { data: rows });
+  async insertDataTableRows(
+    id: string,
+    rows: DataTableRow[],
+  ): Promise<{ success: boolean; insertedRows: number }> {
+    return this.post<{ success: boolean; insertedRows: number }>(`/api/v1/data-tables/${id}/rows`, {
+      data: rows,
+    });
   }
 }

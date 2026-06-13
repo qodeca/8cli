@@ -1,0 +1,7 @@
+dist
+node_modules
+coverage
+package-lock.json
+LICENSE
+THIRD-PARTY-LICENSES.md
+CHANGELOG.md

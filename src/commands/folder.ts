@@ -3,12 +3,12 @@
 
 import { Command } from 'commander';
 import { resolve, relative, join, dirname } from 'node:path';
-import { readdirSync, statSync, mkdirSync, renameSync, rmSync, existsSync } from 'node:fs';
+import { readdirSync, mkdirSync, renameSync, rmSync, existsSync } from 'node:fs';
 import { resolveConfig } from '../config.js';
 import { InternalApiClient } from '../client/internal-api.js';
 import type { InternalWorkflow } from '../client/internal-api.js';
 import type { Folder, Config } from '../types.js';
-import { output, outputError, outputJson } from '../formatters/index.js';
+import { outputError, outputJson } from '../formatters/index.js';
 
 // ── Types ──────────────────────────────────────────────────────────────────
 
@@ -100,7 +100,7 @@ function printTree(nodes: FolderTreeNode[], indent = 0): void {
  * Find a folder by name (case-insensitive).
  */
 function findFolderByName(folders: Folder[], name: string): Folder | undefined {
-  return folders.find(f => f.name.toLowerCase() === name.toLowerCase());
+  return folders.find((f) => f.name.toLowerCase() === name.toLowerCase());
 }
 
 /**
@@ -225,7 +225,11 @@ export function registerFolderCommands(program: Command): void {
       }
 
       const result = await client.createFolder(name, parentFolderId);
-      outputJson({ id: result.id, name: result.name, parentFolderId: result.parentFolderId ?? null });
+      outputJson({
+        id: result.id,
+        name: result.name,
+        parentFolderId: result.parentFolderId ?? null,
+      });
     });
 
   // ── delete ────────────────────────────────────────────────────────────
@@ -261,7 +265,7 @@ export function registerFolderCommands(program: Command): void {
 
       // Find workflow by name (case-insensitive)
       const workflows = await client.getWorkflows();
-      const wf = workflows.find(w => w.name.toLowerCase() === workflowName.toLowerCase());
+      const wf = workflows.find((w) => w.name.toLowerCase() === workflowName.toLowerCase());
       if (!wf) {
         outputError(`Workflow '${workflowName}' not found`, 'ERR_WORKFLOW_NOT_FOUND');
       }
@@ -307,7 +311,7 @@ export function registerFolderCommands(program: Command): void {
 
       // Fetch folders and workflows from server
       const folders = await client.getFolders();
-      const byId = new Map<string, Folder>(folders.map(f => [f.id, f]));
+      const byId = new Map<string, Folder>(folders.map((f) => [f.id, f]));
 
       const workflows = await client.getWorkflows();
       if (workflows.length === 0) {
@@ -391,11 +395,11 @@ export function registerFolderCommands(program: Command): void {
         }
       }
 
-      const createdRelative = createdDirs.map(d => relative(workflowDir, d));
+      const createdRelative = createdDirs.map((d) => relative(workflowDir, d));
 
       outputJson({
         dry,
-        moved: moves.map(m => ({ from: m.from, to: m.to })),
+        moved: moves.map((m) => ({ from: m.from, to: m.to })),
         created: createdRelative,
       });
     });

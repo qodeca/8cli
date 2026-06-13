@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 // SPDX-FileCopyrightText: 2026 Qodeca
 
-import type { OutputOptions, ColumnDef } from '../types.js';
+import type { OutputOptions } from '../types.js';
 import { outputJson } from './json.js';
 import { outputTable } from './table.js';
 

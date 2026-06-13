@@ -7,9 +7,7 @@ import { outputJson } from '../formatters/index.js';
 import { outputError } from '../formatters/index.js';
 
 export function registerConfigCommands(program: Command): void {
-  const config = program
-    .command('config')
-    .description('View resolved configuration');
+  const config = program.command('config').description('View resolved configuration');
 
   config
     .command('show')
@@ -30,10 +28,7 @@ export function registerConfigCommands(program: Command): void {
           verbose: resolved.verbose,
         });
       } catch (err) {
-        outputError(
-          err instanceof Error ? err.message : String(err),
-          'ERR_CONFIG',
-        );
+        outputError(err instanceof Error ? err.message : String(err), 'ERR_CONFIG');
       }
     });
 }

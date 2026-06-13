@@ -43,7 +43,11 @@ export class InternalApiClient extends BaseClient {
   protected override async request<T>(
     method: string,
     path: string,
-    options: { params?: Record<string, string | number | boolean | undefined>; body?: unknown; headers?: Record<string, string> } = {},
+    options: {
+      params?: Record<string, string | number | boolean | undefined>;
+      body?: unknown;
+      headers?: Record<string, string>;
+    } = {},
   ): Promise<T> {
     const headers = { ...options.headers };
     if (this.cookies.length > 0) {
@@ -74,7 +78,7 @@ export class InternalApiClient extends BaseClient {
           if (cookiePart) {
             // Update or add cookie
             const cookieName = cookiePart.split('=')[0];
-            this.cookies = this.cookies.filter(c => !c.startsWith(cookieName + '='));
+            this.cookies = this.cookies.filter((c) => !c.startsWith(cookieName + '='));
             this.cookies.push(cookiePart);
           }
         }
@@ -86,20 +90,21 @@ export class InternalApiClient extends BaseClient {
         const retryAfter = response.headers.get('Retry-After');
         const delay = retryAfter ? parseInt(retryAfter, 10) * 1000 : Math.pow(2, retries) * 1000;
         this.log(`Rate limited – retrying in ${delay}ms (attempt ${retries}/${maxRetries})`);
-        await new Promise(resolve => setTimeout(resolve, delay));
+        await new Promise((resolve) => setTimeout(resolve, delay));
         continue;
       }
 
       if (!response.ok) {
         let errorBody: Record<string, unknown> | undefined;
         try {
-          errorBody = await response.json() as Record<string, unknown>;
+          errorBody = (await response.json()) as Record<string, unknown>;
         } catch {
           // Response body is not JSON
         }
 
         throw new ApiRequestError({
-          message: (errorBody?.message as string) || response.statusText || `HTTP ${response.status}`,
+          message:
+            (errorBody?.message as string) || response.statusText || `HTTP ${response.status}`,
           statusCode: response.status,
           code: (errorBody?.code as string) || `ERR_HTTP_${response.status}`,
         });
@@ -153,7 +158,9 @@ export class InternalApiClient extends BaseClient {
       return this.cachedProjectId;
     }
 
-    const result = await this.get<InternalProject[] | { data: InternalProject[] }>('/rest/projects');
+    const result = await this.get<InternalProject[] | { data: InternalProject[] }>(
+      '/rest/projects',
+    );
     const projects = Array.isArray(result) ? result : result.data;
 
     if (!projects || projects.length === 0) {
@@ -161,7 +168,7 @@ export class InternalApiClient extends BaseClient {
     }
 
     // Prefer personal project
-    const personal = projects.find(p => p.type === 'personal');
+    const personal = projects.find((p) => p.type === 'personal');
     this.cachedProjectId = personal ? personal.id : projects[0].id;
     return this.cachedProjectId;
   }
@@ -171,7 +178,9 @@ export class InternalApiClient extends BaseClient {
    */
   async getFolders(): Promise<Folder[]> {
     const projectId = await this.getProjectId();
-    const result = await this.get<Folder[] | { data: Folder[] }>(`/rest/projects/${projectId}/folders`);
+    const result = await this.get<Folder[] | { data: Folder[] }>(
+      `/rest/projects/${projectId}/folders`,
+    );
     if (Array.isArray(result)) {
       return result;
     }
@@ -202,7 +211,9 @@ export class InternalApiClient extends BaseClient {
    * GET /rest/workflows – list all workflows (internal API, includes parentFolder).
    */
   async getWorkflows(): Promise<InternalWorkflow[]> {
-    const result = await this.get<InternalWorkflow[] | { data: InternalWorkflow[] }>('/rest/workflows');
+    const result = await this.get<InternalWorkflow[] | { data: InternalWorkflow[] }>(
+      '/rest/workflows',
+    );
     if (Array.isArray(result)) {
       return result;
     }

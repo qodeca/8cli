@@ -25,10 +25,16 @@ function workflowFilename(wf: { id: string; name: string }): string {
 /** Create a PublicApiClient from resolved config. */
 function createClient(config: Config): PublicApiClient {
   if (!config.url) {
-    outputError('No n8n URL configured. Use --url, N8N_URL env var, or a config file.', 'ERR_NO_URL');
+    outputError(
+      'No n8n URL configured. Use --url, N8N_URL env var, or a config file.',
+      'ERR_NO_URL',
+    );
   }
   if (!config.apiKey) {
-    outputError('No API key configured. Use --api-key, N8N_API_KEY env var, or run "8cli auth login".', 'ERR_NO_API_KEY');
+    outputError(
+      'No API key configured. Use --api-key, N8N_API_KEY env var, or run "8cli auth login".',
+      'ERR_NO_API_KEY',
+    );
   }
   return new PublicApiClient(config.url, config.apiKey, config.verbose);
 }
@@ -77,8 +83,8 @@ function readWorkflowFile(filePath: string): { id: string; data: Record<string, 
 function findWorkflowFiles(dir: string): string[] {
   if (!existsSync(dir)) return [];
   return readdirSync(dir)
-    .filter(f => f.endsWith('.json'))
-    .map(f => join(dir, f));
+    .filter((f) => f.endsWith('.json'))
+    .map((f) => join(dir, f));
 }
 
 /**
@@ -94,10 +100,7 @@ function stripDates(obj: Record<string, unknown>): Record<string, unknown> {
 // ── Command registration ─────────────────────────────────────────────────────
 
 export function registerWorkflowCommands(program: Command): void {
-  const wf = program
-    .command('workflow')
-    .alias('wf')
-    .description('Manage workflows');
+  const wf = program.command('workflow').alias('wf').description('Manage workflows');
 
   // ── list ─────────────────────────────────────────────────────────────────
 
@@ -109,7 +112,7 @@ export function registerWorkflowCommands(program: Command): void {
         const client = createClient(config);
         const workflows = await client.listWorkflows();
 
-        const items = workflows.map(w => ({
+        const items = workflows.map((w) => ({
           id: w.id,
           name: w.name,
           active: w.active,
@@ -126,10 +129,7 @@ export function registerWorkflowCommands(program: Command): void {
           ],
         });
       } catch (err) {
-        outputError(
-          err instanceof Error ? err.message : String(err),
-          'ERR_WORKFLOW_LIST',
-        );
+        outputError(err instanceof Error ? err.message : String(err), 'ERR_WORKFLOW_LIST');
       }
     });
 
@@ -145,10 +145,7 @@ export function registerWorkflowCommands(program: Command): void {
         const workflow = await client.getWorkflow(id);
         outputJson(workflow);
       } catch (err) {
-        outputError(
-          err instanceof Error ? err.message : String(err),
-          'ERR_WORKFLOW_GET',
-        );
+        outputError(err instanceof Error ? err.message : String(err), 'ERR_WORKFLOW_GET');
       }
     });
 
@@ -170,11 +167,11 @@ export function registerWorkflowCommands(program: Command): void {
         } else {
           // Fetch all workflows with full details
           const list = await client.listWorkflows();
-          workflows = await Promise.all(list.map(w => client.getWorkflow(w.id)));
+          workflows = await Promise.all(list.map((w) => client.getWorkflow(w.id)));
         }
 
         if (config.dry) {
-          const files = workflows.map(w => join(dir, workflowFilename(w)));
+          const files = workflows.map((w) => join(dir, workflowFilename(w)));
           outputJson({ dryRun: true, files });
           return;
         }
@@ -193,10 +190,7 @@ export function registerWorkflowCommands(program: Command): void {
 
         outputJson({ files });
       } catch (err) {
-        outputError(
-          err instanceof Error ? err.message : String(err),
-          'ERR_WORKFLOW_SAVE',
-        );
+        outputError(err instanceof Error ? err.message : String(err), 'ERR_WORKFLOW_SAVE');
       }
     });
 
@@ -219,7 +213,7 @@ export function registerWorkflowCommands(program: Command): void {
         } else {
           filePaths = findWorkflowFiles(dir);
           if (opts.id) {
-            filePaths = filePaths.filter(f => {
+            filePaths = filePaths.filter((f) => {
               try {
                 const { id } = readWorkflowFile(f);
                 return id === opts.id;
@@ -236,7 +230,7 @@ export function registerWorkflowCommands(program: Command): void {
 
         // Get existing workflow IDs to know if we should create or update
         const existingWorkflows = await client.listWorkflows();
-        const existingIds = new Set(existingWorkflows.map(w => w.id));
+        const existingIds = new Set(existingWorkflows.map((w) => w.id));
 
         const updated: Array<{ id: string; name: string }> = [];
         const created: Array<{ id: string; name: string }> = [];
@@ -275,10 +269,7 @@ export function registerWorkflowCommands(program: Command): void {
         if (config.dry) result.dryRun = true;
         outputJson(result);
       } catch (err) {
-        outputError(
-          err instanceof Error ? err.message : String(err),
-          'ERR_WORKFLOW_PUBLISH',
-        );
+        outputError(err instanceof Error ? err.message : String(err), 'ERR_WORKFLOW_PUBLISH');
       }
     });
 
@@ -294,10 +285,7 @@ export function registerWorkflowCommands(program: Command): void {
         const result = await client.activateWorkflow(id);
         outputJson({ id: result.id, name: result.name, active: true });
       } catch (err) {
-        outputError(
-          err instanceof Error ? err.message : String(err),
-          'ERR_WORKFLOW_ACTIVATE',
-        );
+        outputError(err instanceof Error ? err.message : String(err), 'ERR_WORKFLOW_ACTIVATE');
       }
     });
 
@@ -313,10 +301,7 @@ export function registerWorkflowCommands(program: Command): void {
         const result = await client.deactivateWorkflow(id);
         outputJson({ id: result.id, name: result.name, active: false });
       } catch (err) {
-        outputError(
-          err instanceof Error ? err.message : String(err),
-          'ERR_WORKFLOW_DEACTIVATE',
-        );
+        outputError(err instanceof Error ? err.message : String(err), 'ERR_WORKFLOW_DEACTIVATE');
       }
     });
 
@@ -338,10 +323,7 @@ export function registerWorkflowCommands(program: Command): void {
         await client.deleteWorkflow(id);
         outputJson({ id, deleted: true });
       } catch (err) {
-        outputError(
-          err instanceof Error ? err.message : String(err),
-          'ERR_WORKFLOW_DELETE',
-        );
+        outputError(err instanceof Error ? err.message : String(err), 'ERR_WORKFLOW_DELETE');
       }
     });
 
@@ -359,7 +341,7 @@ export function registerWorkflowCommands(program: Command): void {
 
         // Find the local file for this workflow ID
         const files = findWorkflowFiles(dir);
-        const localFile = files.find(f => {
+        const localFile = files.find((f) => {
           try {
             const { id: fileId } = readWorkflowFile(f);
             return fileId === id;
@@ -395,10 +377,13 @@ export function registerWorkflowCommands(program: Command): void {
         );
 
         // Check if there are actual differences (patch header is always present)
-        const hasChanges = patch.split('\n').some(line =>
-          line.startsWith('+') && !line.startsWith('+++') ||
-          line.startsWith('-') && !line.startsWith('---'),
-        );
+        const hasChanges = patch
+          .split('\n')
+          .some(
+            (line) =>
+              (line.startsWith('+') && !line.startsWith('+++')) ||
+              (line.startsWith('-') && !line.startsWith('---')),
+          );
 
         if (!hasChanges) {
           outputJson({ id, diff: null, message: 'No differences found' });
@@ -407,10 +392,7 @@ export function registerWorkflowCommands(program: Command): void {
           process.stdout.write(patch);
         }
       } catch (err) {
-        outputError(
-          err instanceof Error ? err.message : String(err),
-          'ERR_WORKFLOW_DIFF',
-        );
+        outputError(err instanceof Error ? err.message : String(err), 'ERR_WORKFLOW_DIFF');
       }
     });
 }

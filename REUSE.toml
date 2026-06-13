@@ -1,0 +1,21 @@
+version = 1
+SPDX-PackageName = "8cli"
+SPDX-PackageSupplier = "Qodeca"
+SPDX-PackageDownloadLocation = "https://github.com/qodeca/8cli"
+
+# Copyright and license for files that do not carry an inline SPDX header
+# (configuration, lockfiles, and documentation without a comment header).
+[[annotations]]
+path = [
+  "README.md",
+  "CLAUDE.md",
+  "package.json",
+  "package-lock.json",
+  "tsconfig.json",
+  ".gitignore",
+  ".prettierrc.json",
+  ".prettierignore",
+]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2026 Qodeca"
+SPDX-License-Identifier = "GPL-3.0-only"

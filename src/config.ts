@@ -2,7 +2,7 @@
 // SPDX-FileCopyrightText: 2026 Qodeca
 
 import { existsSync, readFileSync } from 'node:fs';
-import { resolve, join } from 'node:path';
+import { resolve } from 'node:path';
 import type { Config } from './types.js';
 import {
   getSecret,
@@ -19,6 +19,30 @@ interface CliFlags {
   table?: boolean;
   dry?: boolean;
   verbose?: boolean;
+  insecure?: boolean;
+}
+
+/**
+ * Reject plaintext-HTTP n8n URLs so the API key is never sent in clear text.
+ * Loopback hosts (localhost / 127.0.0.1 / ::1) are allowed for local dev, and
+ * the `--insecure` flag is an explicit opt-out. Exported for testing.
+ */
+export function assertSecureUrl(url: string, insecure = false): void {
+  if (!url || insecure) return;
+  let parsed: URL;
+  try {
+    parsed = new URL(url);
+  } catch {
+    return; // malformed URLs are handled downstream by the API client
+  }
+  if (parsed.protocol === 'https:') return;
+  const host = parsed.hostname;
+  const isLoopback = host === 'localhost' || host === '127.0.0.1' || host === '::1';
+  if (parsed.protocol === 'http:' && isLoopback) return;
+  throw new Error(
+    `Refusing to use an insecure (${parsed.protocol}//) URL "${url}" – the API key would be sent in plaintext. ` +
+      'Use an https:// URL, or pass --insecure to override (not recommended).',
+  );
 }
 
 interface ConfigFile {
@@ -35,12 +59,10 @@ export async function resolveConfig(flags: CliFlags): Promise<Config> {
   const configFile = loadConfigFile(flags.config);
 
   // Resolve URL: flags → env → config file → default
-  const url = (
-    flags.url
-    || process.env.N8N_URL
-    || configFile?.url
-    || ''
-  ).replace(/\/+$/, '');
+  const url = (flags.url || process.env.N8N_URL || configFile?.url || '').replace(/\/+$/, '');
+
+  // Reject plaintext-HTTP URLs before any credential is sent over the wire.
+  assertSecureUrl(url, flags.insecure);
 
   // Resolve API key: flags → env → keychain
   let apiKey = flags.apiKey || process.env.N8N_API_KEY || '';
@@ -58,13 +80,17 @@ export async function resolveConfig(flags: CliFlags): Promise<Config> {
   let password: string | undefined = process.env.N8N_PASSWORD;
   if (!email && url) {
     try {
-      email = await getSecret(KEYCHAIN_SERVICE, emailAccount(url)) || undefined;
-    } catch { /* ignore */ }
+      email = (await getSecret(KEYCHAIN_SERVICE, emailAccount(url))) || undefined;
+    } catch {
+      /* ignore */
+    }
   }
   if (!password && url) {
     try {
-      password = await getSecret(KEYCHAIN_SERVICE, passwordAccount(url)) || undefined;
-    } catch { /* ignore */ }
+      password = (await getSecret(KEYCHAIN_SERVICE, passwordAccount(url))) || undefined;
+    } catch {
+      /* ignore */
+    }
   }
 
   // Resolve workflow directory

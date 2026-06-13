@@ -7,10 +7,7 @@ import { PublicApiClient } from '../client/public-api.js';
 import { output, outputError, outputJson } from '../formatters/index.js';
 
 export function registerVariableCommands(program: Command): void {
-  const variable = program
-    .command('variable')
-    .alias('var')
-    .description('Manage variables');
+  const variable = program.command('variable').alias('var').description('Manage variables');
 
   // ── variable list ────────────────────────────────────────────────────────
 

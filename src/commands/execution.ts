@@ -9,10 +9,7 @@ import { output, outputError, outputJson } from '../formatters/index.js';
 import type { Execution, PaginatedResponse } from '../types.js';
 
 export function registerExecutionCommands(program: Command): void {
-  const exec = program
-    .command('execution')
-    .alias('exec')
-    .description('Manage executions');
+  const exec = program.command('execution').alias('exec').description('Manage executions');
 
   // ── execution list ──────────────────────────────────────────────────────
 
@@ -31,7 +28,10 @@ export function registerExecutionCommands(program: Command): void {
           outputError('No n8n URL configured. Use --url flag or N8N_URL env var.', 'ERR_NO_URL');
         }
         if (!config.apiKey) {
-          outputError('No API key configured. Use --api-key flag, N8N_API_KEY env var, or `auth login`.', 'ERR_NO_API_KEY');
+          outputError(
+            'No API key configured. Use --api-key flag, N8N_API_KEY env var, or `auth login`.',
+            'ERR_NO_API_KEY',
+          );
         }
 
         const client = new PublicApiClient(config.url, config.apiKey, config.verbose);
@@ -44,7 +44,9 @@ export function registerExecutionCommands(program: Command): void {
         params.limit = limit;
 
         // Use a single request with limit instead of paginateAll to respect the limit
-        const response = await client.get<PaginatedResponse<Execution>>('/api/v1/executions', { params });
+        const response = await client.get<PaginatedResponse<Execution>>('/api/v1/executions', {
+          params,
+        });
         const executions = response.data;
 
         output(executions, {
@@ -61,10 +63,7 @@ export function registerExecutionCommands(program: Command): void {
         if (err instanceof ApiRequestError) {
           outputError(err.message, err.code);
         }
-        outputError(
-          err instanceof Error ? err.message : String(err),
-          'ERR_EXECUTION_LIST',
-        );
+        outputError(err instanceof Error ? err.message : String(err), 'ERR_EXECUTION_LIST');
       }
     });
 
@@ -83,7 +82,10 @@ export function registerExecutionCommands(program: Command): void {
           outputError('No n8n URL configured. Use --url flag or N8N_URL env var.', 'ERR_NO_URL');
         }
         if (!config.apiKey) {
-          outputError('No API key configured. Use --api-key flag, N8N_API_KEY env var, or `auth login`.', 'ERR_NO_API_KEY');
+          outputError(
+            'No API key configured. Use --api-key flag, N8N_API_KEY env var, or `auth login`.',
+            'ERR_NO_API_KEY',
+          );
         }
 
         const client = new PublicApiClient(config.url, config.apiKey, config.verbose);
@@ -97,10 +99,7 @@ export function registerExecutionCommands(program: Command): void {
         if (err instanceof ApiRequestError) {
           outputError(err.message, err.code);
         }
-        outputError(
-          err instanceof Error ? err.message : String(err),
-          'ERR_EXECUTION_GET',
-        );
+        outputError(err instanceof Error ? err.message : String(err), 'ERR_EXECUTION_GET');
       }
     });
 
@@ -118,7 +117,10 @@ export function registerExecutionCommands(program: Command): void {
           outputError('No n8n URL configured. Use --url flag or N8N_URL env var.', 'ERR_NO_URL');
         }
         if (!config.apiKey) {
-          outputError('No API key configured. Use --api-key flag, N8N_API_KEY env var, or `auth login`.', 'ERR_NO_API_KEY');
+          outputError(
+            'No API key configured. Use --api-key flag, N8N_API_KEY env var, or `auth login`.',
+            'ERR_NO_API_KEY',
+          );
         }
 
         const client = new PublicApiClient(config.url, config.apiKey, config.verbose);
@@ -129,10 +131,7 @@ export function registerExecutionCommands(program: Command): void {
         if (err instanceof ApiRequestError) {
           outputError(err.message, err.code);
         }
-        outputError(
-          err instanceof Error ? err.message : String(err),
-          'ERR_EXECUTION_DELETE',
-        );
+        outputError(err instanceof Error ? err.message : String(err), 'ERR_EXECUTION_DELETE');
       }
     });
 }

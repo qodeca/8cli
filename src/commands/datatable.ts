@@ -9,15 +9,11 @@ import { ApiRequestError } from '../client/base.js';
 import { output, outputError, outputJson } from '../formatters/index.js';
 
 export function registerDataTableCommands(program: Command): void {
-  const dt = program
-    .command('datatable')
-    .alias('dt')
-    .description('Manage data tables');
+  const dt = program.command('datatable').alias('dt').description('Manage data tables');
 
   // ── datatable list ──────────────────────────────────────────────────────
 
-  dt
-    .command('list')
+  dt.command('list')
     .description('List all data tables')
     .action(async () => {
       try {
@@ -39,27 +35,27 @@ export function registerDataTableCommands(program: Command): void {
           columns: [
             { key: 'id', header: 'ID', width: 20 },
             { key: 'name', header: 'Name', width: 30 },
-            { key: 'columns', header: 'Columns', formatter: (v) => {
-              const cols = v as Array<{ name: string }>;
-              return cols.map(c => c.name).join(', ');
-            }},
+            {
+              key: 'columns',
+              header: 'Columns',
+              formatter: (v) => {
+                const cols = v as Array<{ name: string }>;
+                return cols.map((c) => c.name).join(', ');
+              },
+            },
           ],
         });
       } catch (err) {
         if (err instanceof ApiRequestError) {
           outputError(err.message, err.code);
         }
-        outputError(
-          err instanceof Error ? err.message : String(err),
-          'ERR_DATATABLE_LIST',
-        );
+        outputError(err instanceof Error ? err.message : String(err), 'ERR_DATATABLE_LIST');
       }
     });
 
   // ── datatable get <id> ──────────────────────────────────────────────────
 
-  dt
-    .command('get <id>')
+  dt.command('get <id>')
     .description('Get data table details')
     .action(async (id: string) => {
       try {
@@ -81,17 +77,13 @@ export function registerDataTableCommands(program: Command): void {
         if (err instanceof ApiRequestError) {
           outputError(err.message, err.code);
         }
-        outputError(
-          err instanceof Error ? err.message : String(err),
-          'ERR_DATATABLE_GET',
-        );
+        outputError(err instanceof Error ? err.message : String(err), 'ERR_DATATABLE_GET');
       }
     });
 
   // ── datatable rows <id> ─────────────────────────────────────────────────
 
-  dt
-    .command('rows <id>')
+  dt.command('rows <id>')
     .description('List rows of a data table')
     .option('--limit <n>', 'Maximum number of rows to return', '100')
     .action(async (id: string, opts: { limit: string }) => {
@@ -115,20 +107,19 @@ export function registerDataTableCommands(program: Command): void {
         if (err instanceof ApiRequestError) {
           outputError(err.message, err.code);
         }
-        outputError(
-          err instanceof Error ? err.message : String(err),
-          'ERR_DATATABLE_ROWS',
-        );
+        outputError(err instanceof Error ? err.message : String(err), 'ERR_DATATABLE_ROWS');
       }
     });
 
   // ── datatable create ────────────────────────────────────────────────────
 
-  dt
-    .command('create')
+  dt.command('create')
     .description('Create a new data table')
     .requiredOption('--name <name>', 'Table name')
-    .requiredOption('--columns <json>', 'Column definitions as JSON array, e.g. \'[{"name":"col1","type":"string"}]\'')
+    .requiredOption(
+      '--columns <json>',
+      'Column definitions as JSON array, e.g. \'[{"name":"col1","type":"string"}]\'',
+    )
     .action(async (opts: { name: string; columns: string }) => {
       try {
         const parentOpts = program.opts();
@@ -161,17 +152,13 @@ export function registerDataTableCommands(program: Command): void {
         if (err instanceof ApiRequestError) {
           outputError(err.message, err.code);
         }
-        outputError(
-          err instanceof Error ? err.message : String(err),
-          'ERR_DATATABLE_CREATE',
-        );
+        outputError(err instanceof Error ? err.message : String(err), 'ERR_DATATABLE_CREATE');
       }
     });
 
   // ── datatable delete <id> ───────────────────────────────────────────────
 
-  dt
-    .command('delete <id>')
+  dt.command('delete <id>')
     .description('Delete a data table')
     .action(async (id: string) => {
       try {
@@ -198,17 +185,13 @@ export function registerDataTableCommands(program: Command): void {
         if (err instanceof ApiRequestError) {
           outputError(err.message, err.code);
         }
-        outputError(
-          err instanceof Error ? err.message : String(err),
-          'ERR_DATATABLE_DELETE',
-        );
+        outputError(err instanceof Error ? err.message : String(err), 'ERR_DATATABLE_DELETE');
       }
     });
 
   // ── datatable insert <id> ───────────────────────────────────────────────
 
-  dt
-    .command('insert <id>')
+  dt.command('insert <id>')
     .description('Insert rows into a data table')
     .option('--data <json>', 'Row data as JSON array or @filepath')
     .option('--stdin', 'Read row data from stdin')
@@ -273,10 +256,7 @@ export function registerDataTableCommands(program: Command): void {
         if (err instanceof ApiRequestError) {
           outputError(err.message, err.code);
         }
-        outputError(
-          err instanceof Error ? err.message : String(err),
-          'ERR_DATATABLE_INSERT',
-        );
+        outputError(err instanceof Error ? err.message : String(err), 'ERR_DATATABLE_INSERT');
       }
     });
 }

@@ -4,15 +4,15 @@
 
 AI-first n8n remote management CLI. JSON output by default, no interactive prompts, composable with `jq` and other tools. Designed for both AI agents (Claude Code) and humans.
 
-| Detail | Value |
-|--------|-------|
-| **Runtime** | Node.js 22+ (native fetch) |
-| **Language** | TypeScript (strict, nodenext) |
-| **Package** | `@qodeca/8cli` (scoped npm); CLI command stays `8cli` |
-| **Entry point** | `bin/8cli.ts` (dev via `tsx`); built to `dist/bin/8cli.js` (`#!/usr/bin/env node`) |
-| **Build** | `tsc` → `dist/` (runs on `prepublishOnly`); not needed for local dev |
-| **License** | GPL-3.0-only – every `.ts` file carries an SPDX header (see Licensing) |
-| **Dependencies** | commander, chalk, cli-table3, diff |
+| Detail           | Value                                                                              |
+| ---------------- | ---------------------------------------------------------------------------------- |
+| **Runtime**      | Node.js 22+ (native fetch)                                                         |
+| **Language**     | TypeScript (strict, nodenext)                                                      |
+| **Package**      | `@qodeca/8cli` (scoped npm); CLI command stays `8cli`                              |
+| **Entry point**  | `bin/8cli.ts` (dev via `tsx`); built to `dist/bin/8cli.js` (`#!/usr/bin/env node`) |
+| **Build**        | `tsc` → `dist/` (runs on `prepublishOnly`); not needed for local dev               |
+| **License**      | GPL-3.0-only – every `.ts` file carries an SPDX header (see Licensing)             |
+| **Dependencies** | commander, chalk, cli-table3, diff                                                 |
 
 ## Quick start
 
@@ -80,16 +80,17 @@ src/
 
 CLI flags → env vars → config file → keychain → defaults
 
-| Source | Example |
-|--------|---------|
-| CLI flags | `--url https://n8n.example.com --api-key eyJ...` |
-| Env vars | `N8N_URL`, `N8N_API_KEY`, `N8N_EMAIL`, `N8N_PASSWORD` |
-| Config file | `8cli.json` in cwd or `configs/` (non-secret settings only) |
-| Keychain | macOS Keychain, service `8cli`, accounts `{url}/api-key` etc. |
+| Source      | Example                                                       |
+| ----------- | ------------------------------------------------------------- |
+| CLI flags   | `--url https://n8n.example.com --api-key eyJ...`              |
+| Env vars    | `N8N_URL`, `N8N_API_KEY`, `N8N_EMAIL`, `N8N_PASSWORD`         |
+| Config file | `8cli.json` in cwd or `configs/` (non-secret settings only)   |
+| Keychain    | macOS Keychain, service `8cli`, accounts `{url}/api-key` etc. |
 
 ## Credential security
 
 Secrets are **never** stored in config files. They live in the OS keychain:
+
 - **Service name**: `8cli`
 - **Account names**: `{url}/api-key`, `{url}/email`, `{url}/password`
 - **macOS**: `security add-generic-password` / `find-generic-password` / `delete-generic-password`
@@ -97,14 +98,15 @@ Secrets are **never** stored in config files. They live in the OS keychain:
 
 ## Global options
 
-| Flag | Purpose |
-|------|---------|
-| `--url <url>` | n8n instance URL |
-| `--api-key <key>` | API key (overrides keychain) |
-| `--config <path>` | Config file path |
-| `--table` | Human-readable table output |
-| `--dry` | Preview changes without applying |
-| `--verbose` | Debug logging to stderr |
+| Flag              | Purpose                          |
+| ----------------- | -------------------------------- |
+| `--url <url>`     | n8n instance URL                 |
+| `--api-key <key>` | API key (overrides keychain)     |
+| `--config <path>` | Config file path                 |
+| `--table`         | Human-readable table output      |
+| `--dry`           | Preview changes without applying |
+| `--verbose`       | Debug logging to stderr          |
+| `--insecure`      | Allow plaintext-HTTP URLs        |
 
 ## n8n API gotchas
 
@@ -136,19 +138,22 @@ import { output, outputError, outputJson } from '../formatters/index.js';
 export function registerFooCommands(program: Command): void {
   const foo = program.command('foo').alias('f').description('Manage foos');
 
-  foo.command('list').description('List all foos').action(async () => {
-    try {
-      const config = await resolveConfig(program.opts());
-      if (!config.url || !config.apiKey) {
-        outputError('No n8n URL or API key configured', 'ERR_NO_CONFIG');
+  foo
+    .command('list')
+    .description('List all foos')
+    .action(async () => {
+      try {
+        const config = await resolveConfig(program.opts());
+        if (!config.url || !config.apiKey) {
+          outputError('No n8n URL or API key configured', 'ERR_NO_CONFIG');
+        }
+        const client = new PublicApiClient(config.url, config.apiKey, config.verbose);
+        const foos = await client.listFoos();
+        output(foos, { table: config.table });
+      } catch (err) {
+        outputError(err instanceof Error ? err.message : String(err), 'ERR_FOO_LIST');
       }
-      const client = new PublicApiClient(config.url, config.apiKey, config.verbose);
-      const foos = await client.listFoos();
-      output(foos, { table: config.table });
-    } catch (err) {
-      outputError(err instanceof Error ? err.message : String(err), 'ERR_FOO_LIST');
-    }
-  });
+    });
 }
 ```
 
@@ -157,15 +162,20 @@ export function registerFooCommands(program: Command): void {
 ```bash
 npm install                        # Install dependencies
 npm run typecheck                  # Type check (tsc --noEmit)
+npm run lint                       # ESLint (flat config + typescript-eslint)
+npm run format                     # Prettier auto-format (format:check in CI)
+npm test                           # Vitest (test/**/*.test.ts)
+npm run check:headers              # Verify every source file has the SPDX header
 npx tsx bin/8cli.ts --help         # Run raw TS directly via tsx (no build needed for dev)
-npx tsx bin/8cli.ts wf list        # Run a command
-npm run build                      # Compile to dist/ (tsc) – produces the published artifact
+npm run build                      # Clean + compile to dist/ (tsc) – the published artifact
 node dist/bin/8cli.js --help       # Run the compiled CLI (what installed users get)
 ```
 
-Dev runs raw TypeScript via `tsx`; the published npm package ships compiled `dist/` only
-(`files: ["dist", "THIRD-PARTY-LICENSES.md"]`), so the build runs automatically on
-`prepublishOnly`. No test suite yet.
+Dev runs raw TypeScript via `tsx`; the published npm package ships compiled JS in `dist/`
+only (`files: ["dist", "THIRD-PARTY-LICENSES.md"]`; no `.d.ts`/source maps – CLI-only), so
+the build runs automatically on `prepublishOnly`. CI (`.github/workflows/ci.yml`) runs
+typecheck + lint + format check + tests + build + `npm audit` + the SPDX-header check on
+every push and PR. Tests live in `test/`.
 
 ## Licensing and headers
 

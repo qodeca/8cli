@@ -1,0 +1,53 @@
+# SPDX-License-Identifier: GPL-3.0-only
+# SPDX-FileCopyrightText: 2026 Qodeca
+
+name: Bug report
+description: Report a problem with 8cli
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting a bug. Please do not include API keys, passwords, or other
+        secrets in this report. For security vulnerabilities, use the Security tab instead.
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: Describe the bug and what you expected to happen.
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Steps to reproduce
+      description: The exact command(s) you ran and the output (redact secrets).
+      render: shell
+    validations:
+      required: true
+  - type: input
+    id: cli-version
+    attributes:
+      label: 8cli version
+      description: Output of `8cli --version`.
+    validations:
+      required: true
+  - type: input
+    id: node-version
+    attributes:
+      label: Node.js version
+      description: Output of `node --version`.
+    validations:
+      required: true
+  - type: input
+    id: os
+    attributes:
+      label: Operating system
+      placeholder: e.g. macOS 15.3, Ubuntu 24.04, Windows 11
+    validations:
+      required: true
+  - type: input
+    id: n8n-version
+    attributes:
+      label: n8n version
+      description: The version of the n8n instance you targeted, if known.

@@ -10,11 +10,13 @@ the third-party production dependencies listed below. Each is GPL-3.0-compatible
 original copyright notices and license texts are reproduced here as required by their
 licenses.
 
-Development-only dependencies (`typescript`, `tsx`, `@types/*`) are **not distributed** with
-the published package and are therefore not listed here.
+Development-only dependencies (`typescript`, `tsx`, `eslint`, `prettier`, `vitest`, and
+`@types/*`) are **not distributed** with the published package and are therefore not listed
+here.
 
 This file is generated from the production dependency tree
-(`npx license-checker --production`). Regenerate it when dependencies change.
+(`npx license-checker --production`); last generated 2026-06-13. Regenerate it when
+dependencies change.
 
 ---
 
@@ -58,7 +60,7 @@ The following bundled package is licensed under the BSD 3-Clause License:
 
 | Package | Version | Repository |
 |---------|---------|------------|
-| diff | 7.0.0 | https://github.com/kpdecker/jsdiff |
+| diff | 9.0.0 | https://github.com/kpdecker/jsdiff |
 
 ```
 BSD 3-Clause License

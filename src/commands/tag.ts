@@ -7,9 +7,7 @@ import { PublicApiClient } from '../client/public-api.js';
 import { output, outputError, outputJson } from '../formatters/index.js';
 
 export function registerTagCommands(program: Command): void {
-  const tag = program
-    .command('tag')
-    .description('Manage tags');
+  const tag = program.command('tag').description('Manage tags');
 
   // ── tag list ─────────────────────────────────────────────────────────────
 
@@ -31,7 +29,10 @@ export function registerTagCommands(program: Command): void {
         const client = new PublicApiClient(config.url, config.apiKey, config.verbose);
         const tags = await client.listTags();
 
-        output(tags.map(({ id, name }) => ({ id, name })), { table: config.table });
+        output(
+          tags.map(({ id, name }) => ({ id, name })),
+          { table: config.table },
+        );
       } catch (err) {
         outputError(err instanceof Error ? err.message : String(err), 'ERR_TAG_LIST');
       }

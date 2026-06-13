@@ -32,21 +32,33 @@
   },
   "scripts": {
     "start": "tsx bin/8cli.ts",
-    "build": "tsc",
+    "clean": "rm -rf dist",
+    "build": "npm run clean && tsc",
     "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:cov": "vitest run --coverage",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "check:headers": "bash scripts/check-headers.sh",
     "prepublishOnly": "npm run build"
   },
   "dependencies": {
     "chalk": "^5.4",
     "cli-table3": "^0.6.5",
     "commander": "^13",
-    "diff": "^7"
+    "diff": "^9.0.0"
   },
   "devDependencies": {
-    "@types/diff": "^7",
+    "@eslint/js": "^10.0.1",
     "@types/node": "^22",
-    "tsx": "^4.19",
-    "typescript": "^5.7"
+    "eslint": "^10.5.0",
+    "eslint-config-prettier": "^10.1.8",
+    "prettier": "^3.8.4",
+    "tsx": "^4.22.4",
+    "typescript": "^5.7",
+    "typescript-eslint": "^8.61.0",
+    "vitest": "^4.1.8"
   },
   "engines": {
     "node": ">=22"

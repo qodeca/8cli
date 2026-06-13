@@ -11,16 +11,14 @@ const SERVICE = '8cli';
  */
 export function setSecret(account: string, value: string): void {
   try {
-    execFileSync('security', [
-      'add-generic-password',
-      '-s', SERVICE,
-      '-a', account,
-      '-w', value,
-      '-U',
-    ], { stdio: 'pipe' });
+    execFileSync(
+      'security',
+      ['add-generic-password', '-s', SERVICE, '-a', account, '-w', value, '-U'],
+      { stdio: 'pipe' },
+    );
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
-    throw new Error(`Failed to store secret in keychain: ${msg}`);
+    throw new Error(`Failed to store secret in keychain: ${msg}`, { cause: err });
   }
 }
 
@@ -30,12 +28,11 @@ export function setSecret(account: string, value: string): void {
  */
 export function getSecret(account: string): string | undefined {
   try {
-    const result = execFileSync('security', [
-      'find-generic-password',
-      '-s', SERVICE,
-      '-a', account,
-      '-w',
-    ], { stdio: 'pipe' });
+    const result = execFileSync(
+      'security',
+      ['find-generic-password', '-s', SERVICE, '-a', account, '-w'],
+      { stdio: 'pipe' },
+    );
     return result.toString().trim();
   } catch {
     return undefined;
@@ -47,11 +44,9 @@ export function getSecret(account: string): string | undefined {
  */
 export function deleteSecret(account: string): boolean {
   try {
-    execFileSync('security', [
-      'delete-generic-password',
-      '-s', SERVICE,
-      '-a', account,
-    ], { stdio: 'pipe' });
+    execFileSync('security', ['delete-generic-password', '-s', SERVICE, '-a', account], {
+      stdio: 'pipe',
+    });
     return true;
   } catch {
     return false;
@@ -75,7 +70,10 @@ export function listAccounts(): string[] {
 
     for (const line of lines) {
       // Detect service attribute: 0x00000007 <blob>="8cli" or "svce"<blob>="8cli"
-      if (line.includes(`"svce"<blob>="${SERVICE}"`) || line.includes(`0x00000007 <blob>="${SERVICE}"`)) {
+      if (
+        line.includes(`"svce"<blob>="${SERVICE}"`) ||
+        line.includes(`0x00000007 <blob>="${SERVICE}"`)
+      ) {
         inOurService = true;
         continue;
       }

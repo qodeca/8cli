@@ -44,7 +44,10 @@ export class BaseClient {
     this.verbose = verbose;
   }
 
-  protected buildUrl(path: string, params?: Record<string, string | number | boolean | undefined>): string {
+  protected buildUrl(
+    path: string,
+    params?: Record<string, string | number | boolean | undefined>,
+  ): string {
     const url = new URL(path, this.baseUrl);
     if (params) {
       for (const [key, value] of Object.entries(params)) {
@@ -62,7 +65,11 @@ export class BaseClient {
     }
   }
 
-  protected async request<T>(method: string, path: string, options: RequestOptions = {}): Promise<T> {
+  protected async request<T>(
+    method: string,
+    path: string,
+    options: RequestOptions = {},
+  ): Promise<T> {
     const url = this.buildUrl(path, options.params);
     const headers = { ...this.headers, ...options.headers };
 
@@ -84,20 +91,21 @@ export class BaseClient {
         const retryAfter = response.headers.get('Retry-After');
         const delay = retryAfter ? parseInt(retryAfter, 10) * 1000 : Math.pow(2, retries) * 1000;
         this.log(`Rate limited – retrying in ${delay}ms (attempt ${retries}/${maxRetries})`);
-        await new Promise(resolve => setTimeout(resolve, delay));
+        await new Promise((resolve) => setTimeout(resolve, delay));
         continue;
       }
 
       if (!response.ok) {
         let errorBody: Record<string, unknown> | undefined;
         try {
-          errorBody = await response.json() as Record<string, unknown>;
+          errorBody = (await response.json()) as Record<string, unknown>;
         } catch {
           // Response body is not JSON
         }
 
         throw new ApiRequestError({
-          message: (errorBody?.message as string) || response.statusText || `HTTP ${response.status}`,
+          message:
+            (errorBody?.message as string) || response.statusText || `HTTP ${response.status}`,
           statusCode: response.status,
           code: (errorBody?.code as string) || `ERR_HTTP_${response.status}`,
         });
@@ -137,7 +145,10 @@ export class BaseClient {
   /**
    * Async generator for cursor-based pagination.
    */
-  async *paginate<T>(path: string, params?: Record<string, string | number | boolean | undefined>): AsyncGenerator<T[], void, unknown> {
+  async *paginate<T>(
+    path: string,
+    params?: Record<string, string | number | boolean | undefined>,
+  ): AsyncGenerator<T[], void, unknown> {
     let cursor: string | undefined;
 
     do {
@@ -151,7 +162,10 @@ export class BaseClient {
   /**
    * Collect all pages into a single array.
    */
-  async paginateAll<T>(path: string, params?: Record<string, string | number | boolean | undefined>): Promise<T[]> {
+  async paginateAll<T>(
+    path: string,
+    params?: Record<string, string | number | boolean | undefined>,
+  ): Promise<T[]> {
     const results: T[] = [];
     for await (const page of this.paginate<T>(path, params)) {
       results.push(...page);

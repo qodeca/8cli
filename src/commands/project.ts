@@ -7,10 +7,7 @@ import { PublicApiClient } from '../client/public-api.js';
 import { output, outputError, outputJson } from '../formatters/index.js';
 
 export function registerProjectCommands(program: Command): void {
-  const proj = program
-    .command('project')
-    .alias('proj')
-    .description('Manage projects');
+  const proj = program.command('project').alias('proj').description('Manage projects');
 
   // ── list ────────────────────────────────────────────────────────────────
 
@@ -22,7 +19,10 @@ export function registerProjectCommands(program: Command): void {
         const parentOpts = program.opts();
         const config = await resolveConfig(parentOpts);
         if (!config.url || !config.apiKey) {
-          outputError('Missing url or apiKey – run "8cli auth login" or pass --url and --api-key', 'ERR_NO_CONFIG');
+          outputError(
+            'Missing url or apiKey – run "8cli auth login" or pass --url and --api-key',
+            'ERR_NO_CONFIG',
+          );
         }
         const client = new PublicApiClient(config.url, config.apiKey, config.verbose);
         const projects = await client.listProjects();
@@ -42,7 +42,10 @@ export function registerProjectCommands(program: Command): void {
         const parentOpts = program.opts();
         const config = await resolveConfig(parentOpts);
         if (!config.url || !config.apiKey) {
-          outputError('Missing url or apiKey – run "8cli auth login" or pass --url and --api-key', 'ERR_NO_CONFIG');
+          outputError(
+            'Missing url or apiKey – run "8cli auth login" or pass --url and --api-key',
+            'ERR_NO_CONFIG',
+          );
         }
         const client = new PublicApiClient(config.url, config.apiKey, config.verbose);
         const project = await client.createProject(name);
@@ -63,7 +66,10 @@ export function registerProjectCommands(program: Command): void {
         const parentOpts = program.opts();
         const config = await resolveConfig(parentOpts);
         if (!config.url || !config.apiKey) {
-          outputError('Missing url or apiKey – run "8cli auth login" or pass --url and --api-key', 'ERR_NO_CONFIG');
+          outputError(
+            'Missing url or apiKey – run "8cli auth login" or pass --url and --api-key',
+            'ERR_NO_CONFIG',
+          );
         }
         const client = new PublicApiClient(config.url, config.apiKey, config.verbose);
         const project = await client.updateProject(id, opts.name);
@@ -84,7 +90,10 @@ export function registerProjectCommands(program: Command): void {
         const parentOpts = program.opts();
         const config = await resolveConfig(parentOpts);
         if (!config.url || !config.apiKey) {
-          outputError('Missing url or apiKey – run "8cli auth login" or pass --url and --api-key', 'ERR_NO_CONFIG');
+          outputError(
+            'Missing url or apiKey – run "8cli auth login" or pass --url and --api-key',
+            'ERR_NO_CONFIG',
+          );
         }
         const client = new PublicApiClient(config.url, config.apiKey, config.verbose);
         await client.deleteProject(id, opts.transferTo);

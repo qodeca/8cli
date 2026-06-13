@@ -52,7 +52,8 @@ export function run(): void {
     .option('--config <path>', 'Path to config file (default: auto-detect)')
     .option('--table', 'Output as table instead of JSON', false)
     .option('--dry', 'Dry-run mode – preview changes without applying', false)
-    .option('--verbose', 'Enable verbose logging to stderr', false);
+    .option('--verbose', 'Enable verbose logging to stderr', false)
+    .option('--insecure', 'Allow plaintext-HTTP n8n URLs (sends the API key in clear text)', false);
 
   // Register all command groups
   registerAuthCommands(program);

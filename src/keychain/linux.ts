@@ -2,17 +2,29 @@
 // SPDX-FileCopyrightText: 2026 Qodeca
 
 export function setSecret(_account: string, _value: string): void {
-  throw new Error('Linux keychain not yet supported');
+  throw new Error(
+    'Secret storage via the keychain is not yet implemented on Linux. ' +
+      'Set the N8N_API_KEY (and N8N_EMAIL / N8N_PASSWORD) environment variables instead.',
+  );
 }
 
 export function getSecret(_account: string): string | undefined {
-  throw new Error('Linux keychain not yet supported');
+  throw new Error(
+    'Secret storage via the keychain is not yet implemented on Linux. ' +
+      'Set the N8N_API_KEY (and N8N_EMAIL / N8N_PASSWORD) environment variables instead.',
+  );
 }
 
 export function deleteSecret(_account: string): boolean {
-  throw new Error('Linux keychain not yet supported');
+  throw new Error(
+    'Secret storage via the keychain is not yet implemented on Linux. ' +
+      'Set the N8N_API_KEY (and N8N_EMAIL / N8N_PASSWORD) environment variables instead.',
+  );
 }
 
 export function listAccounts(): string[] {
-  throw new Error('Linux keychain not yet supported');
+  throw new Error(
+    'Secret storage via the keychain is not yet implemented on Linux. ' +
+      'Set the N8N_API_KEY (and N8N_EMAIL / N8N_PASSWORD) environment variables instead.',
+  );
 }

@@ -14,16 +14,14 @@ take security reports seriously and ask that they be disclosed privately.
 
 Report a vulnerability using **GitHub's private vulnerability reporting**:
 
-1. Go to the repository's **Security** tab.
+1. Open the repository's **Security** tab: <https://github.com/qodeca/8cli/security>
 2. Click **Report a vulnerability**.
-3. Provide a description, reproduction steps, affected version, and impact.
-
-Alternatively, email **security@qodeca.com** *(confirm/replace with the real reporting
-address before publishing)*.
+3. Provide a description, reproduction steps, the affected version (`8cli --version`), and
+   the impact.
 
 Please include, where possible:
 
-- The 8cli version (`8cli --version`) and Node.js version.
+- The 8cli version (`8cli --version`) and your Node.js version.
 - A description of the issue and its potential impact.
 - Steps to reproduce or a proof of concept.
 

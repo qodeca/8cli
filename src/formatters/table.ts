@@ -14,15 +14,17 @@ export function outputTable(data: unknown[], columns?: ColumnDef[]): void {
   }
 
   // Auto-detect columns from first item if not provided
-  const cols: ColumnDef[] = columns || Object.keys(data[0] as Record<string, unknown>).map(key => ({
-    key,
-    header: key,
-  }));
+  const cols: ColumnDef[] =
+    columns ||
+    Object.keys(data[0] as Record<string, unknown>).map((key) => ({
+      key,
+      header: key,
+    }));
 
   const table = new Table({
-    head: cols.map(c => c.header),
-    colWidths: cols.map(c => c.width).some(Boolean)
-      ? cols.map(c => c.width ?? null)
+    head: cols.map((c) => c.header),
+    colWidths: cols.map((c) => c.width).some(Boolean)
+      ? cols.map((c) => c.width ?? null)
       : undefined,
     style: {
       head: ['cyan'],
@@ -30,7 +32,7 @@ export function outputTable(data: unknown[], columns?: ColumnDef[]): void {
   });
 
   for (const item of data) {
-    const row = cols.map(col => {
+    const row = cols.map((col) => {
       const value = (item as Record<string, unknown>)[col.key];
       if (col.formatter) return col.formatter(value);
       if (value === null || value === undefined) return '';

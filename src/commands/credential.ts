@@ -7,10 +7,7 @@ import { PublicApiClient } from '../client/public-api.js';
 import { output, outputError, outputJson } from '../formatters/index.js';
 
 export function registerCredentialCommands(program: Command): void {
-  const cred = program
-    .command('credential')
-    .alias('cred')
-    .description('Manage credentials');
+  const cred = program.command('credential').alias('cred').description('Manage credentials');
 
   // ── list ────────────────────────────────────────────────────────────────
 
@@ -22,7 +19,10 @@ export function registerCredentialCommands(program: Command): void {
         const parentOpts = program.opts();
         const config = await resolveConfig(parentOpts);
         if (!config.url || !config.apiKey) {
-          outputError('Missing url or apiKey – run "8cli auth login" or pass --url and --api-key', 'ERR_NO_CONFIG');
+          outputError(
+            'Missing url or apiKey – run "8cli auth login" or pass --url and --api-key',
+            'ERR_NO_CONFIG',
+          );
         }
         const client = new PublicApiClient(config.url, config.apiKey, config.verbose);
         const creds = await client.listCredentials();
@@ -42,7 +42,10 @@ export function registerCredentialCommands(program: Command): void {
         const parentOpts = program.opts();
         const config = await resolveConfig(parentOpts);
         if (!config.url || !config.apiKey) {
-          outputError('Missing url or apiKey – run "8cli auth login" or pass --url and --api-key', 'ERR_NO_CONFIG');
+          outputError(
+            'Missing url or apiKey – run "8cli auth login" or pass --url and --api-key',
+            'ERR_NO_CONFIG',
+          );
         }
         const client = new PublicApiClient(config.url, config.apiKey, config.verbose);
         await client.deleteCredential(id);
@@ -63,7 +66,10 @@ export function registerCredentialCommands(program: Command): void {
         const parentOpts = program.opts();
         const config = await resolveConfig(parentOpts);
         if (!config.url || !config.apiKey) {
-          outputError('Missing url or apiKey – run "8cli auth login" or pass --url and --api-key', 'ERR_NO_CONFIG');
+          outputError(
+            'Missing url or apiKey – run "8cli auth login" or pass --url and --api-key',
+            'ERR_NO_CONFIG',
+          );
         }
         const client = new PublicApiClient(config.url, config.apiKey, config.verbose);
         await client.transferCredential(id, opts.to);

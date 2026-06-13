@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: GPL-3.0-only
 // SPDX-FileCopyrightText: 2026 Qodeca
 
+import { readFileSync } from 'node:fs';
 import { Command } from 'commander';
-import { resolveConfig, maskApiKey } from '../config.js';
+import { resolveConfig } from '../config.js';
 import {
   setSecret,
-  getSecret,
   deleteSecret,
   listAccounts,
   apiKeyAccount,
@@ -33,30 +33,44 @@ function getUrl(program: Command): string {
   return url;
 }
 
+/**
+ * Resolve a secret-bearing flag value. When the value is `-`, read the secret
+ * from stdin instead, so callers can avoid exposing it in process arguments
+ * (visible to other users via `ps`). Trailing newline is stripped.
+ */
+function resolveSecretValue(value: string): string {
+  if (value === '-') {
+    return readFileSync(0, 'utf-8').replace(/\r?\n$/, '');
+  }
+  return value;
+}
+
 export function registerAuthCommands(program: Command): void {
-  const auth = program
-    .command('auth')
-    .description('Manage n8n instance authentication');
+  const auth = program.command('auth').description('Manage n8n instance authentication');
 
   // ── auth login ──────────────────────────────────────────────────────────
 
   auth
     .command('login')
     .description('Store credentials for an n8n instance in the keychain')
-    .requiredOption('--api-key <key>', 'API key')
+    .requiredOption('--api-key <key>', 'API key (use "-" to read from stdin)')
     .option('--email <email>', 'Email for internal API auth')
-    .option('--password <password>', 'Password for internal API auth')
+    .option('--password <password>', 'Password for internal API auth (use "-" to read from stdin)')
     .action(async (opts) => {
       try {
         const url = getUrl(program);
 
-        await setSecret(KEYCHAIN_SERVICE, apiKeyAccount(url), opts.apiKey);
+        await setSecret(KEYCHAIN_SERVICE, apiKeyAccount(url), resolveSecretValue(opts.apiKey));
 
         if (opts.email) {
           await setSecret(KEYCHAIN_SERVICE, emailAccount(url), opts.email);
         }
         if (opts.password) {
-          await setSecret(KEYCHAIN_SERVICE, passwordAccount(url), opts.password);
+          await setSecret(
+            KEYCHAIN_SERVICE,
+            passwordAccount(url),
+            resolveSecretValue(opts.password),
+          );
         }
 
         outputJson({
@@ -67,10 +81,7 @@ export function registerAuthCommands(program: Command): void {
           hasPassword: !!opts.password,
         });
       } catch (err) {
-        outputError(
-          err instanceof Error ? err.message : String(err),
-          'ERR_AUTH_LOGIN',
-        );
+        outputError(err instanceof Error ? err.message : String(err), 'ERR_AUTH_LOGIN');
       }
     });
 
@@ -95,10 +106,7 @@ export function registerAuthCommands(program: Command): void {
           deletedPassword,
         });
       } catch (err) {
-        outputError(
-          err instanceof Error ? err.message : String(err),
-          'ERR_AUTH_LOGOUT',
-        );
+        outputError(err instanceof Error ? err.message : String(err), 'ERR_AUTH_LOGOUT');
       }
     });
 
@@ -112,7 +120,10 @@ export function registerAuthCommands(program: Command): void {
         const accounts = await listAccounts(KEYCHAIN_SERVICE);
 
         // Group accounts by URL
-        const urlMap = new Map<string, { hasApiKey: boolean; hasEmail: boolean; hasPassword: boolean }>();
+        const urlMap = new Map<
+          string,
+          { hasApiKey: boolean; hasEmail: boolean; hasPassword: boolean }
+        >();
 
         for (const account of accounts) {
           // Account format: url/api-key, url/email, url/password
@@ -149,10 +160,7 @@ export function registerAuthCommands(program: Command): void {
         const parentOpts = program.opts();
         output(result, { table: parentOpts.table });
       } catch (err) {
-        outputError(
-          err instanceof Error ? err.message : String(err),
-          'ERR_AUTH_LIST',
-        );
+        outputError(err instanceof Error ? err.message : String(err), 'ERR_AUTH_LIST');
       }
     });
 
@@ -170,7 +178,10 @@ export function registerAuthCommands(program: Command): void {
           outputError('No n8n URL configured. Use --url flag or N8N_URL env var.', 'ERR_NO_URL');
         }
         if (!config.apiKey) {
-          outputError('No API key configured. Use --api-key flag, N8N_API_KEY env var, or `auth login`.', 'ERR_NO_API_KEY');
+          outputError(
+            'No API key configured. Use --api-key flag, N8N_API_KEY env var, or `auth login`.',
+            'ERR_NO_API_KEY',
+          );
         }
 
         const client = new PublicApiClient(config.url, config.apiKey, config.verbose);
@@ -192,10 +203,7 @@ export function registerAuthCommands(program: Command): void {
           });
           process.exit(1);
         }
-        outputError(
-          err instanceof Error ? err.message : String(err),
-          'ERR_AUTH_VERIFY',
-        );
+        outputError(err instanceof Error ? err.message : String(err), 'ERR_AUTH_VERIFY');
       }
     });
 
@@ -204,21 +212,18 @@ export function registerAuthCommands(program: Command): void {
   auth
     .command('set-api-key')
     .description('Store an API key for an n8n instance')
-    .requiredOption('--value <key>', 'API key value')
+    .requiredOption('--value <key>', 'API key value (use "-" to read from stdin)')
     .action(async (opts) => {
       try {
         const url = getUrl(program);
-        await setSecret(KEYCHAIN_SERVICE, apiKeyAccount(url), opts.value);
+        await setSecret(KEYCHAIN_SERVICE, apiKeyAccount(url), resolveSecretValue(opts.value));
 
         outputJson({
           message: 'API key stored',
           url,
         });
       } catch (err) {
-        outputError(
-          err instanceof Error ? err.message : String(err),
-          'ERR_AUTH_SET_API_KEY',
-        );
+        outputError(err instanceof Error ? err.message : String(err), 'ERR_AUTH_SET_API_KEY');
       }
     });
 
@@ -228,12 +233,12 @@ export function registerAuthCommands(program: Command): void {
     .command('set-credentials')
     .description('Store email/password credentials for an n8n instance')
     .requiredOption('--email <email>', 'Email address')
-    .requiredOption('--password <password>', 'Password')
+    .requiredOption('--password <password>', 'Password (use "-" to read from stdin)')
     .action(async (opts) => {
       try {
         const url = getUrl(program);
         await setSecret(KEYCHAIN_SERVICE, emailAccount(url), opts.email);
-        await setSecret(KEYCHAIN_SERVICE, passwordAccount(url), opts.password);
+        await setSecret(KEYCHAIN_SERVICE, passwordAccount(url), resolveSecretValue(opts.password));
 
         outputJson({
           message: 'Credentials stored',
@@ -241,10 +246,7 @@ export function registerAuthCommands(program: Command): void {
           email: opts.email,
         });
       } catch (err) {
-        outputError(
-          err instanceof Error ? err.message : String(err),
-          'ERR_AUTH_SET_CREDENTIALS',
-        );
+        outputError(err instanceof Error ? err.message : String(err), 'ERR_AUTH_SET_CREDENTIALS');
       }
     });
 }
