@@ -21,7 +21,7 @@
     "ai"
   ],
   "bin": {
-    "8cli": "./dist/bin/8cli.js"
+    "8cli": "dist/bin/8cli.js"
   },
   "files": [
     "dist",
