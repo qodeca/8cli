@@ -100,7 +100,9 @@ export function registerDataTableCommands(program: Command): void {
 
         const client = new PublicApiClient(config.url, config.apiKey, config.verbose);
         const limit = parseInt(opts.limit, 10);
-        const rows = await client.listDataTableRows(id, { limit });
+        // `--limit` is the max rows to return; listDataTableRows paginates
+        // through every page, so cap the merged result to honour the flag.
+        const rows = (await client.listDataTableRows(id, { limit })).slice(0, limit);
 
         output(rows, { table: config.table });
       } catch (err) {
