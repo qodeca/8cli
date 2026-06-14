@@ -40,8 +40,10 @@ jobs:
 
   # Black-box e2e: spawn the built binary against a real n8n in Docker
   # (preinstalled on ubuntu-latest). The image is pinned by tag+digest in
-  # test/e2e/setup/global.ts and cached here (digest-verified) to avoid
-  # re-pulling each run.
+  # test/e2e/setup/global.ts. We pre-pull that exact ref so the registry verifies
+  # the digest and the pull time isn't charged against the container start
+  # timeout. (A docker save/load tar cache is intentionally avoided: it does not
+  # preserve the RepoDigest, which breaks digest-pinned reuse.)
   e2e:
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -54,30 +56,8 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      - name: Cache n8n image
-        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
-        with:
-          path: /tmp/n8n-image.tar
-          # Full digest binds the cache to the exact image; bump in lockstep with global.ts.
-          key: n8n-image-761374d4eb841b0a22771d6bd68f0e8d827b4979ae4e490045517b13fc1259dd
-      - name: Ensure pinned n8n image is present and verified
-        run: |
-          set -euo pipefail
-          DIGEST="sha256:761374d4eb841b0a22771d6bd68f0e8d827b4979ae4e490045517b13fc1259dd"
-          if docker load -i /tmp/n8n-image.tar 2>/dev/null; then
-            echo "n8n image restored from cache"
-          else
-            docker pull "n8nio/n8n@$DIGEST"
-            docker save -o /tmp/n8n-image.tar "n8nio/n8n@$DIGEST"
-          fi
-          # Fail closed if the restored/pulled image is not the pinned digest.
-          have="$(docker inspect --format '{{index .RepoDigests 0}}' "n8nio/n8n@$DIGEST")"
-          case "$have" in
-            *"$DIGEST") : ;;
-            *) echo "ERROR: image digest mismatch ($have)"; exit 1 ;;
-          esac
-          # Re-attach the tag so Testcontainers resolves it locally (no re-pull).
-          docker tag "n8nio/n8n@$DIGEST" "n8nio/n8n:2.25.7"
+      - name: Pre-pull the pinned n8n image (registry verifies the digest)
+        run: docker pull n8nio/n8n:2.25.7@sha256:761374d4eb841b0a22771d6bd68f0e8d827b4979ae4e490045517b13fc1259dd
       - run: npm run test:e2e
 
   # macOS-only: real `security` keychain coverage for the auth commands.
