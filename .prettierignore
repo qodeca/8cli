@@ -5,3 +5,5 @@ package-lock.json
 LICENSE
 THIRD-PARTY-LICENSES.md
 CHANGELOG.md
+# Vitest golden snapshots are byte-for-byte fixtures, not prettier-managed
+test/e2e/__snapshots__

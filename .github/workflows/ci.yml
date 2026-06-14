@@ -8,15 +8,24 @@ on:
     branches: [main]
   pull_request:
 
-permissions:
-  contents: read
+# Least privilege: grant nothing by default, then `contents: read` per job.
+permissions: {}
+
+# Cancel superseded PR runs (unique group per branch); main/tag runs get a
+# unique group via run_id so post-merge e2e is never cancelled.
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
 
 jobs:
   check:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: 22
           cache: npm
@@ -28,3 +37,42 @@ jobs:
       - run: npm test
       - run: npm run build
       - run: npm audit --audit-level=high
+
+  # Black-box e2e: spawn the built binary against a real n8n in Docker
+  # (preinstalled on ubuntu-latest). The image is pinned by tag+digest in
+  # test/e2e/setup/global.ts. We pre-pull that exact ref so the registry verifies
+  # the digest and the pull time isn't charged against the container start
+  # timeout. (A docker save/load tar cache is intentionally avoided: it does not
+  # preserve the RepoDigest, which breaks digest-pinned reuse.)
+  e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Pre-pull the pinned n8n image (registry verifies the digest)
+        run: docker pull n8nio/n8n:2.25.7@sha256:761374d4eb841b0a22771d6bd68f0e8d827b4979ae4e490045517b13fc1259dd
+      - run: npm run test:e2e
+
+  # macOS-only: real `security` keychain coverage for the auth commands.
+  # GitHub macOS runners have no Docker daemon, so this job uses a local HTTP
+  # mock instead of a live n8n (see test/e2e-macos/auth.e2e.ts).
+  e2e-macos:
+    runs-on: macos-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run test:e2e:macos

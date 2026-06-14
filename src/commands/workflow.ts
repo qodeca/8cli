@@ -233,7 +233,9 @@ export function registerWorkflowCommands(program: Command): void {
         const existingIds = new Set(existingWorkflows.map((w) => w.id));
 
         const updated: Array<{ id: string; name: string }> = [];
-        const created: Array<{ id: string; name: string }> = [];
+        // A create's real id is assigned by n8n on publish, so it is null in a
+        // dry-run preview (the local file id is read-only and won't be used).
+        const created: Array<{ id: string | null; name: string }> = [];
         const errors: Array<{ file: string; error: string }> = [];
 
         for (const filePath of filePaths) {
@@ -245,7 +247,7 @@ export function registerWorkflowCommands(program: Command): void {
               if (existingIds.has(id)) {
                 updated.push({ id, name: String(data.name ?? '') });
               } else {
-                created.push({ id, name: String(data.name ?? '') });
+                created.push({ id: null, name: String(data.name ?? '') });
               }
               continue;
             }
@@ -254,7 +256,10 @@ export function registerWorkflowCommands(program: Command): void {
               await client.updateWorkflow(id, payload);
               updated.push({ id, name: String(data.name ?? '') });
             } else {
-              const result = await client.createWorkflow({ ...payload, id } as Partial<Workflow>);
+              // n8n's public API rejects a client-supplied `id` on create
+              // (`request/body/id is read-only`), so publish only sends the
+              // stripped payload and reports the server-assigned id.
+              const result = await client.createWorkflow(payload);
               created.push({ id: result.id, name: result.name });
             }
           } catch (err) {

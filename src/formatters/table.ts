@@ -21,11 +21,12 @@ export function outputTable(data: unknown[], columns?: ColumnDef[]): void {
       header: key,
     }));
 
+  // Only set colWidths when at least one column defines a width; passing
+  // `colWidths: undefined` makes cli-table3 throw in mergeTableOptions.
+  const hasWidths = cols.some((c) => c.width != null);
   const table = new Table({
     head: cols.map((c) => c.header),
-    colWidths: cols.map((c) => c.width).some(Boolean)
-      ? cols.map((c) => c.width ?? null)
-      : undefined,
+    ...(hasWidths ? { colWidths: cols.map((c) => c.width ?? null) } : {}),
     style: {
       head: ['cyan'],
     },

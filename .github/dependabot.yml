@@ -1,0 +1,22 @@
+# SPDX-License-Identifier: GPL-3.0-only
+# SPDX-FileCopyrightText: 2026 Qodeca
+
+# Keeps SHA-pinned GitHub Actions and npm dependencies current.
+# Note: the n8n test image is pinned (tag+digest) in test/e2e/setup/global.ts;
+# Dependabot's docker manager only scans Dockerfiles/compose, so that digest is
+# bumped manually (or via a Renovate customManager if adopted).
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    commit-message:
+      prefix: ci
+
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    commit-message:
+      prefix: chore
