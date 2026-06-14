@@ -169,6 +169,19 @@ function removeEmptyDirs(dir: string, rootDir: string): void {
   }
 }
 
+/**
+ * Run a folder command body, routing any thrown error (e.g. login failure or a
+ * license-gated internal API response) through the structured `{error,code}`
+ * contract instead of letting an ApiRequestError escape as a raw stack trace.
+ */
+async function runFolder(code: string, fn: () => Promise<void>): Promise<void> {
+  try {
+    await fn();
+  } catch (err) {
+    outputError(err instanceof Error ? err.message : String(err), code);
+  }
+}
+
 // ── Commands ───────────────────────────────────────────────────────────────
 
 export function registerFolderCommands(program: Command): void {
@@ -182,24 +195,26 @@ export function registerFolderCommands(program: Command): void {
     .command('tree')
     .description('Show folder tree')
     .action(async () => {
-      const parentOpts = program.opts();
-      const config = await resolveConfig(parentOpts);
-      const client = await createInternalClient(config);
+      await runFolder('ERR_FOLDER_TREE', async () => {
+        const parentOpts = program.opts();
+        const config = await resolveConfig(parentOpts);
+        const client = await createInternalClient(config);
 
-      const folders = await client.getFolders();
+        const folders = await client.getFolders();
 
-      if (folders.length === 0) {
-        outputJson([]);
-        return;
-      }
+        if (folders.length === 0) {
+          outputJson([]);
+          return;
+        }
 
-      const tree = buildTree(folders);
+        const tree = buildTree(folders);
 
-      if (config.table) {
-        printTree(tree);
-      } else {
-        outputJson(tree);
-      }
+        if (config.table) {
+          printTree(tree);
+        } else {
+          outputJson(tree);
+        }
+      });
     });
 
   // ── create ────────────────────────────────────────────────────────────
@@ -209,26 +224,28 @@ export function registerFolderCommands(program: Command): void {
     .description('Create a new folder')
     .option('--parent <name>', 'Parent folder name')
     .action(async (name: string, opts: { parent?: string }) => {
-      const parentOpts = program.opts();
-      const config = await resolveConfig(parentOpts);
-      const client = await createInternalClient(config);
+      await runFolder('ERR_FOLDER_CREATE', async () => {
+        const parentOpts = program.opts();
+        const config = await resolveConfig(parentOpts);
+        const client = await createInternalClient(config);
 
-      let parentFolderId: string | undefined;
+        let parentFolderId: string | undefined;
 
-      if (opts.parent) {
-        const folders = await client.getFolders();
-        const parent = findFolderByName(folders, opts.parent);
-        if (!parent) {
-          outputError(`Parent folder '${opts.parent}' not found`, 'ERR_FOLDER_NOT_FOUND');
+        if (opts.parent) {
+          const folders = await client.getFolders();
+          const parent = findFolderByName(folders, opts.parent);
+          if (!parent) {
+            outputError(`Parent folder '${opts.parent}' not found`, 'ERR_FOLDER_NOT_FOUND');
+          }
+          parentFolderId = parent.id;
         }
-        parentFolderId = parent.id;
-      }
 
-      const result = await client.createFolder(name, parentFolderId);
-      outputJson({
-        id: result.id,
-        name: result.name,
-        parentFolderId: result.parentFolderId ?? null,
+        const result = await client.createFolder(name, parentFolderId);
+        outputJson({
+          id: result.id,
+          name: result.name,
+          parentFolderId: result.parentFolderId ?? null,
+        });
       });
     });
 
@@ -238,18 +255,20 @@ export function registerFolderCommands(program: Command): void {
     .command('delete <name>')
     .description('Delete an empty folder')
     .action(async (name: string) => {
-      const parentOpts = program.opts();
-      const config = await resolveConfig(parentOpts);
-      const client = await createInternalClient(config);
+      await runFolder('ERR_FOLDER_DELETE', async () => {
+        const parentOpts = program.opts();
+        const config = await resolveConfig(parentOpts);
+        const client = await createInternalClient(config);
 
-      const folders = await client.getFolders();
-      const target = findFolderByName(folders, name);
-      if (!target) {
-        outputError(`Folder '${name}' not found`, 'ERR_FOLDER_NOT_FOUND');
-      }
+        const folders = await client.getFolders();
+        const target = findFolderByName(folders, name);
+        if (!target) {
+          outputError(`Folder '${name}' not found`, 'ERR_FOLDER_NOT_FOUND');
+        }
 
-      await client.deleteFolder(target.id);
-      outputJson({ deleted: { id: target.id, name: target.name } });
+        await client.deleteFolder(target.id);
+        outputJson({ deleted: { id: target.id, name: target.name } });
+      });
     });
 
   // ── move ──────────────────────────────────────────────────────────────
@@ -259,35 +278,37 @@ export function registerFolderCommands(program: Command): void {
     .description('Move a workflow to a folder')
     .requiredOption('--to <folder>', 'Target folder name (or "(root)" for no folder)')
     .action(async (workflowName: string, opts: { to: string }) => {
-      const parentOpts = program.opts();
-      const config = await resolveConfig(parentOpts);
-      const client = await createInternalClient(config);
+      await runFolder('ERR_FOLDER_MOVE', async () => {
+        const parentOpts = program.opts();
+        const config = await resolveConfig(parentOpts);
+        const client = await createInternalClient(config);
 
-      // Find workflow by name (case-insensitive)
-      const workflows = await client.getWorkflows();
-      const wf = workflows.find((w) => w.name.toLowerCase() === workflowName.toLowerCase());
-      if (!wf) {
-        outputError(`Workflow '${workflowName}' not found`, 'ERR_WORKFLOW_NOT_FOUND');
-      }
-
-      // Find target folder
-      let folderId: string | null = null;
-      if (opts.to.toLowerCase() !== '(root)') {
-        const folders = await client.getFolders();
-        const target = findFolderByName(folders, opts.to);
-        if (!target) {
-          outputError(`Folder '${opts.to}' not found`, 'ERR_FOLDER_NOT_FOUND');
+        // Find workflow by name (case-insensitive)
+        const workflows = await client.getWorkflows();
+        const wf = workflows.find((w) => w.name.toLowerCase() === workflowName.toLowerCase());
+        if (!wf) {
+          outputError(`Workflow '${workflowName}' not found`, 'ERR_WORKFLOW_NOT_FOUND');
         }
-        folderId = target.id;
-      }
 
-      await client.moveWorkflow(wf.id, folderId);
-      outputJson({
-        moved: {
-          workflowId: wf.id,
-          workflowName: wf.name,
-          toFolder: opts.to,
-        },
+        // Find target folder
+        let folderId: string | null = null;
+        if (opts.to.toLowerCase() !== '(root)') {
+          const folders = await client.getFolders();
+          const target = findFolderByName(folders, opts.to);
+          if (!target) {
+            outputError(`Folder '${opts.to}' not found`, 'ERR_FOLDER_NOT_FOUND');
+          }
+          folderId = target.id;
+        }
+
+        await client.moveWorkflow(wf.id, folderId);
+        outputJson({
+          moved: {
+            workflowId: wf.id,
+            workflowName: wf.name,
+            toFolder: opts.to,
+          },
+        });
       });
     });
 
@@ -298,109 +319,111 @@ export function registerFolderCommands(program: Command): void {
     .description('Sync local files to match n8n folder structure')
     .option('--dir <path>', 'Workflow files directory (default: from config)')
     .action(async (opts: { dir?: string }) => {
-      const parentOpts = program.opts();
-      const config = await resolveConfig(parentOpts);
-      const client = await createInternalClient(config);
-      const dry = config.dry;
+      await runFolder('ERR_FOLDER_SYNC', async () => {
+        const parentOpts = program.opts();
+        const config = await resolveConfig(parentOpts);
+        const client = await createInternalClient(config);
+        const dry = config.dry;
 
-      const workflowDir = resolve(opts.dir ?? config.workflowDir);
+        const workflowDir = resolve(opts.dir ?? config.workflowDir);
 
-      if (!existsSync(workflowDir)) {
-        outputError(`Workflow directory not found: ${workflowDir}`, 'ERR_DIR_NOT_FOUND');
-      }
-
-      // Fetch folders and workflows from server
-      const folders = await client.getFolders();
-      const byId = new Map<string, Folder>(folders.map((f) => [f.id, f]));
-
-      const workflows = await client.getWorkflows();
-      if (workflows.length === 0) {
-        outputJson({ moved: [], created: [] });
-        return;
-      }
-
-      // Build expected folder path for each workflow
-      const expected = new Map<string, { folder: string; name: string }>();
-      for (const wf of workflows) {
-        const fpath = workflowFolderPath(wf, byId);
-        expected.set(wf.id, { folder: fpath, name: wf.name });
-      }
-
-      // Find existing files by workflow ID prefix (everything before first _)
-      const existingFiles = new Map<string, string>();
-      const jsonFiles = findJsonFiles(workflowDir);
-      const idPattern = /^([A-Za-z0-9]+)_/;
-
-      for (const filePath of jsonFiles) {
-        const fileName = filePath.split('/').pop() ?? '';
-        const match = fileName.match(idPattern);
-        if (match) {
-          existingFiles.set(match[1], filePath);
+        if (!existsSync(workflowDir)) {
+          outputError(`Workflow directory not found: ${workflowDir}`, 'ERR_DIR_NOT_FOUND');
         }
-      }
 
-      // Calculate moves
-      const moves: SyncMove[] = [];
-      const createdDirs: string[] = [];
+        // Fetch folders and workflows from server
+        const folders = await client.getFolders();
+        const byId = new Map<string, Folder>(folders.map((f) => [f.id, f]));
 
-      for (const [wfId, info] of expected.entries()) {
-        const currentPath = existingFiles.get(wfId);
-        if (!currentPath) continue;
+        const workflows = await client.getWorkflows();
+        if (workflows.length === 0) {
+          outputJson({ moved: [], created: [] });
+          return;
+        }
 
-        const fileName = currentPath.split('/').pop() ?? '';
-        const targetDir = info.folder ? join(workflowDir, info.folder) : workflowDir;
-        const targetPath = join(targetDir, fileName);
+        // Build expected folder path for each workflow
+        const expected = new Map<string, { folder: string; name: string }>();
+        for (const wf of workflows) {
+          const fpath = workflowFolderPath(wf, byId);
+          expected.set(wf.id, { folder: fpath, name: wf.name });
+        }
 
-        if (currentPath !== targetPath) {
-          // Track directories that need creating
-          if (!existsSync(targetDir) && !createdDirs.includes(targetDir)) {
-            createdDirs.push(targetDir);
+        // Find existing files by workflow ID prefix (everything before first _)
+        const existingFiles = new Map<string, string>();
+        const jsonFiles = findJsonFiles(workflowDir);
+        const idPattern = /^([A-Za-z0-9]+)_/;
+
+        for (const filePath of jsonFiles) {
+          const fileName = filePath.split('/').pop() ?? '';
+          const match = fileName.match(idPattern);
+          if (match) {
+            existingFiles.set(match[1], filePath);
+          }
+        }
+
+        // Calculate moves
+        const moves: SyncMove[] = [];
+        const createdDirs: string[] = [];
+
+        for (const [wfId, info] of expected.entries()) {
+          const currentPath = existingFiles.get(wfId);
+          if (!currentPath) continue;
+
+          const fileName = currentPath.split('/').pop() ?? '';
+          const targetDir = info.folder ? join(workflowDir, info.folder) : workflowDir;
+          const targetPath = join(targetDir, fileName);
+
+          if (currentPath !== targetPath) {
+            // Track directories that need creating
+            if (!existsSync(targetDir) && !createdDirs.includes(targetDir)) {
+              createdDirs.push(targetDir);
+            }
+
+            moves.push({
+              workflowId: wfId,
+              workflowName: info.name,
+              from: relative(workflowDir, currentPath),
+              to: relative(workflowDir, targetPath),
+            });
+          }
+        }
+
+        if (moves.length === 0) {
+          outputJson({ moved: [], created: [] });
+          return;
+        }
+
+        if (!dry) {
+          // Create directories
+          for (const dir of createdDirs) {
+            mkdirSync(dir, { recursive: true });
           }
 
-          moves.push({
-            workflowId: wfId,
-            workflowName: info.name,
-            from: relative(workflowDir, currentPath),
-            to: relative(workflowDir, targetPath),
-          });
-        }
-      }
-
-      if (moves.length === 0) {
-        outputJson({ moved: [], created: [] });
-        return;
-      }
-
-      if (!dry) {
-        // Create directories
-        for (const dir of createdDirs) {
-          mkdirSync(dir, { recursive: true });
-        }
-
-        // Move files
-        for (const move of moves) {
-          const srcPath = join(workflowDir, move.from);
-          const dstPath = join(workflowDir, move.to);
-          const dstDir = dirname(dstPath);
-          if (!existsSync(dstDir)) {
-            mkdirSync(dstDir, { recursive: true });
+          // Move files
+          for (const move of moves) {
+            const srcPath = join(workflowDir, move.from);
+            const dstPath = join(workflowDir, move.to);
+            const dstDir = dirname(dstPath);
+            if (!existsSync(dstDir)) {
+              mkdirSync(dstDir, { recursive: true });
+            }
+            renameSync(srcPath, dstPath);
           }
-          renameSync(srcPath, dstPath);
+
+          // Clean up empty directories
+          for (const move of moves) {
+            const srcDir = dirname(join(workflowDir, move.from));
+            removeEmptyDirs(srcDir, workflowDir);
+          }
         }
 
-        // Clean up empty directories
-        for (const move of moves) {
-          const srcDir = dirname(join(workflowDir, move.from));
-          removeEmptyDirs(srcDir, workflowDir);
-        }
-      }
+        const createdRelative = createdDirs.map((d) => relative(workflowDir, d));
 
-      const createdRelative = createdDirs.map((d) => relative(workflowDir, d));
-
-      outputJson({
-        dry,
-        moved: moves.map((m) => ({ from: m.from, to: m.to })),
-        created: createdRelative,
+        outputJson({
+          dry,
+          moved: moves.map((m) => ({ from: m.from, to: m.to })),
+          created: createdRelative,
+        });
       });
     });
 }
