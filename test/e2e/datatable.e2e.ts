@@ -6,6 +6,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { apiEnv, apiFetch, json, run8cli, track, uniqueName } from './setup/helpers.js';
+import { snapshotJson } from './setup/redact.js';
 
 const COLUMNS = '[{"name":"label","type":"string"}]';
 
@@ -86,5 +87,57 @@ describe('datatable --dry and input errors', () => {
     const dt = await makeTable();
     const r = await run8cli(['dt', 'insert', dt.id], apiEnv());
     expect(r).toFailWithCode('ERR_MISSING_DATA');
+  });
+});
+
+describe('datatable malformed input', () => {
+  it('rejects invalid --columns JSON', async () => {
+    const r = await run8cli(
+      ['dt', 'create', '--name', uniqueName('dt'), '--columns', 'not json'],
+      apiEnv(),
+    );
+    expect(r).toFailWithCode('ERR_INVALID_JSON');
+  });
+
+  it('rejects non-array row data', async () => {
+    const r = await run8cli(['dt', 'insert', 'any-id', '--data', '{"not":"array"}'], apiEnv());
+    expect(r).toFailWithCode('ERR_INVALID_DATA');
+  });
+
+  it('rejects an unreadable @file', async () => {
+    const r = await run8cli(['dt', 'insert', 'any-id', '--data', '@/no/such/file.json'], apiEnv());
+    expect(r).toFailWithCode('ERR_FILE_READ');
+  });
+});
+
+describe('datatable rows --limit and --table', () => {
+  it('caps rows with --limit', async () => {
+    const dt = await makeTable();
+    await run8cli(['dt', 'insert', dt.id, '--data', '[{"label":"a"},{"label":"b"}]'], apiEnv());
+    const rows = await run8cli(['dt', 'rows', dt.id, '--limit', '1'], apiEnv());
+    expect(rows.exitCode).toBe(0);
+    expect(json<unknown[]>(rows).length).toBeLessThanOrEqual(1);
+  });
+
+  it('renders the column formatter in --table output', async () => {
+    await makeTable(); // has a "label" column
+    const r = await run8cli(['dt', 'list', '--table'], apiEnv());
+    expect(r.exitCode).toBe(0);
+    expect(r.json).toBeUndefined();
+    expect(r.stdout).toContain('label'); // custom columns formatter joins column names
+  });
+
+  it('matches the data-table JSON contract (golden snapshot)', async () => {
+    const created = await run8cli(
+      ['dt', 'create', '--name', 'snapshot-dt', '--columns', COLUMNS],
+      apiEnv(),
+    );
+    const id = json<{ id: string }>(created).id;
+    track(async () => {
+      await apiFetch(`/api/v1/data-tables/${id}`, { method: 'DELETE' });
+    });
+    const r = await run8cli(['dt', 'get', id], apiEnv());
+    expect(r.exitCode).toBe(0);
+    await expect(snapshotJson(r.json)).toMatchFileSnapshot('./__snapshots__/dt-get.json');
   });
 });

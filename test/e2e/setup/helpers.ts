@@ -56,12 +56,13 @@ export interface CliResult {
 export async function run8cli(
   args: string[],
   env: Record<string, string> = {},
-  opts: { input?: string } = {},
+  opts: { input?: string; cwd?: string } = {},
 ): Promise<CliResult> {
   const result: Result = await execa('node', [BIN, ...args], {
     reject: false,
     extendEnv: false,
     input: opts.input,
+    cwd: opts.cwd,
     env: {
       ...safeHostEnv(),
       FORCE_COLOR: '0',

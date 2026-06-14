@@ -19,4 +19,9 @@ describe('source-control', () => {
     const r = await run8cli(['sc', 'pull'], apiEnv());
     expect(r).toFailWithCode('ERR_SOURCE_CONTROL');
   });
+
+  it('pull --force returns a structured error on a free container', async () => {
+    const r = await run8cli(['sc', 'pull', '--force'], apiEnv());
+    expect(r).toFailWithCode('ERR_SOURCE_CONTROL');
+  });
 });

@@ -74,4 +74,60 @@ describe.skipIf(!isMac)('auth keychain round-trip (macOS)', () => {
     expect(verify.json).toMatchObject({ authenticated: true });
     await run8cli(['--url', url, 'auth', 'logout']);
   });
+
+  it('stores email + password via set-credentials and removes them', async () => {
+    // NOTE: `auth login --api-key` is currently unusable — the global --api-key
+    // option shadows the subcommand's, so this covers the email/password storage
+    // branch via set-credentials (no option collision) instead.
+    const set = await run8cli(
+      ['--url', url, 'auth', 'set-credentials', '--email', 'creds@example.com', '--password', '-'],
+      {},
+      { input: 'INSECURE-E2E-ONLY-creds-pw\n' },
+    );
+    expect(set.exitCode).toBe(0);
+    expect(set.json).toMatchObject({ email: 'creds@example.com' });
+
+    const list = await run8cli(['auth', 'list']);
+    const entry = json<Array<{ url: string; hasEmail: boolean; hasPassword: boolean }>>(list).find(
+      (e) => e.url === url,
+    );
+    expect(entry).toMatchObject({ hasEmail: true, hasPassword: true });
+
+    const logout = await run8cli(['--url', url, 'auth', 'logout']);
+    expect(logout.json).toMatchObject({ deletedEmail: true, deletedPassword: true });
+  });
+
+  it('stores api-key + email + password via auth login (global --api-key)', async () => {
+    const login = await run8cli(
+      [
+        '--url',
+        url,
+        '--api-key',
+        FAKE_TOKEN,
+        'auth',
+        'login',
+        '--email',
+        'login@example.com',
+        '--password',
+        '-',
+      ],
+      {},
+      { input: 'INSECURE-E2E-ONLY-login-pw\n' },
+    );
+    expect(login.exitCode).toBe(0);
+    expect(login.json).toMatchObject({ hasApiKey: true, hasEmail: true, hasPassword: true });
+
+    const list = await run8cli(['auth', 'list']);
+    const entry = json<
+      Array<{ url: string; hasApiKey: boolean; hasEmail: boolean; hasPassword: boolean }>
+    >(list).find((e) => e.url === url);
+    expect(entry).toMatchObject({ hasApiKey: true, hasEmail: true, hasPassword: true });
+
+    const logout = await run8cli(['--url', url, 'auth', 'logout']);
+    expect(logout.json).toMatchObject({
+      deletedApiKey: true,
+      deletedEmail: true,
+      deletedPassword: true,
+    });
+  });
 });

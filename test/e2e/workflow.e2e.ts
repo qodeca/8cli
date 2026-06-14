@@ -5,7 +5,15 @@ import { mkdtempSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { apiEnv, createWorkflowFixture, json, run8cli, uniqueName } from './setup/helpers.js';
+import {
+  apiEnv,
+  apiFetch,
+  createWorkflowFixture,
+  json,
+  run8cli,
+  track,
+  uniqueName,
+} from './setup/helpers.js';
 import { snapshotJson } from './setup/redact.js';
 
 describe('wf list', () => {
@@ -21,6 +29,15 @@ describe('wf list', () => {
     expect(r.exitCode).toBe(0);
     expect(r.json).toBeUndefined(); // table output is not JSON
     expect(r.stdout).toContain('Name');
+  });
+
+  it('matches the list-item JSON contract (golden snapshot)', async () => {
+    await createWorkflowFixture({ name: 'list-snapshot-fixture' });
+    const list = await run8cli(['wf', 'list'], apiEnv());
+    const item = json<Array<{ id: string; name: string }>>(list).find(
+      (w) => w.name === 'list-snapshot-fixture',
+    )!;
+    await expect(snapshotJson(item)).toMatchFileSnapshot('./__snapshots__/wf-list-item.json');
   });
 });
 
@@ -134,5 +151,75 @@ describe('wf save + diff (both branches)', () => {
     expect(diff.json).toBeUndefined();
     expect(diff.stdout).toContain('---');
     expect(diff.stdout).toContain('+++');
+  });
+});
+
+describe('wf publish (create / dry / no files)', () => {
+  it('creates a new workflow from a file with an unknown id', async () => {
+    const dir = mkdtempSync(join(tmpdir(), '8cli-pub-'));
+    const name = uniqueName('pub');
+    const file = join(dir, 'new_wf.json');
+    writeFileSync(
+      file,
+      JSON.stringify({
+        id: 'local-unknown-id',
+        name,
+        nodes: [],
+        connections: {},
+        settings: { executionOrder: 'v1' },
+      }),
+    );
+    const pub = await run8cli(['wf', 'publish', '--file', file], apiEnv());
+    expect(pub.exitCode).toBe(0);
+    const created = json<{ created: Array<{ id: string; name: string }> }>(pub).created;
+    expect(created).toHaveLength(1);
+    expect(created[0].id).toBeTruthy();
+    expect(created[0].id).not.toBe('local-unknown-id'); // server-assigned id
+    const newId = created[0].id;
+    track(async () => {
+      await apiFetch(`/api/v1/workflows/${newId}`, { method: 'DELETE' });
+    });
+    const got = await run8cli(['wf', 'get', newId], apiEnv());
+    expect(got.exitCode).toBe(0);
+    expect(json<{ name: string }>(got).name).toBe(name);
+  });
+
+  it('previews a create with --dry without mutating', async () => {
+    const before = json<unknown[]>(await run8cli(['wf', 'list'], apiEnv())).length;
+    const dir = mkdtempSync(join(tmpdir(), '8cli-pubdry-'));
+    const file = join(dir, 'dry_wf.json');
+    writeFileSync(
+      file,
+      JSON.stringify({
+        id: 'dry-id',
+        name: uniqueName('dry'),
+        nodes: [],
+        connections: {},
+        settings: { executionOrder: 'v1' },
+      }),
+    );
+    const pub = await run8cli(['wf', 'publish', '--file', file, '--dry'], apiEnv());
+    expect(pub.exitCode).toBe(0);
+    expect(pub.json).toMatchObject({ dryRun: true });
+    const after = json<unknown[]>(await run8cli(['wf', 'list'], apiEnv())).length;
+    expect(after).toBe(before); // no mutation
+  });
+
+  it('reports ERR_NO_FILES when the workflow dir has nothing to publish', async () => {
+    const emptyCwd = mkdtempSync(join(tmpdir(), '8cli-empty-'));
+    const r = await run8cli(['wf', 'publish'], apiEnv(), { cwd: emptyCwd });
+    expect(r).toFailWithCode('ERR_NO_FILES');
+  });
+});
+
+describe('wf save (all workflows)', () => {
+  it('saves every workflow, one file per workflow in the list', async () => {
+    await createWorkflowFixture();
+    await createWorkflowFixture();
+    const count = json<unknown[]>(await run8cli(['wf', 'list'], apiEnv())).length;
+    const dir = mkdtempSync(join(tmpdir(), '8cli-saveall-'));
+    const save = await run8cli(['wf', 'save', '--dir', dir], apiEnv());
+    expect(save.exitCode).toBe(0);
+    expect(json<{ files: string[] }>(save).files).toHaveLength(count);
   });
 });

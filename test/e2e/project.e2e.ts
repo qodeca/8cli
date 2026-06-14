@@ -18,6 +18,11 @@ describe('project (Enterprise-gated on free n8n)', () => {
     expect(r).toFailWithCode('ERR_PROJECT_CREATE');
   });
 
+  it('update returns a structured error', async () => {
+    const r = await run8cli(['proj', 'update', 'x', '--name', uniqueName('proj')], apiEnv());
+    expect(r).toFailWithCode('ERR_PROJECT_UPDATE');
+  });
+
   it('delete (with --transfer-to) returns a structured error', async () => {
     const r = await run8cli(['proj', 'delete', 'x', '--transfer-to', 'y'], apiEnv());
     expect(r).toFailWithCode('ERR_PROJECT_DELETE');

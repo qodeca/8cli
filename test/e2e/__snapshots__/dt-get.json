@@ -1,0 +1,18 @@
+{
+  "updatedAt": "<timestamp>",
+  "createdAt": "<timestamp>",
+  "id": "<id>",
+  "name": "snapshot-dt",
+  "projectId": "<projectId>",
+  "columns": [
+    {
+      "updatedAt": "<timestamp>",
+      "createdAt": "<timestamp>",
+      "id": "<id>",
+      "dataTableId": "<dataTableId>",
+      "name": "label",
+      "type": "string",
+      "index": 0
+    }
+  ]
+}
