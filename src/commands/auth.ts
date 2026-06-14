@@ -53,14 +53,23 @@ export function registerAuthCommands(program: Command): void {
   auth
     .command('login')
     .description('Store credentials for an n8n instance in the keychain')
-    .requiredOption('--api-key <key>', 'API key (use "-" to read from stdin)')
     .option('--email <email>', 'Email for internal API auth')
     .option('--password <password>', 'Password for internal API auth (use "-" to read from stdin)')
     .action(async (opts) => {
       try {
         const url = getUrl(program);
 
-        await setSecret(KEYCHAIN_SERVICE, apiKeyAccount(url), resolveSecretValue(opts.apiKey));
+        // The API key comes from the global --api-key flag (use "-" for stdin);
+        // a subcommand --api-key would be shadowed by the global option.
+        const apiKey = (program.opts() as { apiKey?: string }).apiKey;
+        if (!apiKey) {
+          outputError(
+            'No API key provided. Pass the global --api-key flag (use "-" to read from stdin).',
+            'ERR_NO_API_KEY',
+          );
+        }
+
+        await setSecret(KEYCHAIN_SERVICE, apiKeyAccount(url), resolveSecretValue(apiKey));
 
         if (opts.email) {
           await setSecret(KEYCHAIN_SERVICE, emailAccount(url), opts.email);
