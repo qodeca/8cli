@@ -164,7 +164,9 @@ npm install                        # Install dependencies
 npm run typecheck                  # Type check (tsc --noEmit)
 npm run lint                       # ESLint (flat config + typescript-eslint)
 npm run format                     # Prettier auto-format (format:check in CI)
-npm test                           # Vitest (test/**/*.test.ts)
+npm test                           # Unit tests (Vitest, test/**/*.test.ts)
+npm run test:e2e                   # E2e: built CLI vs real n8n in Docker (Testcontainers)
+npm run test:e2e:macos             # E2e: real macOS keychain (no Docker)
 npm run check:headers              # Verify every source file has the SPDX header
 npx tsx bin/8cli.ts --help         # Run raw TS directly via tsx (no build needed for dev)
 npm run build                      # Clean + compile to dist/ (tsc) – the published artifact
@@ -173,9 +175,18 @@ node dist/bin/8cli.js --help       # Run the compiled CLI (what installed users 
 
 Dev runs raw TypeScript via `tsx`; the published npm package ships compiled JS in `dist/`
 only (`files: ["dist", "THIRD-PARTY-LICENSES.md"]`; no `.d.ts`/source maps – CLI-only), so
-the build runs automatically on `prepublishOnly`. CI (`.github/workflows/ci.yml`) runs
-typecheck + lint + format check + tests + build + `npm audit` + the SPDX-header check on
-every push and PR. Tests live in `test/`.
+the build runs automatically on `prepublishOnly`.
+
+**Tests.** Unit tests (`test/*.test.ts`) run via `npm test`. The e2e suite (`test/e2e/**`)
+spawns the built `dist/bin/8cli.js` against a real n8n started by Testcontainers (Docker
+required; targets free Community n8n, so license-gated groups – variable/project/folder/
+source-control – assert the gated-error contract). `test/e2e-macos/` covers the real
+`security` keychain without Docker. Command→branch→spec coverage map: `test/e2e/COVERAGE.md`.
+
+CI (`.github/workflows/ci.yml`) runs three jobs on every push and PR: `check` (typecheck,
+lint, format check, unit tests, build, `npm audit`, SPDX-header check), `e2e` (Linux +
+Docker), and `e2e-macos`. Releases publish to npm via OIDC trusted publishing when a GitHub
+Release is published (`.github/workflows/publish.yml`).
 
 ## Licensing and headers
 

@@ -39,9 +39,16 @@ Every change must pass the same checks CI runs. Run them locally before opening 
 npm run typecheck     # tsc --noEmit
 npm run lint          # eslint
 npm run format:check  # prettier (use `npm run format` to auto-fix)
-npm test              # vitest
+npm test              # unit tests (vitest)
 npm run check:headers # every source file must carry the SPDX header
 npm run build         # compile to dist/
+```
+
+CI also runs the end-to-end suites as required checks; run them locally where you can:
+
+```bash
+npm run test:e2e        # built CLI vs a real n8n in Docker (Testcontainers) – needs Docker
+npm run test:e2e:macos  # the real macOS keychain (macOS only, no Docker)
 ```
 
 ## Conventions
@@ -58,7 +65,9 @@ npm run build         # compile to dist/
   stderr (`{ "error": "...", "code": "ERR_..." }`) with exit code 1. No interactive prompts.
 - **Style** – sentence case (not Title Case), en dashes (–) not em dashes, one file per
   command group. Prettier and ESLint enforce formatting.
-- **Tests** – add or update tests under `test/` for behavior changes where practical.
+- **Tests** – add or update tests under `test/` for behavior changes where practical: unit
+  tests for pure logic, and e2e specs under `test/e2e/` for command behavior (see the
+  command→branch→spec map in [`test/e2e/COVERAGE.md`](./test/e2e/COVERAGE.md)).
 
 ## Submitting a change
 

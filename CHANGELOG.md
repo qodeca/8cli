@@ -12,6 +12,26 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.1.1] - 2026-06-14
+
+### Fixed
+
+- `folder` commands now return a structured `{ "error", "code" }` (exit 1) instead of
+  leaking a raw stack trace when the internal API errors.
+- `workflow publish` can create new workflows again – it no longer sends the read-only `id`
+  that n8n rejects on create (`--dry` reports a provisional id).
+- `--table` output no longer crashes for commands that set no explicit column widths
+  (`tag`, `credential`, `variable`, `project`, `user`, `datatable`).
+- `datatable rows --limit` now caps the number of rows returned instead of paginating
+  through every row.
+- `auth login` now works: its `--api-key` was shadowed by the global flag, so it reads the
+  global `--api-key` (use `-` for stdin).
+
+### Added
+
+- Real-n8n black-box end-to-end test suite (Testcontainers) plus a macOS keychain job and
+  gating `e2e` / `e2e-macos` CI jobs. Tests are not shipped in the published package.
+
 ## [0.1.0] - 2026-06-13
 
 First public release.
@@ -38,5 +58,6 @@ First public release.
 - Windows/Linux keychain stubs fail with an actionable message instead of silently no-opping.
 - Vulnerability reporting via GitHub private reporting (`SECURITY.md`).
 
-[unreleased]: https://github.com/qodeca/8cli/compare/v0.1.0...HEAD
+[unreleased]: https://github.com/qodeca/8cli/compare/v0.1.1...HEAD
+[0.1.1]: https://github.com/qodeca/8cli/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/qodeca/8cli/releases/tag/v0.1.0
