@@ -195,7 +195,7 @@ to any new file:
 
 ```
 // SPDX-License-Identifier: GPL-3.0-only
-// SPDX-FileCopyrightText: 2026 Qodeca
+// SPDX-FileCopyrightText: 2026 Qodeca sp. z o.o.
 ```
 
 In `bin/8cli.ts` the header sits immediately after the `#!/usr/bin/env node` shebang.

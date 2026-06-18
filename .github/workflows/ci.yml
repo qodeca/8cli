@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: GPL-3.0-only
-# SPDX-FileCopyrightText: 2026 Qodeca
+# SPDX-FileCopyrightText: 2026 Qodeca sp. z o.o.
 
 name: CI
 
@@ -31,6 +31,10 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run check:headers
+      - name: REUSE compliance
+        # charset-normalizer extra avoids reuse's "no encoding module" error on
+        # minimal runners. pipx is preinstalled on ubuntu-latest.
+        run: pipx run --spec "reuse[charset-normalizer]" reuse lint
       - run: npm run typecheck
       - run: npm run lint
       - run: npm run format:check

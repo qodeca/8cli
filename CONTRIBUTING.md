@@ -1,6 +1,6 @@
 <!--
 SPDX-License-Identifier: GPL-3.0-only
-SPDX-FileCopyrightText: 2026 Qodeca
+SPDX-FileCopyrightText: 2026 Qodeca sp. z o.o.
 -->
 
 # Contributing to 8cli
@@ -8,8 +8,11 @@ SPDX-FileCopyrightText: 2026 Qodeca
 Thanks for your interest in improving 8cli. This document covers how to set up the project,
 the quality gates your change must pass, and how to submit it.
 
-By contributing, you agree that your contributions are licensed under the project's
-**GPL-3.0-only** license, and that you have the right to submit them under that license.
+By contributing, you agree to the project's [Contributor License Agreement](./CLA.md)
+(CLA). It confirms you have the right to submit your contribution and grants Qodeca a
+broad licence (GPL-3.0-only plus any other terms Qodeca may choose, preserving the
+dual-licensing option). Signing is automatic: the CLA-assistant bot posts a one-time
+link on your first pull request, and your Git author identity is your signature.
 
 ## Prerequisites
 
@@ -56,7 +59,7 @@ npm run test:e2e:macos  # the real macOS keychain (macOS only, no Docker)
 - **License header** – every new file under `bin/` or `src/` must start with:
   ```
   // SPDX-License-Identifier: GPL-3.0-only
-  // SPDX-FileCopyrightText: 2026 Qodeca
+  // SPDX-FileCopyrightText: 2026 Qodeca sp. z o.o.
   ```
   (In `bin/8cli.ts` it goes immediately after the shebang.)
 - **Commits** – use [Conventional Commits](https://www.conventionalcommits.org/)
@@ -75,6 +78,7 @@ npm run test:e2e:macos  # the real macOS keychain (macOS only, no Docker)
 2. Make your change with tests and docs updated.
 3. Ensure all quality gates pass.
 4. Open a pull request describing the change and linking any related issue.
+5. Sign the [CLA](./CLA.md) via the one-time link the bot posts on your PR.
 
 ## Reporting bugs and requesting features
 

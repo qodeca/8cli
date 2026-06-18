@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
-// SPDX-FileCopyrightText: 2026 Qodeca
+// SPDX-FileCopyrightText: 2026 Qodeca sp. z o.o.
 
 /**
  * Normalize n8n API output for snapshotting. `toMatchFileSnapshot` does not
