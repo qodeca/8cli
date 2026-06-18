@@ -169,16 +169,16 @@ sponsored by n8n GmbH. "n8n" is a trademark of n8n GmbH, used here only to descr
 compatibility.
 
 "Claude" and "Claude Code" are trademarks of Anthropic; 8cli is not affiliated with or
-endorsed by Anthropic — it is simply designed to be usable by terminal coding agents. See
+endorsed by Anthropic – it is simply designed to be usable by terminal coding agents. See
 [`TRADEMARKS.md`](./TRADEMARKS.md) for the full trademark policy, including Qodeca's own marks.
 
 ## Contributing
 
 Contributions are welcome – see [`CONTRIBUTING.md`](./CONTRIBUTING.md) for setup and the
 quality gates, and [`CODE_OF_CONDUCT.md`](./CODE_OF_CONDUCT.md) for community standards.
-Contributions are accepted under **GPL-3.0-only** and require signing the project
-[Contributor License Agreement](./CLA.md); the CLA-assistant bot prompts first-time
-contributors automatically on their pull request.
+Contributions are accepted under **GPL-3.0-only** and require agreeing to the project
+[Contributor License Agreement](./CLA.md) – by opening a pull request you agree to its
+terms (your Git author identity is your record).
 
 ## Security
 
@@ -200,7 +200,7 @@ preserved in this repository.
 
 ## Built by Qodeca
 
-8cli is built by **[Qodeca](https://qodeca.com)** — a Warsaw-based software team building
+8cli is built by **[Qodeca](https://qodeca.com)** – a Warsaw-based software team building
 software since 2014 for the fitness, sport, and healthcare industries, where HIPAA, GDPR, and
 PCI DSS are the baseline, not the exception. We build a lot of our tooling in the open.
 

@@ -34,7 +34,7 @@ jobs:
       - name: REUSE compliance
         # charset-normalizer extra avoids reuse's "no encoding module" error on
         # minimal runners. pipx is preinstalled on ubuntu-latest.
-        run: pipx run --spec "reuse[charset-normalizer]" reuse lint
+        run: pipx run --spec "reuse[charset-normalizer]==6.2.0" reuse lint
       - run: npm run typecheck
       - run: npm run lint
       - run: npm run format:check

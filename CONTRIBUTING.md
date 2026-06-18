@@ -11,8 +11,9 @@ the quality gates your change must pass, and how to submit it.
 By contributing, you agree to the project's [Contributor License Agreement](./CLA.md)
 (CLA). It confirms you have the right to submit your contribution and grants Qodeca a
 broad licence (GPL-3.0-only plus any other terms Qodeca may choose, preserving the
-dual-licensing option). Signing is automatic: the CLA-assistant bot posts a one-time
-link on your first pull request, and your Git author identity is your signature.
+dual-licensing option). By opening a pull request you agree to the CLA; your Git author
+identity is your signature of record. (Automatic recording via a CLA-assistant bot may be
+added in the future.)
 
 ## Prerequisites
 
@@ -78,7 +79,7 @@ npm run test:e2e:macos  # the real macOS keychain (macOS only, no Docker)
 2. Make your change with tests and docs updated.
 3. Ensure all quality gates pass.
 4. Open a pull request describing the change and linking any related issue.
-5. Sign the [CLA](./CLA.md) via the one-time link the bot posts on your PR.
+5. By opening the pull request you agree to the [CLA](./CLA.md).
 
 ## Reporting bugs and requesting features
 
