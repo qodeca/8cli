@@ -91,7 +91,8 @@ Use the GitHub issue templates. For security vulnerabilities, follow
 Releases publish to npm automatically via **trusted publishing** (OIDC) – do not run
 `npm publish` by hand for normal releases. The flow:
 
-1. Bump `version` in `package.json` (follow [SemVer](https://semver.org)).
+1. Bump `version` in `package.json` (follow [SemVer](https://semver.org)), and update
+   `version` + `date-released` in `CITATION.cff` to match.
 2. Move the relevant `CHANGELOG.md` entries from `[Unreleased]` into the new version section.
 3. Commit, then create a matching **signed, annotated** tag
    (`git tag -s v0.2.0 -m "v0.2.0"`) and a **GitHub Release** (for example `v0.2.0`).
