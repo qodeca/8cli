@@ -93,10 +93,12 @@ Releases publish to npm automatically via **trusted publishing** (OIDC) – do n
 
 1. Bump `version` in `package.json` (follow [SemVer](https://semver.org)).
 2. Move the relevant `CHANGELOG.md` entries from `[Unreleased]` into the new version section.
-3. Commit, then create a matching tag and a **GitHub Release** (for example `v0.2.0`).
+3. Commit, then create a matching **signed, annotated** tag
+   (`git tag -s v0.2.0 -m "v0.2.0"`) and a **GitHub Release** (for example `v0.2.0`).
 4. Publishing the release triggers `.github/workflows/publish.yml`, which runs the tests and
    then `npm publish` over OIDC – no token, with provenance attestation generated
-   automatically.
+   automatically. The job runs in the protected `release` environment, so a maintainer must
+   approve the deployment before the npm token is minted.
 
 Trusted publishing is configured for `@qodeca/8cli` against the `qodeca` GitHub org, the
 `8cli` repository, and the `publish.yml` workflow. The package is owned under the Qodeca
