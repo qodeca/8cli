@@ -172,6 +172,13 @@ compatibility.
 endorsed by Anthropic – it is simply designed to be usable by terminal coding agents. See
 [`TRADEMARKS.md`](./TRADEMARKS.md) for the full trademark policy, including Qodeca's own marks.
 
+## Support
+
+See [`SUPPORT.md`](./SUPPORT.md) for where to get help: usage questions go to
+[GitHub Discussions](https://github.com/qodeca/8cli/discussions), bugs and feature requests to
+[issues](https://github.com/qodeca/8cli/issues). Report security issues privately (see
+[Security](#security)).
+
 ## Contributing
 
 Contributions are welcome – see [`CONTRIBUTING.md`](./CONTRIBUTING.md) for setup and the
