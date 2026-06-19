@@ -3,6 +3,7 @@
 [![CI](https://github.com/qodeca/8cli/actions/workflows/ci.yml/badge.svg)](https://github.com/qodeca/8cli/actions/workflows/ci.yml)
 [![npm](https://img.shields.io/npm/v/@qodeca/8cli)](https://www.npmjs.com/package/@qodeca/8cli)
 [![License: GPL-3.0-only](https://img.shields.io/badge/License-GPLv3-blue.svg)](./LICENSE)
+[![Node.js](https://img.shields.io/node/v/@qodeca/8cli)](https://www.npmjs.com/package/@qodeca/8cli)
 
 An AI-first command-line interface for remote-managing [n8n](https://n8n.io) instances.
 JSON output by default, no interactive prompts, composable with `jq` and other tools –
@@ -82,9 +83,13 @@ Configuration can also come from environment variables (`N8N_URL`, `N8N_API_KEY`
 | `folder`         |        | `tree`, `create`, `delete`, `move`, `sync`                                   |
 | `datatable`      | `dt`   | `list`, `get`, `rows`, `create`, `delete`, `insert`                          |
 | `audit`          |        | `run`                                                                        |
-| `source-control` | `sc`   | `status`, `pull`, `push`                                                     |
+| `source-control` | `sc`   | `status`, `pull`, `push`\*                                                   |
 
 Run `8cli <group> --help` for the options of any group.
+
+\* `sc push` is a stub: n8n's public API has no push endpoint, so the command returns a
+structured `ERR_NOT_SUPPORTED` error. Push from the n8n UI instead – `sc status` and
+`sc pull` work normally.
 
 ## Global options
 

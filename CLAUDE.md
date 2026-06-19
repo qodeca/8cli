@@ -59,7 +59,7 @@ src/
 │   ├── folder.ts              folder tree|create|delete|move|sync
 │   ├── datatable.ts           dt list|get|rows|create|delete|insert
 │   ├── audit.ts               audit run
-│   └── source-control.ts      sc status|pull|push
+│   └── source-control.ts      sc status|pull|push (push: unsupported stub – public API has no push)
 └── formatters/
     ├── index.ts               Output dispatcher (JSON default, table opt-in)
     ├── json.ts                JSON.stringify to stdout

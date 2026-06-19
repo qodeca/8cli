@@ -45,7 +45,7 @@ export function registerSourceControlCommands(program: Command): void {
     });
 
   sc.command('push')
-    .description('Push to source control')
+    .description('Push to source control (not supported via the n8n public API)')
     .option('--force', 'Force push, overwriting remote changes')
     .action(async () => {
       outputError(
