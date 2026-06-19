@@ -183,7 +183,8 @@ required; targets free Community n8n, so license-gated groups – variable/proje
 source-control – assert the gated-error contract). `test/e2e-macos/` covers the real
 `security` keychain without Docker. Command→branch→spec coverage map: `test/e2e/COVERAGE.md`.
 
-CI (`.github/workflows/ci.yml`) runs three jobs on every push and PR: `check` (typecheck,
+CI (`.github/workflows/ci.yml`) runs three jobs on pushes to `main`/`develop` and on every
+pull request: `check` (typecheck,
 lint, format check, unit tests, build, `npm audit`, SPDX-header check, `reuse lint`), `e2e`
 (Linux + Docker), and `e2e-macos`. Releases publish to npm via OIDC trusted publishing – from
 a signed tag, behind a protected `release` environment – when a GitHub Release is published
