@@ -12,6 +12,8 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.1.2] - 2026-06-19
+
 ### Added
 
 - REUSE 3.3 / SPDX licensing compliance: `LICENSES/GPL-3.0-only.txt`, `REUSE.toml`, and an
@@ -23,10 +25,14 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 - Releases are cut from a signed tag, and the npm publish workflow runs behind a protected
   `release` environment (OIDC trusted publishing, no stored token).
+- `sc push` is now documented as an unsupported public-API stub in its `--help` text and the
+  README; behavior is unchanged (it already returned `ERR_NOT_SUPPORTED`).
 
 ### Security
 
 - GitHub Actions are pinned to full commit SHAs, hardening the release supply chain.
+- Bumped the transitive dev-only dependency `undici` to clear a high-severity advisory; the
+  published package was not affected.
 
 ## [0.1.1] - 2026-06-14
 
@@ -74,6 +80,7 @@ First public release.
 - Windows/Linux keychain stubs fail with an actionable message instead of silently no-opping.
 - Vulnerability reporting via GitHub private reporting (`SECURITY.md`).
 
-[unreleased]: https://github.com/qodeca/8cli/compare/v0.1.1...HEAD
+[unreleased]: https://github.com/qodeca/8cli/compare/v0.1.2...HEAD
+[0.1.2]: https://github.com/qodeca/8cli/compare/v0.1.1...v0.1.2
 [0.1.1]: https://github.com/qodeca/8cli/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/qodeca/8cli/releases/tag/v0.1.0
