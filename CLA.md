@@ -4,7 +4,7 @@ This Contributor License Agreement ("Agreement") is between you ("Contributor") 
 
 ## 1. Definitions
 
-"Contribution" means any original work of authorship — code, documentation, assets, or other material — that you intentionally submit to the project (for example, via a pull request).
+"Contribution" means any original work of authorship – code, documentation, assets, or other material – that you intentionally submit to the project (for example, via a pull request).
 
 ## 2. Copyright
 
