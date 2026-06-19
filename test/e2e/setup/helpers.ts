@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
-// SPDX-FileCopyrightText: 2026 Qodeca
+// SPDX-FileCopyrightText: 2026 Qodeca sp. z o.o.
 
 // Bridges the ambient vitest augmentations (ProvidedContext + custom matcher);
 // test/ is outside tsconfig's include, so a reference is the way to load them.

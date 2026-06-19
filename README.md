@@ -3,6 +3,7 @@
 [![CI](https://github.com/qodeca/8cli/actions/workflows/ci.yml/badge.svg)](https://github.com/qodeca/8cli/actions/workflows/ci.yml)
 [![npm](https://img.shields.io/npm/v/@qodeca/8cli)](https://www.npmjs.com/package/@qodeca/8cli)
 [![License: GPL-3.0-only](https://img.shields.io/badge/License-GPLv3-blue.svg)](./LICENSE)
+[![Node.js](https://img.shields.io/node/v/@qodeca/8cli)](https://www.npmjs.com/package/@qodeca/8cli)
 
 An AI-first command-line interface for remote-managing [n8n](https://n8n.io) instances.
 JSON output by default, no interactive prompts, composable with `jq` and other tools –
@@ -82,9 +83,13 @@ Configuration can also come from environment variables (`N8N_URL`, `N8N_API_KEY`
 | `folder`         |        | `tree`, `create`, `delete`, `move`, `sync`                                   |
 | `datatable`      | `dt`   | `list`, `get`, `rows`, `create`, `delete`, `insert`                          |
 | `audit`          |        | `run`                                                                        |
-| `source-control` | `sc`   | `status`, `pull`, `push`                                                     |
+| `source-control` | `sc`   | `status`, `pull`, `push`\*                                                   |
 
 Run `8cli <group> --help` for the options of any group.
+
+\* `sc push` is a stub: n8n's public API has no push endpoint, so the command returns a
+structured `ERR_NOT_SUPPORTED` error. Push from the n8n UI instead – `sc status` and
+`sc pull` work normally.
 
 ## Global options
 
@@ -168,12 +173,31 @@ because the public API does not expose folder information. As a result:
 sponsored by n8n GmbH. "n8n" is a trademark of n8n GmbH, used here only to describe
 compatibility.
 
+"Claude" and "Claude Code" are trademarks of Anthropic; 8cli is not affiliated with or
+endorsed by Anthropic – it is simply designed to be usable by terminal coding agents. See
+[`TRADEMARKS.md`](./TRADEMARKS.md) for the full trademark policy, including Qodeca's own marks.
+
+## Support
+
+See [`SUPPORT.md`](./SUPPORT.md) for where to get help: usage questions go to
+[GitHub Discussions](https://github.com/qodeca/8cli/discussions), bugs and feature requests to
+[issues](https://github.com/qodeca/8cli/issues). Report security issues privately (see
+[Security](#security)).
+
 ## Contributing
 
 Contributions are welcome – see [`CONTRIBUTING.md`](./CONTRIBUTING.md) for setup and the
-quality gates, and [`CODE_OF_CONDUCT.md`](./CODE_OF_CONDUCT.md) for community standards. To
-report a security vulnerability, follow [`SECURITY.md`](./SECURITY.md) (do not open a public
-issue).
+quality gates, and [`CODE_OF_CONDUCT.md`](./CODE_OF_CONDUCT.md) for community standards.
+Contributions are accepted under **GPL-3.0-only** and require agreeing to the project
+[Contributor License Agreement](./CLA.md) – by opening a pull request you agree to its
+terms (your Git author identity is your record).
+
+## Security
+
+8cli keeps secrets in the OS keychain (never in config files) and refuses plaintext-HTTP URLs
+by default. Report security vulnerabilities **privately** via
+[GitHub's private advisory reporting](https://github.com/qodeca/8cli/security/advisories/new) –
+see [`SECURITY.md`](./SECURITY.md). Please do not open a public issue for an unfixed vulnerability.
 
 ## License
 
@@ -185,3 +209,14 @@ dependencies are not distributed.
 
 This project was extracted from an internal Qodeca monorepo; prior commit history is not
 preserved in this repository.
+
+## Built by Qodeca
+
+8cli is built by **[Qodeca](https://qodeca.com)** – a Warsaw-based software team building
+software since 2014 for the fitness, sport, and healthcare industries, where HIPAA, GDPR, and
+PCI DSS are the baseline, not the exception. We build a lot of our tooling in the open.
+
+**Related projects:** [erfana](https://github.com/qodeca/erfana) (agent-native Markdown
+workspace) · [erfana-skills](https://github.com/qodeca/erfana-skills) (Claude Code plugin).
+
+[qodeca.com](https://qodeca.com) · [LinkedIn](https://www.linkedin.com/company/qodecasoftwaredevelopment) · [hi@qodeca.com](mailto:hi@qodeca.com)

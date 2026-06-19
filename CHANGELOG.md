@@ -1,6 +1,6 @@
 <!--
 SPDX-License-Identifier: GPL-3.0-only
-SPDX-FileCopyrightText: 2026 Qodeca
+SPDX-FileCopyrightText: 2026 Qodeca sp. z o.o.
 -->
 
 # Changelog
@@ -11,6 +11,22 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+### Added
+
+- REUSE 3.3 / SPDX licensing compliance: `LICENSES/GPL-3.0-only.txt`, `REUSE.toml`, and an
+  `SPDX-License-Identifier` header on every source file, enforced by a `reuse lint` CI step.
+- Open-source governance set: `CLA.md`, `COPYRIGHT`, `TRADEMARKS.md`, `SUPPORT.md`, and
+  `CITATION.cff`, plus `.github/CODEOWNERS` and a Dependabot config for npm and GitHub Actions.
+
+### Changed
+
+- Releases are cut from a signed tag, and the npm publish workflow runs behind a protected
+  `release` environment (OIDC trusted publishing, no stored token).
+
+### Security
+
+- GitHub Actions are pinned to full commit SHAs, hardening the release supply chain.
 
 ## [0.1.1] - 2026-06-14
 

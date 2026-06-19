@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: GPL-3.0-only
-# SPDX-FileCopyrightText: 2026 Qodeca
+# SPDX-FileCopyrightText: 2026 Qodeca sp. z o.o.
 #
 # Fail if any TypeScript source file under bin/ or src/ is missing the
 # required SPDX license header. Run in CI and locally via `npm run check:headers`.
@@ -9,7 +9,9 @@ set -euo pipefail
 
 missing=0
 while IFS= read -r -d '' file; do
+  # REUSE-IgnoreStart
   if ! grep -q 'SPDX-License-Identifier: GPL-3.0-only' "$file"; then
+  # REUSE-IgnoreEnd
     echo "Missing SPDX header: $file"
     missing=1
   fi

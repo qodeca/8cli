@@ -1,6 +1,6 @@
 <!--
 SPDX-License-Identifier: GPL-3.0-only
-SPDX-FileCopyrightText: 2026 Qodeca
+SPDX-FileCopyrightText: 2026 Qodeca sp. z o.o.
 -->
 
 # e2e coverage map
@@ -68,7 +68,7 @@ representative success shapes.
 
 ## Deferred (with rationale)
 
-- **Real workflow executions** — `exec get --data` / `exec delete` happy paths and `exec list` filter _semantics_ (the current array assertion only checks the filters are accepted). Requires triggering a real run (manual/webhook); comparatively expensive and brittle for marginal contract value.
-- **Licensed folders / projects happy paths** — require an n8n license. 8cli targets free Community n8n, so the gated-error contract is the correct coverage. `folder sync --dry` no-mutation preview also needs folders (licensed).
-- **`config show` snapshot** — output includes the random container `url` and the masked `apiKey`, neither volatile-by-key; would need `redact.ts` extended to mask them. Asserted by field instead.
-- **Per-command `--table` snapshots** — over-coverage; one formatter assertion (`dt list`) plus the `wf`/`tag` table checks suffice.
+- **Real workflow executions** – `exec get --data` / `exec delete` happy paths and `exec list` filter _semantics_ (the current array assertion only checks the filters are accepted). Requires triggering a real run (manual/webhook); comparatively expensive and brittle for marginal contract value.
+- **Licensed folders / projects happy paths** – require an n8n license. 8cli targets free Community n8n, so the gated-error contract is the correct coverage. `folder sync --dry` no-mutation preview also needs folders (licensed).
+- **`config show` snapshot** – output includes the random container `url` and the masked `apiKey`, neither volatile-by-key; would need `redact.ts` extended to mask them. Asserted by field instead.
+- **Per-command `--table` snapshots** – over-coverage; one formatter assertion (`dt list`) plus the `wf`/`tag` table checks suffice.

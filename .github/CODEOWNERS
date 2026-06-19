@@ -1,0 +1,15 @@
+# Code owners for qodeca/8cli
+#
+# Outside (fork) pull requests that touch these paths require review from
+# @marcinobel. CODEOWNERS only gates pull requests; the maintainer's own
+# direct pushes are unaffected.
+#
+# When a second maintainer is onboarded, replace the catch-all with finer
+# path-scoped rules while @marcinobel keeps gatekeeping the security-critical
+# surfaces listed below (CI/release automation and credential handling).
+
+* @marcinobel
+
+# Security-critical surfaces (explicit for emphasis; covered by the catch-all):
+/.github/   @marcinobel
+/scripts/   @marcinobel

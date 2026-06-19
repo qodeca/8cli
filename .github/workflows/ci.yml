@@ -1,18 +1,18 @@
 # SPDX-License-Identifier: GPL-3.0-only
-# SPDX-FileCopyrightText: 2026 Qodeca
+# SPDX-FileCopyrightText: 2026 Qodeca sp. z o.o.
 
 name: CI
 
 on:
   push:
-    branches: [main]
+    branches: [main, develop]
   pull_request:
 
 # Least privilege: grant nothing by default, then `contents: read` per job.
 permissions: {}
 
-# Cancel superseded PR runs (unique group per branch); main/tag runs get a
-# unique group via run_id so post-merge e2e is never cancelled.
+# Cancel superseded PR runs (unique group per branch); main/develop/tag runs get
+# a unique group via run_id so post-merge e2e is never cancelled.
 concurrency:
   group: ci-${{ github.workflow }}-${{ github.head_ref || github.run_id }}
   cancel-in-progress: true
@@ -31,6 +31,10 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run check:headers
+      - name: REUSE compliance
+        # charset-normalizer extra avoids reuse's "no encoding module" error on
+        # minimal runners. pipx is preinstalled on ubuntu-latest.
+        run: pipx run --spec "reuse[charset-normalizer]==6.2.0" reuse lint
       - run: npm run typecheck
       - run: npm run lint
       - run: npm run format:check

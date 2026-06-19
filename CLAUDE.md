@@ -59,7 +59,7 @@ src/
 │   ├── folder.ts              folder tree|create|delete|move|sync
 │   ├── datatable.ts           dt list|get|rows|create|delete|insert
 │   ├── audit.ts               audit run
-│   └── source-control.ts      sc status|pull|push
+│   └── source-control.ts      sc status|pull|push (push: unsupported stub – public API has no push)
 └── formatters/
     ├── index.ts               Output dispatcher (JSON default, table opt-in)
     ├── json.ts                JSON.stringify to stdout
@@ -183,10 +183,12 @@ required; targets free Community n8n, so license-gated groups – variable/proje
 source-control – assert the gated-error contract). `test/e2e-macos/` covers the real
 `security` keychain without Docker. Command→branch→spec coverage map: `test/e2e/COVERAGE.md`.
 
-CI (`.github/workflows/ci.yml`) runs three jobs on every push and PR: `check` (typecheck,
-lint, format check, unit tests, build, `npm audit`, SPDX-header check), `e2e` (Linux +
-Docker), and `e2e-macos`. Releases publish to npm via OIDC trusted publishing when a GitHub
-Release is published (`.github/workflows/publish.yml`).
+CI (`.github/workflows/ci.yml`) runs three jobs on pushes to `main`/`develop` and on every
+pull request: `check` (typecheck,
+lint, format check, unit tests, build, `npm audit`, SPDX-header check, `reuse lint`), `e2e`
+(Linux + Docker), and `e2e-macos`. Releases publish to npm via OIDC trusted publishing – from
+a signed tag, behind a protected `release` environment – when a GitHub Release is published
+(`.github/workflows/publish.yml`).
 
 ## Licensing and headers
 
@@ -195,7 +197,7 @@ to any new file:
 
 ```
 // SPDX-License-Identifier: GPL-3.0-only
-// SPDX-FileCopyrightText: 2026 Qodeca
+// SPDX-FileCopyrightText: 2026 Qodeca sp. z o.o.
 ```
 
 In `bin/8cli.ts` the header sits immediately after the `#!/usr/bin/env node` shebang.

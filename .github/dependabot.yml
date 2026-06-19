@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: GPL-3.0-only
-# SPDX-FileCopyrightText: 2026 Qodeca
+# SPDX-FileCopyrightText: 2026 Qodeca sp. z o.o.
 
 # Keeps SHA-pinned GitHub Actions and npm dependencies current.
 # Note: the n8n test image is pinned (tag+digest) in test/e2e/setup/global.ts;

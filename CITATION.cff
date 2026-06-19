@@ -1,0 +1,12 @@
+cff-version: 1.2.0
+message: 'If you use this software, please cite it using these metadata.'
+title: 8cli
+abstract: 'AI-first, JSON-native CLI for remotely managing n8n instances.'
+type: software
+authors:
+  - name: 'Qodeca sp. z o.o.'
+repository-code: 'https://github.com/qodeca/8cli'
+url: 'https://github.com/qodeca/8cli'
+license: GPL-3.0-only
+version: 0.1.1
+date-released: 2026-06-14
