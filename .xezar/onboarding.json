@@ -89,16 +89,7 @@
       "rootClaudeMd": "kept, one section appended"
     }
   },
-  "notWritten": [
-    {
-      "path": "scripts/xezar-leader.sh",
-      "why": "blocked by the harness safety check on the development-channels flag; owner decision pending"
-    },
-    {
-      "path": ".claude/settings.local.json",
-      "why": "same block; gitignored; owner decision pending"
-    }
-  ],
+  "notWritten": [],
   "deviationsFromKit": [
     "gate list renumbered to 9 entries in repo-gates.sh and lib/gate-parallel.mjs",
     "local-tree.sh accepts the engine's own top-level entries in single-project mode",
@@ -701,6 +692,11 @@
       "path": "eslint.config.js",
       "sha256": "a6ca8b34c48519f0127b94934bf576c961c4d72ec7c6092c4cc223479bb1b4c5",
       "origin": "existing-edited"
+    },
+    {
+      "path": "scripts/xezar-leader.sh",
+      "sha256": "931b9c41002553197d2ffb5ec5c98398a28f46ba83cced93fe2e98af1dfe9f96",
+      "origin": "generated"
     }
   ]
 }
