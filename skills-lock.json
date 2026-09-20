@@ -1,0 +1,275 @@
+{
+  "version": 1,
+  "skills": {
+    "xez-add-rule": {
+      "source": "qodeca/xezar-skills",
+      "sourceType": "github",
+      "skillPath": "skills/xez-add-rule/SKILL.md",
+      "computedHash": "9bc44701097f4adac9275f239633e78341ec5b6821dd75d626035cceba912161"
+    },
+    "xez-apply-upgrade-notes": {
+      "source": "qodeca/xezar-skills",
+      "sourceType": "github",
+      "skillPath": "skills/xez-apply-upgrade-notes/SKILL.md",
+      "computedHash": "23aa5ed1011003162ab6e3f675a5dc1db10e5ac3b3c40b71be45c5ab2de0872b"
+    },
+    "xez-approve-merge-pr": {
+      "source": "qodeca/xezar-skills",
+      "sourceType": "github",
+      "skillPath": "skills/xez-approve-merge-pr/SKILL.md",
+      "computedHash": "5149d85daa1e86f4ae1e58ce2ac1506aa25718b3b5753166901590a00d2f8f0d"
+    },
+    "xez-auto-continue-pr": {
+      "source": "qodeca/xezar-skills",
+      "sourceType": "github",
+      "skillPath": "skills/xez-auto-continue-pr/SKILL.md",
+      "computedHash": "1d0134d01bafee62a7b39df0722f69fa3d0f1ae1d576c8641ae339add2f4898f"
+    },
+    "xez-auto-continue-pr-loop": {
+      "source": "qodeca/xezar-skills",
+      "sourceType": "github",
+      "skillPath": "skills/xez-auto-continue-pr-loop/SKILL.md",
+      "computedHash": "80dee45952d9c2cfeaff93613416c0b5b6418f08a22c107dd96bd87e500b86db"
+    },
+    "xez-auto-create-pr": {
+      "source": "qodeca/xezar-skills",
+      "sourceType": "github",
+      "skillPath": "skills/xez-auto-create-pr/SKILL.md",
+      "computedHash": "de90b425ff479713a2c66c1d793f112353ee9d2dbad0038e79e6285ee431fd2a"
+    },
+    "xez-auto-create-pr-loop": {
+      "source": "qodeca/xezar-skills",
+      "sourceType": "github",
+      "skillPath": "skills/xez-auto-create-pr-loop/SKILL.md",
+      "computedHash": "7d6ef8d2ba84ec171ca9be9b38ea1618db29c0d53687e13f7e21bcc4539968cd"
+    },
+    "xez-auto-fix-issue": {
+      "source": "qodeca/xezar-skills",
+      "sourceType": "github",
+      "skillPath": "skills/xez-auto-fix-issue/SKILL.md",
+      "computedHash": "34bdbcdf599b5ff409dbef4e25d7fbc9d4c198c25ce09409b5a8aafe84c61c3c"
+    },
+    "xez-auto-fix-pr": {
+      "source": "qodeca/xezar-skills",
+      "sourceType": "github",
+      "skillPath": "skills/xez-auto-fix-pr/SKILL.md",
+      "computedHash": "bd746f7729441ccdb4a53f623b3709ed6de8d939a6a967032b3486d314b9ab15"
+    },
+    "xez-auto-implement-spec": {
+      "source": "qodeca/xezar-skills",
+      "sourceType": "github",
+      "skillPath": "skills/xez-auto-implement-spec/SKILL.md",
+      "computedHash": "9053a025a2421abf142a66112d649b5a2d83e5909a71c151b6c949ee84e149d6"
+    },
+    "xez-auto-manage-issues": {
+      "source": "qodeca/xezar-skills",
+      "sourceType": "github",
+      "skillPath": "skills/xez-auto-manage-issues/SKILL.md",
+      "computedHash": "1527be04545c3b330fbe882985ee8b7dba25f3dfe0ca58c06402de6cb47e7f5b"
+    },
+    "xez-auto-qa-pr": {
+      "source": "qodeca/xezar-skills",
+      "sourceType": "github",
+      "skillPath": "skills/xez-auto-qa-pr/SKILL.md",
+      "computedHash": "841708547cd5d488c661427dc49f50d000e9ed9208b9600813c5db41406f127e"
+    },
+    "xez-auto-review-pr": {
+      "source": "qodeca/xezar-skills",
+      "sourceType": "github",
+      "skillPath": "skills/xez-auto-review-pr/SKILL.md",
+      "computedHash": "5b27a9711a0af2062f349954ceaabdfb41235a79eec49558ffe5da558309ffcc"
+    },
+    "xez-auto-update-changelog": {
+      "source": "qodeca/xezar-skills",
+      "sourceType": "github",
+      "skillPath": "skills/xez-auto-update-changelog/SKILL.md",
+      "computedHash": "c02ce1f48a6735a8a4449ab072f0a3f75c2f7fe4125813bdc044040c25220a21"
+    },
+    "xez-auto-write-spec": {
+      "source": "qodeca/xezar-skills",
+      "sourceType": "github",
+      "skillPath": "skills/xez-auto-write-spec/SKILL.md",
+      "computedHash": "50d1a05e619ec242538030116e78030280656672de32044c1643e861f7f770fb"
+    },
+    "xez-brainstorm": {
+      "source": "qodeca/xezar-skills",
+      "sourceType": "github",
+      "skillPath": "skills/xez-brainstorm/SKILL.md",
+      "computedHash": "8239441a6f482d30feff6da0e858c90417e300066447e53f4275a486d5f4e5b5"
+    },
+    "xez-check-and-commit": {
+      "source": "qodeca/xezar-skills",
+      "sourceType": "github",
+      "skillPath": "skills/xez-check-and-commit/SKILL.md",
+      "computedHash": "2fce486647ad45588779855d02a83f96c046af306614e51ccbe6caa642b5e342"
+    },
+    "xez-close-fixed-issues": {
+      "source": "qodeca/xezar-skills",
+      "sourceType": "github",
+      "skillPath": "skills/xez-close-fixed-issues/SKILL.md",
+      "computedHash": "e8c455f1324bbf47c9ec14474da14daee750a7ee753c828e90a51784f37a71ca"
+    },
+    "xez-code-review": {
+      "source": "qodeca/xezar-skills",
+      "sourceType": "github",
+      "skillPath": "skills/xez-code-review/SKILL.md",
+      "computedHash": "8d62643735bd50cebf12db3a0217d20d9b205e95a1d9ab08d7dedd4ca560b73a"
+    },
+    "xez-create-skill": {
+      "source": "qodeca/xezar-skills",
+      "sourceType": "github",
+      "skillPath": "skills/xez-create-skill/SKILL.md",
+      "computedHash": "242db40ddb6d9411a1697b224e13ff970d632cdc68bdf6f0a77744d12c14c387"
+    },
+    "xez-discover": {
+      "source": "qodeca/xezar-skills",
+      "sourceType": "github",
+      "skillPath": "skills/xez-discover/SKILL.md",
+      "computedHash": "e9893e808c84445bb9286ff34c3e0987742b3bbcd39e11859dcbd731bfe6946c"
+    },
+    "xez-fix": {
+      "source": "qodeca/xezar-skills",
+      "sourceType": "github",
+      "skillPath": "skills/xez-fix/SKILL.md",
+      "computedHash": "ee3dad46943c536e14bab8c45da87b4a3a8e732004c87e9a0f18ab9d5b164d80"
+    },
+    "xez-followup-issue-from-pr": {
+      "source": "qodeca/xezar-skills",
+      "sourceType": "github",
+      "skillPath": "skills/xez-followup-issue-from-pr/SKILL.md",
+      "computedHash": "39b566dccd874f4868b4d1305deb1a2d1fa7b9891143682e9a61f64e03214b7b"
+    },
+    "xez-integration-tests": {
+      "source": "qodeca/xezar-skills",
+      "sourceType": "github",
+      "skillPath": "skills/xez-integration-tests/SKILL.md",
+      "computedHash": "05fd1364c64b2cbeae02a5cf42c95e779b2e7fabd326b6c4e54d53a9fe12b169"
+    },
+    "xez-issue-create": {
+      "source": "qodeca/xezar-skills",
+      "sourceType": "github",
+      "skillPath": "skills/xez-issue-create/SKILL.md",
+      "computedHash": "d25b83c5fde69f6ed761bc2c409bfee3c36288d8373a0f06270c80455830856e"
+    },
+    "xez-maintain-deps": {
+      "source": "qodeca/xezar-skills",
+      "sourceType": "github",
+      "skillPath": "skills/xez-maintain-deps/SKILL.md",
+      "computedHash": "2cead0166f3f762b0605011a20a0422c3a94466cf3819ae2003a4d073c2895f9"
+    },
+    "xez-merge-buddy": {
+      "source": "qodeca/xezar-skills",
+      "sourceType": "github",
+      "skillPath": "skills/xez-merge-buddy/SKILL.md",
+      "computedHash": "9f7d2bdd792098a2fde7de0b7bd7eea62abe37f71b23d744d8db0222f2b336de"
+    },
+    "xez-onboard": {
+      "source": "qodeca/xezar-skills",
+      "sourceType": "github",
+      "skillPath": "skills/xez-onboard/SKILL.md",
+      "computedHash": "88ac9c6f225b1a42d82c5b911bd92f199476a903967032cafdc11125f288f5ea"
+    },
+    "xez-onboard-opinionated": {
+      "source": "qodeca/xezar-skills",
+      "sourceType": "github",
+      "skillPath": "skills/xez-onboard-opinionated/SKILL.md",
+      "computedHash": "f5743421ffedc483139552d4f6eeec4fa7ae8711584ec2241dbb883bb870ed28"
+    },
+    "xez-open-pr": {
+      "source": "qodeca/xezar-skills",
+      "sourceType": "github",
+      "skillPath": "skills/xez-open-pr/SKILL.md",
+      "computedHash": "a54ede57288a755150db8be952a7bec37ec3106f3e42d91bef97717600c8be8e"
+    },
+    "xez-pipeline-retro": {
+      "source": "qodeca/xezar-skills",
+      "sourceType": "github",
+      "skillPath": "skills/xez-pipeline-retro/SKILL.md",
+      "computedHash": "4894ca15fb96c9ef3ce9cb3fca5ac5dfc33c8e4d7e745e84f9e996f51f556784"
+    },
+    "xez-pr-autopilot": {
+      "source": "qodeca/xezar-skills",
+      "sourceType": "github",
+      "skillPath": "skills/xez-pr-autopilot/SKILL.md",
+      "computedHash": "e3ff6aab5567c813808c79f6938c5ba0329ed41cd7141299ef42781bab664937"
+    },
+    "xez-prepare-issue": {
+      "source": "qodeca/xezar-skills",
+      "sourceType": "github",
+      "skillPath": "skills/xez-prepare-issue/SKILL.md",
+      "computedHash": "60e0431890b5aba78bf84dc51f7dab0921115332cfe38170cdbbbe57623dde9e"
+    },
+    "xez-prepare-test-env": {
+      "source": "qodeca/xezar-skills",
+      "sourceType": "github",
+      "skillPath": "skills/xez-prepare-test-env/SKILL.md",
+      "computedHash": "bece2a74ab029a8de75e6ddf14faf00ae6205ee5de26fb8ff604806ad009f8f2"
+    },
+    "xez-release": {
+      "source": "qodeca/xezar-skills",
+      "sourceType": "github",
+      "skillPath": "skills/xez-release/SKILL.md",
+      "computedHash": "c189ec28dcd8b76986679f3190e53b610881845bcfc90a5638780904e66ae303"
+    },
+    "xez-review-prs": {
+      "source": "qodeca/xezar-skills",
+      "sourceType": "github",
+      "skillPath": "skills/xez-review-prs/SKILL.md",
+      "computedHash": "12cf4d6819d3f677c148abce3b8286ab3b842b819adaaa59c973b7ee63fcd672"
+    },
+    "xez-root-cause": {
+      "source": "qodeca/xezar-skills",
+      "sourceType": "github",
+      "skillPath": "skills/xez-root-cause/SKILL.md",
+      "computedHash": "e734fe872d13da964d7252e60e132d7aa8570a80133f86514a7a97a4d9a7f556"
+    },
+    "xez-setup-agent-pipeline": {
+      "source": "qodeca/xezar-skills",
+      "sourceType": "github",
+      "skillPath": "skills/xez-setup-agent-pipeline/SKILL.md",
+      "computedHash": "1588cd13fcc088f793240b73d8f906a64a43cb4c23c7ce678fd98480cf56d010"
+    },
+    "xez-spec-writing": {
+      "source": "qodeca/xezar-skills",
+      "sourceType": "github",
+      "skillPath": "skills/xez-spec-writing/SKILL.md",
+      "computedHash": "b3743ea52b5d32bac149bb971e216c20e71397651a998398859886139e373644"
+    },
+    "xez-unattended-off": {
+      "source": "qodeca/xezar-skills",
+      "sourceType": "github",
+      "skillPath": "skills/xez-unattended-off/SKILL.md",
+      "computedHash": "5cf91eb8b90502eae70cfac15053319fa28f9a2dd7cd8338f10080aa3040d5ab"
+    },
+    "xez-unattended-on": {
+      "source": "qodeca/xezar-skills",
+      "sourceType": "github",
+      "skillPath": "skills/xez-unattended-on/SKILL.md",
+      "computedHash": "b3eef4df4cb95d626cff8760dd3b97ab28c3a627f9c087027516d0e8c736d6b1"
+    },
+    "xez-ux-review-pr": {
+      "source": "qodeca/xezar-skills",
+      "sourceType": "github",
+      "skillPath": "skills/xez-ux-review-pr/SKILL.md",
+      "computedHash": "2e3bd62b79e83de3765c228f10a65a07d2728ab1122736bef7db1b5837a84b12"
+    },
+    "xez-ux-setup": {
+      "source": "qodeca/xezar-skills",
+      "sourceType": "github",
+      "skillPath": "skills/xez-ux-setup/SKILL.md",
+      "computedHash": "5e6761af2967404890850349bf7916c8c022b3d23d7eb93f58be0d513c75fed0"
+    },
+    "xez-ux-shape": {
+      "source": "qodeca/xezar-skills",
+      "sourceType": "github",
+      "skillPath": "skills/xez-ux-shape/SKILL.md",
+      "computedHash": "bf841650f3ce5935c811eb77edad9d95bc390b7e5a03c1eba3ace858a27f4fbe"
+    },
+    "xez-verify-in-repo": {
+      "source": "qodeca/xezar-skills",
+      "sourceType": "github",
+      "skillPath": "skills/xez-verify-in-repo/SKILL.md",
+      "computedHash": "1fd764df9e7c0d18eca085958fae9290500b662832cb529ff2fdc0cb60746bdb"
+    }
+  }
+}
