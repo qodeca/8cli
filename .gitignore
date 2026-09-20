@@ -3,3 +3,8 @@ dist/
 coverage/
 *.tsbuildinfo
 .DS_Store
+
+# Local agent working state (xezar)
+/.local/
+/.claude/CLAUDE.md
+/.claude/settings.local.json
