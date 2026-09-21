@@ -16,29 +16,3 @@ path = "**"
 precedence = "aggregate"
 SPDX-FileCopyrightText = "2026 Qodeca sp. z o.o."
 SPDX-License-Identifier = "GPL-3.0-only"
-
-# The xezar project kit, installed by the `xez-onboard-opinionated` skill from
-# qodeca/xezar-skills (MIT). These files are copies of another project's work, so
-# they keep that project's licence. `override` because some of them quote a GPL
-# header line as data, which `closest` would read as a declaration.
-[[annotations]]
-path = [
-  ".xezar/checks/**",
-  ".xezar/workflows/**",
-  ".xezar/skills/**",
-  ".xezar/docs/**",
-  ".xezar/loops.json",
-  ".xezar/pipeline/trackers/**",
-  ".xezar/pipeline/toolchains/**",
-]
-precedence = "override"
-SPDX-FileCopyrightText = ["2026 Qodeca", "2026 Open Mercato"]
-SPDX-License-Identifier = "MIT"
-
-# Written for 8cli during onboarding, not copied from the kit – 8cli's own licence.
-# Later blocks win, so this one sits after the kit block.
-[[annotations]]
-path = [".xezar/docs/leader-guide.md", ".xezar/docs/model-routing.md"]
-precedence = "override"
-SPDX-FileCopyrightText = "2026 Qodeca sp. z o.o."
-SPDX-License-Identifier = "GPL-3.0-only"
