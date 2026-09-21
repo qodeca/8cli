@@ -5,13 +5,10 @@
 # Note: the n8n test image is pinned (tag+digest) in test/e2e/setup/global.ts;
 # Dependabot's docker manager only scans Dockerfiles/compose, so that digest is
 # bumped manually (or via a Renovate customManager if adopted).
-# Work lands on `develop`; `main` takes releases only. GitHub reads this file from the default
-# branch, so `target-branch` takes effect once this change reaches `main`.
 version: 2
 updates:
   - package-ecosystem: github-actions
     directory: /
-    target-branch: develop
     schedule:
       interval: weekly
     commit-message:
@@ -19,7 +16,6 @@ updates:
 
   - package-ecosystem: npm
     directory: /
-    target-branch: develop
     schedule:
       interval: weekly
     commit-message:

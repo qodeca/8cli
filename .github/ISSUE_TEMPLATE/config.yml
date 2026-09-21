@@ -1,10 +1,8 @@
 # SPDX-License-Identifier: GPL-3.0-only
 # SPDX-FileCopyrightText: 2026 Qodeca sp. z o.o.
 
-# Blank issues stay enabled on purpose: SECURITY.md's escalation fallback is a public issue that
-# says only "I am waiting on a private report", and neither form fits that.
-blank_issues_enabled: true
+blank_issues_enabled: false
 contact_links:
-  - name: Report a security vulnerability
-    url: https://github.com/qodeca/8cli/security/advisories/new
-    about: Report privately. Do not open a public issue for a vulnerability – see SECURITY.md.
+  - name: Security vulnerability
+    url: https://github.com/qodeca/8cli/security
+    about: Please report security issues privately, not as public issues.

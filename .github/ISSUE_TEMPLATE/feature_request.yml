@@ -2,42 +2,25 @@
 # SPDX-FileCopyrightText: 2026 Qodeca sp. z o.o.
 
 name: Feature request
-description: Suggest a change to what 8cli does.
-labels: ['feature']
+description: Suggest a new command, flag, or capability
+labels: [enhancement]
 body:
   - type: textarea
     id: problem
     attributes:
-      label: The problem
-      description: What you are trying to do, and what stops you today.
+      label: Problem
+      description: What are you trying to do that 8cli does not support today?
     validations:
       required: true
   - type: textarea
     id: proposal
     attributes:
-      label: What you would like
-      description: The behaviour you want. The command, its flags and example output help.
+      label: Proposed solution
+      description: The command, flag, or behavior you would like. Include example usage.
     validations:
       required: true
   - type: textarea
     id: alternatives
     attributes:
-      label: What you tried instead
-      description: Workarounds or other tools you considered.
-    validations:
-      required: false
-  - type: dropdown
-    id: surface
-    attributes:
-      label: Does this change what a user sees in the terminal?
-      description: Yes means the maintainer applies `needs-design` at triage and the work starts with a proposal in `designs/<feature>/`.
-      options:
-        - 'Yes'
-        - 'No'
-        - 'Not sure'
-    validations:
-      required: false
-  - type: markdown
-    attributes:
-      value: |
-        8cli is zero config by design: a feature that needs a setting before it works is usually the wrong shape. See "Zero config" in [AGENTS.md](https://github.com/qodeca/8cli/blob/develop/AGENTS.md).
+      label: Alternatives considered
+      description: Workarounds or other approaches you have tried.
