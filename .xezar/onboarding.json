@@ -1,0 +1,274 @@
+{
+  "version": 1,
+  "onboardedAt": "2026-09-21T18:07:54Z",
+  "skill": "xez-onboard-opinionated",
+  "engineVersion": "0.17.0",
+  "stack": {
+    "language": "TypeScript",
+    "packageManager": "npm",
+    "runtime": "Node 22+",
+    "toolchain": "npm"
+  },
+  "detected": {
+    "defaultBranch": {
+      "value": "main",
+      "evidence": "remote: gh api repos/qodeca/8cli .default_branch"
+    },
+    "secondLongLivedBranch": {
+      "value": "develop",
+      "evidence": "remote branch list; PRs 17-23 targeted develop"
+    },
+    "branchingModel": {
+      "value": "two-branch flow, work lands on develop",
+      "inferred": true
+    },
+    "designGate": {
+      "value": "on",
+      "evidence": "ships a CLI: bin/8cli.ts, commander, cli-table3 --table output; no web UI found in files read"
+    },
+    "browserTool": {
+      "value": null,
+      "evidence": "neither playwright nor agent-browser found on PATH or in node_modules"
+    },
+    "deployRollbackWorkflows": {
+      "value": [],
+      "evidence": "workflows are ci.yml and publish.yml; publish.yml triggers on release published only, no workflow_dispatch, no sha input"
+    },
+    "locales": {
+      "value": [],
+      "evidence": "no locales/ or i18n/ found"
+    },
+    "docsPaths": {
+      "value": "defaults under docs/",
+      "evidence": "no docs/ folder exists"
+    },
+    "leaderModel": {
+      "value": "claude/claude-opus-5",
+      "evidence": "strongest model on this machine; named in ~/.claude/settings.json"
+    },
+    "lanes": {
+      "value": [
+        {
+          "lane": "claude/claude-opus-5",
+          "kind": "cloud",
+          "images": true,
+          "source": "Claude Code model picker (owner screenshot)"
+        },
+        {
+          "lane": "claude/claude-fable-5-1",
+          "kind": "cloud",
+          "images": true,
+          "source": "Claude Code model picker (owner screenshot)"
+        },
+        {
+          "lane": "claude/claude-sonnet-5",
+          "kind": "cloud",
+          "images": true,
+          "source": "Claude Code model picker (owner screenshot)"
+        },
+        {
+          "lane": "claude/claude-haiku-4-5",
+          "kind": "cloud",
+          "images": true,
+          "source": "Claude Code model picker (owner screenshot)"
+        },
+        {
+          "lane": "codex/gpt-6-astra",
+          "kind": "cloud",
+          "images": null,
+          "source": "codex model picker (owner screenshot)"
+        },
+        {
+          "lane": "codex/gpt-5.6-sol",
+          "kind": "cloud",
+          "images": null,
+          "source": "codex model picker (owner screenshot)"
+        },
+        {
+          "lane": "codex/gpt-5.6-terra",
+          "kind": "cloud",
+          "images": null,
+          "source": "codex model picker (owner screenshot)"
+        },
+        {
+          "lane": "codex/gpt-5.6-luna",
+          "kind": "cloud",
+          "images": null,
+          "source": "codex model picker (owner screenshot)"
+        },
+        {
+          "lane": "codex/gpt-5.5",
+          "kind": "cloud",
+          "images": null,
+          "source": "codex model picker (owner screenshot)"
+        },
+        {
+          "lane": "pi/deepseek-flash",
+          "kind": "cloud",
+          "images": true,
+          "source": "pi --list-models"
+        },
+        {
+          "lane": "pi/deepseek-v4-flash-vision",
+          "kind": "local",
+          "images": true,
+          "source": "pi --list-models"
+        },
+        {
+          "lane": "pi/qwen38-flash-next-mlx-mixed-4-8bit",
+          "kind": "local",
+          "images": true,
+          "source": "pi --list-models"
+        }
+      ],
+      "openCode": "opencode 1.18.31 found - recorded, not offered as a lane; switched off for this project"
+    },
+    "accountImport": {
+      "value": "imported",
+      "evidence": "preflight check 5: 4 accounts in .xezar/agent-accounts.json matching the global registry"
+    },
+    "baseBranchGreen": {
+      "value": true,
+      "evidence": "last 3 CI runs on develop: success"
+    },
+    "ciNotCoveredByGates": {
+      "value": [
+        "npm audit --audit-level=high",
+        "reuse lint (pipx)"
+      ],
+      "evidence": ".github/workflows/ci.yml check job"
+    },
+    "treeWideScanners": {
+      "value": "prettier --check . scans the whole tree; .prettierignore does not exclude .xezar/.claude/.agents/.local; REUSE.toml has a ** catch-all so reuse lint stays covered",
+      "evidence": ".prettierignore, REUSE.toml"
+    },
+    "updateBot": {
+      "value": "dependabot targets main while work lands on develop",
+      "evidence": "remote dependabot/* branches; PRs 13,14 targeted main"
+    }
+  },
+  "answers": {
+    "baseBranch": "develop",
+    "defaultBranch": "main",
+    "branchingModel": "two-branch flow",
+    "designGate": "on",
+    "browserDescriptor": null,
+    "gateCommands": [
+      "npm run typecheck",
+      "npm run lint",
+      "npm run format:check",
+      "npm test",
+      "npm run build",
+      "npm run check:headers"
+    ],
+    "lanes": [
+      "claude/claude-opus-5",
+      "claude/claude-fable-5-1",
+      "claude/claude-sonnet-5",
+      "claude/claude-haiku-4-5",
+      "codex/gpt-6-astra",
+      "codex/gpt-5.6-sol",
+      "codex/gpt-5.6-terra",
+      "codex/gpt-5.6-luna",
+      "codex/gpt-5.5",
+      "pi/deepseek-flash",
+      "pi/deepseek-v4-flash-vision",
+      "pi/qwen38-flash-next-mlx-mixed-4-8bit"
+    ],
+    "laneCount": 12,
+    "taskLoginCount": 4,
+    "routingClasses": {
+      "mechanical": [
+        "claude/claude-haiku-4-5",
+        "codex/gpt-5.6-luna",
+        "pi/deepseek-flash",
+        "wait"
+      ],
+      "writing": [
+        "claude/claude-opus-5",
+        "claude/claude-sonnet-5",
+        "codex/gpt-5.6-sol",
+        "pi/deepseek-flash",
+        "wait"
+      ],
+      "design": [
+        "claude/claude-opus-5",
+        "codex/gpt-6-astra",
+        "wait"
+      ],
+      "visuals": [
+        "codex/gpt-6-astra",
+        "codex/gpt-5.6-sol",
+        "claude/claude-opus-5",
+        "wait"
+      ],
+      "implementation": [
+        "claude/claude-opus-5",
+        "codex/gpt-5.6-sol",
+        "claude/claude-sonnet-5",
+        "pi/deepseek-flash",
+        "wait"
+      ],
+      "testing": [
+        "claude/claude-opus-5",
+        "codex/gpt-5.6-terra",
+        "pi/deepseek-flash",
+        "wait"
+      ],
+      "review": [
+        "claude/claude-opus-5",
+        "codex/gpt-5.6-sol",
+        "codex/gpt-5.6-terra",
+        "pi/deepseek-flash",
+        "wait"
+      ],
+      "securityAndRelease": [
+        "claude/claude-opus-5",
+        "codex/gpt-6-astra",
+        "wait"
+      ]
+    },
+    "escalationOnly": [
+      "claude/claude-fable-5-1"
+    ],
+    "unusedLanes": [
+      "codex/gpt-5.5"
+    ],
+    "openCode": "switched off for this project"
+  },
+  "descriptors": {
+    ".xezar/pipeline/trackers/github.md": "afebf18a9d3e38622601c35bff9f704c1d958baef6319950a830ac02cfeacac6",
+    ".xezar/pipeline/toolchains/npm.md": "05e64fdc03b71cdf74c0254dd2c4b8808b1ac9133e16432d154121c09b73ca8a",
+    ".xezar/pipeline/security/osv-scanner.md": "86d8946082faebb71da1cf08f7d78a60a4b5300571de0b372644db495acdb53e"
+  },
+  "descriptorsShippedDigests": {
+    "_comment": "SHA-256 of every descriptor the kit installs. Byte-identity with the collection's canonical copy proves the two agree; this pin proves a change was looked at, because it cannot land without a deliberate edit here. scripts/test-kit-facts.mjs FACT 9 checks both. The write step records the same digests in the project's onboarding manifest.",
+    "digests": {
+      "kit/pipeline/browsers/agent-browser.md": "4bc3c837e4925f12e3216d20ae7dc60683d3c04358959b75c59b7c1210b3d97c",
+      "kit/pipeline/browsers/playwright.md": "c9c1fded256173e110d015b3af93931f9fe0fcf4f30b8203a34e65b3d52b91b8",
+      "kit/pipeline/security/osv-scanner.md": "86d8946082faebb71da1cf08f7d78a60a4b5300571de0b372644db495acdb53e",
+      "kit/pipeline/toolchains/cargo.md": "2cbd3b0fb645f090e891239253b386c121628db82a35525cf85e6675e0303879",
+      "kit/pipeline/toolchains/npm.md": "05e64fdc03b71cdf74c0254dd2c4b8808b1ac9133e16432d154121c09b73ca8a"
+    }
+  },
+  "generated": [
+    "/.xezar/checks/repo-gates.sh (gate arrays)",
+    ".xezar/config.json",
+    ".xezar/pipeline/config.json",
+    ".xezar/docs/leader-guide.md",
+    ".xezar/docs/model-routing.md",
+    "SDLC.md",
+    "CODE_REVIEW.md",
+    "AGENTS.md",
+    "BACKWARD_COMPATIBILITY.md",
+    "docs/designs/README.md",
+    ".xezar/CLAUDE.md"
+  ],
+  "ownerFilesEdited": [
+    "CLAUDE.md (marked section appended)",
+    ".github/PULL_REQUEST_TEMPLATE.md (Design and Risk appended)",
+    ".gitignore (/.local/ and the xez-* lines)",
+    ".prettierignore (four folders)",
+    "eslint.config.js (four folders in ignores)"
+  ]
+}

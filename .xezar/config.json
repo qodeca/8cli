@@ -1,0 +1,4 @@
+{
+  "baseBranch": "develop",
+  "systemPrompt": "This is 8cli, an AI-first CLI for managing a remote n8n instance (@qodeca/8cli, GPL-3.0-only, TypeScript strict/nodenext on Node 22+). Every command prints JSON to stdout by default, errors go to stderr as {\"error\",\"code\"} with exit code 1, and there are never interactive prompts. Work lands on develop and releases run from main. Read CLAUDE.md, AGENTS.md and SDLC.md before changing anything, keep the SPDX header on every file under bin/ and src/, and run .xezar/checks/repo-gates.sh before claiming a change is done."
+}

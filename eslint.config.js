@@ -7,7 +7,17 @@ import prettier from 'eslint-config-prettier';
 
 export default tseslint.config(
   {
-    ignores: ['dist/**', 'node_modules/**', 'coverage/**'],
+    ignores: [
+      'dist/**',
+      'node_modules/**',
+      'coverage/**',
+      // Agent pipeline folders: installed kit files that answer to their own collection's
+      // style, not this project's lint rules.
+      '.xezar/**',
+      '.claude/**',
+      '.agents/**',
+      '.local/**',
+    ],
   },
   js.configs.recommended,
   ...tseslint.configs.recommended,

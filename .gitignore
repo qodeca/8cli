@@ -6,3 +6,8 @@ coverage/
 /.agents/skills/xez-*
 /.claude/skills/xez-*
 /skills-lock.json
+
+# Local agent working state (xezar)
+/.local/
+/.claude/CLAUDE.md
+/.claude/settings.local.json

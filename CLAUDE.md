@@ -212,3 +212,28 @@ Bundled third-party notices live in `THIRD-PARTY-LICENSES.md`; regenerate it wit
 - One file per command group (not one-file-per-subcommand)
 - Errors always to stderr as structured JSON
 - Success output always to stdout as JSON (unless `--table`)
+
+<!-- xezar:onboarding:start -->
+
+## Agent pipeline (xezar)
+
+This project is run by a Claude Code **project leader** with a task engine behind it. Three files
+say how:
+
+| File             | What it answers                                                              |
+| ---------------- | ---------------------------------------------------------------------------- |
+| `AGENTS.md`      | how work runs here: the one gate command, where things live, branches        |
+| `SDLC.md`        | the QA gate, the design gate, review, security, acceptance, deploy authority |
+| `CODE_REVIEW.md` | what a reviewer checks, and the trust boundaries                             |
+
+The gate is one command: `.xezar/checks/repo-gates.sh`. It runs `npm ci`, the security scan,
+`npm run typecheck`, `npm run lint`, `npm run format:check`, `npm test`, `npm run build`,
+`npm run check:headers`, then the kit's repository checks.
+
+Start the leader with `./scripts/xezar-leader.sh` and keep the engine window open. Every other
+Claude Code session in this checkout is an ordinary session and does not lead the project.
+
+The `xez-*` skills are installed per machine and never committed — `AGENTS.md` has the install
+command.
+
+<!-- xezar:onboarding:end -->
