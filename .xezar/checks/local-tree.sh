@@ -27,8 +27,8 @@ ALLOWED="runtime tasks worktrees scratch cache qa"
 ENGINE_DIRS=""
 ENGINE_FILES=""
 if [ -f "$REPO_ROOT/.xezar/workspace.json" ]; then
-  ENGINE_DIRS="ipc mcp runs writer-claims tmp"
-  ENGINE_FILES="audit.ndjson launch-key machine-state.json mcp-connection.json runs.json runs.json.tmp ui-state.json ui-state.json.tmp todos.json todos.json.tmp"
+  ENGINE_DIRS="ipc mcp mcp-owner-claims runs writer-claims tmp campaigns"
+  ENGINE_FILES="audit.ndjson mcp-audit.ndjson launch-key machine-state.json mcp-connection.json mcp-operations.ndjson mcp-operations.json onboarding-state.json runs.json runs.json.tmp ui-state.json ui-state.json.tmp todos.json todos.json.tmp"
 fi
 
 # Only the primary checkout has the full tree. A task worktree creates the one or two subfolders

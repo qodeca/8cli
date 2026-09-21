@@ -18,4 +18,12 @@ if [ ! -S "$socket" ]; then
   exit 1
 fi
 
+# The xez-* skills are installed per machine, not committed. Warn, never install.
+if [ ! -e ".claude/skills/xez-add-rule" ] || [ ! -f "skills-lock.json" ]; then
+  echo "xezar-leader: the xez-* skills are missing in this clone. Get them with:" >&2
+  echo "  npx -y skills add qodeca/xezar-skills --skill '*' --agent claude-code --agent codex --yes" >&2
+fi
+
+# One leader per project, and the engine has no takeover. If the session reports that the project
+# is occupied, close the other Claude session in this folder and start this script again.
 exec claude --dangerously-load-development-channels server:xezar "$@"
