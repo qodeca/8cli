@@ -3,3 +3,14 @@ dist/
 coverage/
 *.tsbuildinfo
 .DS_Store
+
+# Local agent working state (xezar)
+/.local/
+/.claude/CLAUDE.md
+/.claude/settings.local.json
+
+# xezar-skills collection – installed per machine, kept fresh by the engine, never committed.
+# No trailing slash: the entries under .claude/skills are links, and a slash pattern misses a link.
+/.agents/skills/xez-*
+/.claude/skills/xez-*
+/skills-lock.json

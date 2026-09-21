@@ -1,0 +1,39 @@
+{
+  "version": 1,
+  "baseBranch": "develop",
+  "tracker": "github",
+  "browser": { "provider": "agent-browser" },
+  "validation": {
+    "commands": [
+      "npm run typecheck",
+      "npm run lint",
+      "npm run format:check",
+      "npm test",
+      "npm run build",
+      "npm run check:headers"
+    ]
+  },
+  "labels": {
+    "enabled": true,
+    "pipeline": ["review", "changes-requested", "qa", "qa-failed", "design", "design-failed", "merge-queue", "blocked", "do-not-merge"],
+    "category": ["bug", "feature", "refactor", "security", "dependencies", "documentation"],
+    "meta": ["needs-qa", "skip-qa", "qa-approved", "qa-self-verified", "in-progress", "ci-monitoring", "needs-design", "skip-design", "design-approved"],
+    "priority": ["priority-low", "priority-medium", "priority-high", "priority-extreme"],
+    "risk": ["risk-low", "risk-medium", "risk-high"]
+  },
+  "qaGate": true,
+  "gates": { "failClosed": false, "requireVerdictHead": true, "designGate": true },
+  "toolchain": { "providers": ["npm"] },
+  "security": { "provider": null },
+  "ci": { "maxWaitMinutes": 40 },
+  "engine": { "loopStepThreshold": 20, "executorTier": "standard", "stepReview": "final" },
+  "paths": {
+    "runs": ".xezar/pipeline/runs",
+    "analysis": ".xezar/pipeline/analysis",
+    "specs": ".xezar/pipeline/specs",
+    "scripts": ".xezar/pipeline/scripts",
+    "qa": ".local/xezar/qa"
+  },
+  "reviewChecklist": "CODE_REVIEW.md",
+  "closeKeywords": []
+}

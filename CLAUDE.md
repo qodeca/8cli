@@ -212,3 +212,16 @@ Bundled third-party notices live in `THIRD-PARTY-LICENSES.md`; regenerate it wit
 - One file per command group (not one-file-per-subcommand)
 - Errors always to stderr as structured JSON
 - Success output always to stdout as JSON (unless `--table`)
+
+## Agent pipeline (xezar)
+
+This project runs tasks through the xezar engine with a Claude Code project leader. Read these
+before you work on a task:
+
+- `AGENTS.md` – rules for any coding agent, and the one gate command: `.xezar/checks/repo-gates.sh`
+- `SDLC.md` – branches, task phases, the QA gate and the design gate
+- `CODE_REVIEW.md` – how a change is judged, and the hook trust boundary
+- `BACKWARD_COMPATIBILITY.md` – the contracts a change must keep
+- `.xezar/docs/README.md` – the pipeline's own docs; the leader's guide is `.xezar/docs/leader-guide.md`
+
+Task pull requests target the base branch named in `.xezar/config.json`, not the default branch.
