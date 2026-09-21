@@ -3,3 +3,6 @@ dist/
 coverage/
 *.tsbuildinfo
 .DS_Store
+/.agents/skills/xez-*
+/.claude/skills/xez-*
+/skills-lock.json
