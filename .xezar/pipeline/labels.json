@@ -1,16 +1,4 @@
 {
-  "$comment": [
-    "The label taxonomy as data, so creating it is reproducible instead of remembered.",
-    "config.json lists the label NAMES a pipeline uses; this file adds the colour and the",
-    "one-line description each label needs at creation time. `ensure-label-taxonomy` reads",
-    "it, and scripts/check-label-taxonomy.mjs keeps the two files in step.",
-    "",
-    "This is deliberately NOT a fatal-on-missing list. A label that does not exist in a",
-    "consumer repository degrades to a logged skip (the descriptor's label guard), because",
-    "a collection that refuses to run in a repository whose labels it did not create is a",
-    "collection nobody installs. What must never happen is the reverse: an ABSENT label read",
-    "as a satisfied gate. That is handled in the merge gate, not here."
-  ],
   "colors": {
     "pipeline": "0e8a16",
     "category": "1d76db",

@@ -125,7 +125,7 @@
     },
     {
       "path": ".gitignore",
-      "sha256": "b83d90a80b1bdff10d86f2dab8e8e58234b384d9d1074890c6df3d5c50312886",
+      "sha256": "8b4b2462798527c0d535aa1c3bd02d3351b3cbb113a0830be6fec477e21320e1",
       "origin": "existing-edited"
     },
     {
@@ -135,7 +135,7 @@
     },
     {
       "path": ".prettierignore",
-      "sha256": "10c2d1dbb396cc6bfed608135ca173e33013de5a8018169e10240125ad94cad4",
+      "sha256": "9eccbfe53272734a962bf2d9e8aaaa2d7ab96a7333e580d6b7d8478f10da2ad1",
       "origin": "existing-edited"
     },
     {
@@ -285,7 +285,7 @@
     },
     {
       "path": ".xezar/checks/local-tree.sh",
-      "sha256": "9e370eda8937d96b616fbb7bc5bd4e19d9c919a462dc1b226de116725b4ef886",
+      "sha256": "245c8dcdba612e102c012c34662258411269040fa6142d5687670a36fb7b6661",
       "origin": "kit-adapted"
     },
     {
@@ -440,7 +440,7 @@
     },
     {
       "path": ".xezar/pipeline/labels.json",
-      "sha256": "d5518b90d7236a5753eb511c037f21ac42875235c477baa8c233175c70d75e96",
+      "sha256": "516e83e42460f9eb9851273d4f6b529e5e0da32eab1eed80e62fdbebc029d7ee",
       "origin": "generated"
     },
     {
@@ -660,7 +660,7 @@
     },
     {
       "path": "AGENTS.md",
-      "sha256": "7240b9c082d3b90f7a9a6ea960e8c384ccb5a855d27c290224e6f1e0a96a5399",
+      "sha256": "3ed2c0f52be88325b33a227ef6fe713d8a92111a32553f98d9a341bd7088f0d7",
       "origin": "generated"
     },
     {
@@ -690,12 +690,12 @@
     },
     {
       "path": "eslint.config.js",
-      "sha256": "a6ca8b34c48519f0127b94934bf576c961c4d72ec7c6092c4cc223479bb1b4c5",
+      "sha256": "dd2d927477603dea5f1149f8c144bc56896c65b61533ab31a657bdef8061796b",
       "origin": "existing-edited"
     },
     {
       "path": "scripts/xezar-leader.sh",
-      "sha256": "931b9c41002553197d2ffb5ec5c98398a28f46ba83cced93fe2e98af1dfe9f96",
+      "sha256": "a294ef5e555eb8376af6048b2d0b8e1fde1e9daa6a62ee9c7d74a0121abd419b",
       "origin": "generated"
     }
   ]
