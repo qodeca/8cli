@@ -1,0 +1,527 @@
+{
+  "answers": {
+    "designGate": "on",
+    "disabledProviders": [
+      "opencode"
+    ],
+    "gateCommands": [
+      "npm run typecheck",
+      "npm run lint",
+      "npm run format:check",
+      "npm run check:headers",
+      "npm test",
+      "npm run build"
+    ],
+    "laneCount": {
+      "claude": 4,
+      "codex": 2,
+      "opencode": 0,
+      "pi": 3
+    },
+    "laneUnit": "tool + model; accounts rotate underneath a lane",
+    "leaderLoginIsReserved": true,
+    "leaderModelClass": "strongest available; never falls back to a weaker model",
+    "routingClasses": [
+      "mechanical",
+      "writing",
+      "implementation",
+      "review",
+      "security-and-release"
+    ],
+    "seededPreferences": "none - no day-one preferences were seeded",
+    "specialPurposeLanes": [
+      "escalation-only writing lane",
+      "graphics-only lane"
+    ],
+    "unlimitedLanes": [
+      "pi local models"
+    ]
+  },
+  "detected": {
+    "baseBranch": "develop",
+    "baseBranchGreenAtOnboarding": true,
+    "branchingModel": "two-branch flow",
+    "ciStepsOutsideTheGate": [
+      "reuse lint",
+      "npm audit --audit-level=high"
+    ],
+    "defaultBranch": "main",
+    "dependabotTargetsDefaultBranch": true,
+    "formatterScansWholeTree": true,
+    "linterScansWholeTree": true,
+    "repo": "qodeca/8cli",
+    "requiredChecks": [
+      "check",
+      "e2e",
+      "e2e-macos"
+    ],
+    "tracker": "github"
+  },
+  "engineVersion": "0.16.0",
+  "files": {
+    ".claude/settings.json": {
+      "origin": "kit",
+      "sha256": "71d7e6bfe8027c8d"
+    },
+    ".github/pull_request_template.md": {
+      "origin": "appended",
+      "sha256": "53c9f18143a08167"
+    },
+    ".gitignore": {
+      "origin": "appended",
+      "sha256": "00b226ddc604e078"
+    },
+    ".mcp.json": {
+      "origin": "kit",
+      "sha256": "ee100fc2fc279d31"
+    },
+    ".prettierignore": {
+      "origin": "appended",
+      "sha256": "cb327afc075a53ab"
+    },
+    ".xezar/.gitignore": {
+      "origin": "kit",
+      "sha256": "da7154cd75edf1d8"
+    },
+    ".xezar/CLAUDE.md": {
+      "origin": "generated",
+      "sha256": "039b8c3fdae57774"
+    },
+    ".xezar/campaigns/future-campaign/README.md": {
+      "origin": "kit",
+      "sha256": "bceeb6fcc133cfb7"
+    },
+    ".xezar/campaigns/future-campaign/close-out.md": {
+      "origin": "kit",
+      "sha256": "6707155e223d652b"
+    },
+    ".xezar/campaigns/future-campaign/decisions.md": {
+      "origin": "kit",
+      "sha256": "5b776a05a1697172"
+    },
+    ".xezar/campaigns/future-campaign/parked.md": {
+      "origin": "kit",
+      "sha256": "707642c13d77e270"
+    },
+    ".xezar/campaigns/future-campaign/plan.md": {
+      "origin": "kit",
+      "sha256": "4c8cfac637cf4eaf"
+    },
+    ".xezar/campaigns/future-campaign/risks.md": {
+      "origin": "kit",
+      "sha256": "06a7d51477ac7d0d"
+    },
+    ".xezar/campaigns/future-campaign/timeline-00000000.md": {
+      "origin": "kit",
+      "sha256": "c89d0b691fad00d8"
+    },
+    ".xezar/checks/bootstrap.sh": {
+      "origin": "kit",
+      "sha256": "e72b5b8b0f4e5cab"
+    },
+    ".xezar/checks/catalog-check.mjs": {
+      "origin": "kit",
+      "sha256": "4a23c96b9c6b66e2"
+    },
+    ".xezar/checks/changelog-check.sh": {
+      "origin": "kit",
+      "sha256": "a9b73167fdb241d9"
+    },
+    ".xezar/checks/changelog-fragments.mjs": {
+      "origin": "kit",
+      "sha256": "47c25de586be3ed2"
+    },
+    ".xezar/checks/ci-watch.sh": {
+      "origin": "kit",
+      "sha256": "41bd4fe4f24e05b5"
+    },
+    ".xezar/checks/documented-output.allowlist.json": {
+      "origin": "kit",
+      "sha256": "8970f1d813ea7129"
+    },
+    ".xezar/checks/documented-output.mjs": {
+      "origin": "kit",
+      "sha256": "c77199bf83f0fd94"
+    },
+    ".xezar/checks/dogfooding-fragments.mjs": {
+      "origin": "kit",
+      "sha256": "9872b941854d633c"
+    },
+    ".xezar/checks/fenced-quotes.mjs": {
+      "origin": "kit",
+      "sha256": "d477ddb83b47d99f"
+    },
+    ".xezar/checks/integration-preflight.sh": {
+      "origin": "kit",
+      "sha256": "f570db9c7ab72ed9"
+    },
+    ".xezar/checks/leader-context.sh": {
+      "origin": "kit",
+      "sha256": "82e9c1c455e0cc8f"
+    },
+    ".xezar/checks/lib/bootstrap.mjs": {
+      "origin": "kit",
+      "sha256": "3e033e7e77b845e3"
+    },
+    ".xezar/checks/lib/common.sh": {
+      "origin": "kit",
+      "sha256": "92a79f38cbde7167"
+    },
+    ".xezar/checks/lib/gate-parallel.mjs": {
+      "origin": "kit",
+      "sha256": "ed1ed5c0439d14f6"
+    },
+    ".xezar/checks/lib/gate-record.sh": {
+      "origin": "kit",
+      "sha256": "3eec3e82a6b5b7fc"
+    },
+    ".xezar/checks/lib/gate-results.mjs": {
+      "origin": "kit",
+      "sha256": "14fcbad4dee4c8a3"
+    },
+    ".xezar/checks/lib/manifest.mjs": {
+      "origin": "kit",
+      "sha256": "bf56c855c988883e"
+    },
+    ".xezar/checks/lib/merge-intent.mjs": {
+      "origin": "kit",
+      "sha256": "679af89dbebdd325"
+    },
+    ".xezar/checks/lib/project-policy.mjs": {
+      "origin": "kit",
+      "sha256": "5d771e1487f1b731"
+    },
+    ".xezar/checks/lib/security-scan.mjs": {
+      "origin": "kit",
+      "sha256": "52889d17ded7586c"
+    },
+    ".xezar/checks/local-tree.sh": {
+      "origin": "kit",
+      "sha256": "245c8dcdba612e10"
+    },
+    ".xezar/checks/merge-recovery.sh": {
+      "origin": "kit",
+      "sha256": "a8d5028c997ed4a5"
+    },
+    ".xezar/checks/phase-record.sh": {
+      "origin": "kit",
+      "sha256": "df01a4b1ebc05c63"
+    },
+    ".xezar/checks/repo-gates.sh": {
+      "origin": "generated",
+      "sha256": "19a2ea114c4a5ed5"
+    },
+    ".xezar/checks/repository-checks.sh": {
+      "origin": "kit",
+      "sha256": "fd8ee0f05ac8ddc0"
+    },
+    ".xezar/checks/resume-complete.sh": {
+      "origin": "kit",
+      "sha256": "bbdd25c0adbef833"
+    },
+    ".xezar/checks/root-sync-preflight.sh": {
+      "origin": "kit",
+      "sha256": "4f1a9e7a35973e70"
+    },
+    ".xezar/checks/security-scan.sh": {
+      "origin": "kit",
+      "sha256": "8d5d99dda8ea2cef"
+    },
+    ".xezar/checks/verify-evidence.sh": {
+      "origin": "kit",
+      "sha256": "9cd1bde0d564a043"
+    },
+    ".xezar/checks/worktree-git.sh": {
+      "origin": "kit",
+      "sha256": "9bbffccaf43a699a"
+    },
+    ".xezar/checks/worktree-preflight.sh": {
+      "origin": "kit",
+      "sha256": "7e74c04407e4dde1"
+    },
+    ".xezar/checks/worktree-setup.sh": {
+      "origin": "kit",
+      "sha256": "9eb7f5e718cfbc36"
+    },
+    ".xezar/config.json": {
+      "origin": "generated",
+      "sha256": "b82e28d4e1960139"
+    },
+    ".xezar/docs/README.md": {
+      "origin": "kit",
+      "sha256": "23931f6ac57121f0"
+    },
+    ".xezar/docs/account-limits.md": {
+      "origin": "kit",
+      "sha256": "8f735f7cb0e9a004"
+    },
+    ".xezar/docs/business-analysis.md": {
+      "origin": "kit",
+      "sha256": "0afb07ea22dd25e6"
+    },
+    ".xezar/docs/campaign-notes.md": {
+      "origin": "kit",
+      "sha256": "a22e16b28642fc3a"
+    },
+    ".xezar/docs/close-out.md": {
+      "origin": "kit",
+      "sha256": "913a4062ee0ae7c2"
+    },
+    ".xezar/docs/documented-output.md": {
+      "origin": "kit",
+      "sha256": "51b958d3067eced2"
+    },
+    ".xezar/docs/fenced-quotes.md": {
+      "origin": "kit",
+      "sha256": "0e5a39796532b6a3"
+    },
+    ".xezar/docs/leader-context-loading.md": {
+      "origin": "kit",
+      "sha256": "13d0497c631afe4f"
+    },
+    ".xezar/docs/leader-guide.md": {
+      "origin": "generated",
+      "sha256": "26aae6228034dfe1"
+    },
+    ".xezar/docs/model-routing.md": {
+      "origin": "generated",
+      "sha256": "efe5a44a49f75135"
+    },
+    ".xezar/docs/parallel-tasks.md": {
+      "origin": "kit",
+      "sha256": "f4ebf08eb7a71db3"
+    },
+    ".xezar/docs/phase-record.md": {
+      "origin": "kit",
+      "sha256": "e7981d2356763b54"
+    },
+    ".xezar/docs/recovery.md": {
+      "origin": "kit",
+      "sha256": "8e9feb1dfbd31944"
+    },
+    ".xezar/docs/ui-operations.md": {
+      "origin": "kit",
+      "sha256": "583e2eac70e888a0"
+    },
+    ".xezar/docs/worktrees.md": {
+      "origin": "kit",
+      "sha256": "5d354884529b74cd"
+    },
+    ".xezar/loops.json": {
+      "origin": "kit",
+      "sha256": "a8b51979883810dc"
+    },
+    ".xezar/pipeline/config.json": {
+      "origin": "generated",
+      "sha256": "4aa37213f54d91f9"
+    },
+    ".xezar/pipeline/labels.json": {
+      "origin": "kit",
+      "sha256": "516e83e42460f9eb"
+    },
+    ".xezar/pipeline/toolchains/npm.md": {
+      "origin": "kit",
+      "sha256": "05e64fdc03b71cdf"
+    },
+    ".xezar/pipeline/trackers/github.md": {
+      "origin": "kit",
+      "sha256": "afebf18a9d3e3862"
+    },
+    ".xezar/skills/project-conventions.md": {
+      "origin": "kit",
+      "sha256": "29bfcb1d80713984"
+    },
+    ".xezar/skills/xezar-bug-investigation.md": {
+      "origin": "kit",
+      "sha256": "81673c92c8843ca5"
+    },
+    ".xezar/skills/xezar-business-analysis.md": {
+      "origin": "kit",
+      "sha256": "83b26b2ef33aad57"
+    },
+    ".xezar/skills/xezar-code-review.md": {
+      "origin": "kit",
+      "sha256": "6fbf4573d908d0a5"
+    },
+    ".xezar/skills/xezar-dependency-maintenance.md": {
+      "origin": "kit",
+      "sha256": "62f36fabf83db75e"
+    },
+    ".xezar/skills/xezar-docs-maintenance.md": {
+      "origin": "kit",
+      "sha256": "6960e01dae5fe20b"
+    },
+    ".xezar/skills/xezar-handoff-draft-pr.md": {
+      "origin": "kit",
+      "sha256": "0202c00709a63cc3"
+    },
+    ".xezar/skills/xezar-implementation.md": {
+      "origin": "kit",
+      "sha256": "cb221bce2140c46f"
+    },
+    ".xezar/skills/xezar-integration.md": {
+      "origin": "kit",
+      "sha256": "b685374626c36afc"
+    },
+    ".xezar/skills/xezar-issue-create.md": {
+      "origin": "kit",
+      "sha256": "2655d3ac3ecd7467"
+    },
+    ".xezar/skills/xezar-issue-triage.md": {
+      "origin": "kit",
+      "sha256": "c70c3d1858398d5c"
+    },
+    ".xezar/skills/xezar-planning-spec.md": {
+      "origin": "kit",
+      "sha256": "5428103876572529"
+    },
+    ".xezar/skills/xezar-qa.md": {
+      "origin": "kit",
+      "sha256": "a92c2021bdc36d92"
+    },
+    ".xezar/skills/xezar-quality-gates.md": {
+      "origin": "kit",
+      "sha256": "88c00ea7d90bf2dc"
+    },
+    ".xezar/skills/xezar-release-changelog.md": {
+      "origin": "kit",
+      "sha256": "a42b0a5443327988"
+    },
+    ".xezar/skills/xezar-release-prep.md": {
+      "origin": "kit",
+      "sha256": "a3abdad9220e7970"
+    },
+    ".xezar/skills/xezar-release-publish.md": {
+      "origin": "kit",
+      "sha256": "05b0d3f1fc2a25f3"
+    },
+    ".xezar/skills/xezar-research.md": {
+      "origin": "kit",
+      "sha256": "affb4e8cae9ad04a"
+    },
+    ".xezar/skills/xezar-review-response.md": {
+      "origin": "kit",
+      "sha256": "2cff1dcc5c8cceca"
+    },
+    ".xezar/skills/xezar-testing.md": {
+      "origin": "kit",
+      "sha256": "1aa2d8c578829233"
+    },
+    ".xezar/skills/xezar-ux-design.md": {
+      "origin": "kit",
+      "sha256": "f627649e27839fe7"
+    },
+    ".xezar/workflows/address-review-findings.yaml": {
+      "origin": "kit",
+      "sha256": "a65d279dfc15ded4"
+    },
+    ".xezar/workflows/bug-fix.yaml": {
+      "origin": "kit",
+      "sha256": "077805b335d78aaa"
+    },
+    ".xezar/workflows/business-analysis.yaml": {
+      "origin": "kit",
+      "sha256": "ebc082375d68cc0e"
+    },
+    ".xezar/workflows/code-review.yaml": {
+      "origin": "kit",
+      "sha256": "02f8e2f846bdab9a"
+    },
+    ".xezar/workflows/dependency-maintenance.yaml": {
+      "origin": "kit",
+      "sha256": "2f34e2cb4933c800"
+    },
+    ".xezar/workflows/design-review.yaml": {
+      "origin": "kit",
+      "sha256": "0f12943e4039dedc"
+    },
+    ".xezar/workflows/design.yaml": {
+      "origin": "kit",
+      "sha256": "4f3467988eabd938"
+    },
+    ".xezar/workflows/docs-maintenance.yaml": {
+      "origin": "kit",
+      "sha256": "84f4f764265c410a"
+    },
+    ".xezar/workflows/feature-implementation.yaml": {
+      "origin": "kit",
+      "sha256": "e03229fed20f905c"
+    },
+    ".xezar/workflows/fix-and-verify.yaml": {
+      "origin": "kit",
+      "sha256": "e10fdeee552d33bc"
+    },
+    ".xezar/workflows/integration.yaml": {
+      "origin": "kit",
+      "sha256": "05213da15be96747"
+    },
+    ".xezar/workflows/issue-triage.yaml": {
+      "origin": "kit",
+      "sha256": "981c9ee3179d770e"
+    },
+    ".xezar/workflows/plan-and-spec.yaml": {
+      "origin": "kit",
+      "sha256": "04e39e95c54a78a7"
+    },
+    ".xezar/workflows/qa.yaml": {
+      "origin": "kit",
+      "sha256": "6ac7246f2942309d"
+    },
+    ".xezar/workflows/release-prep.yaml": {
+      "origin": "kit",
+      "sha256": "efd81c05fd4dc072"
+    },
+    ".xezar/workflows/release.yaml": {
+      "origin": "kit",
+      "sha256": "14744e8b5450f34d"
+    },
+    ".xezar/workflows/research.yaml": {
+      "origin": "kit",
+      "sha256": "153a5aed4dc5438e"
+    },
+    ".xezar/workflows/root-sync.yaml": {
+      "origin": "kit",
+      "sha256": "5301499fc8ac1021"
+    },
+    ".xezar/workflows/testing-and-verification.yaml": {
+      "origin": "kit",
+      "sha256": "a8f6e6758f8e097c"
+    },
+    "AGENTS.md": {
+      "origin": "generated",
+      "sha256": "1d7d2da3856c1a50"
+    },
+    "BACKWARD_COMPATIBILITY.md": {
+      "origin": "generated",
+      "sha256": "39ba3ecde287c759"
+    },
+    "CLAUDE.md": {
+      "origin": "appended",
+      "sha256": "5ef13d5b118065d7"
+    },
+    "CODE_REVIEW.md": {
+      "origin": "generated",
+      "sha256": "b0526958b0463994"
+    },
+    "SDLC.md": {
+      "origin": "generated",
+      "sha256": "54f91e7a7fb2386b"
+    },
+    "designs/README.md": {
+      "origin": "generated",
+      "sha256": "86be1467673cc6cb"
+    },
+    "eslint.config.js": {
+      "origin": "appended",
+      "sha256": "f10d8261514f40bd"
+    },
+    "scripts/xezar-leader.sh": {
+      "origin": "kit",
+      "sha256": "31c6418bb41937c5"
+    }
+  },
+  "onboardedAt": "2026-09-21T11:55:00Z",
+  "skill": "xez-onboard-opinionated",
+  "stack": "typescript/npm",
+  "version": 1
+}

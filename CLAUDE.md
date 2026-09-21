@@ -212,3 +212,30 @@ Bundled third-party notices live in `THIRD-PARTY-LICENSES.md`; regenerate it wit
 - One file per command group (not one-file-per-subcommand)
 - Errors always to stderr as structured JSON
 - Success output always to stdout as JSON (unless `--table`)
+
+<!-- xezar:begin -->
+
+## Agent pipeline (xezar)
+
+This project is run by a project leader: a Claude Code session attached to the xezar engine.
+Start it with `./scripts/xezar-leader.sh`, with the engine already running in its own terminal
+window (`xezar --single-project --no-open`).
+
+| File                           | What it is for                                                              |
+| ------------------------------ | --------------------------------------------------------------------------- |
+| `AGENTS.md`                    | how an agent works here, and how to get the `xez-*` skills in a fresh clone |
+| `SDLC.md`                      | branches, definition of ready, the gate, definition of done                 |
+| `CODE_REVIEW.md`               | the review checklist and the trust boundary                                 |
+| `BACKWARD_COMPATIBILITY.md`    | the public surfaces that must not break                                     |
+| `.xezar/docs/leader-guide.md`  | the leader's standing instructions                                          |
+| `.xezar/docs/model-routing.md` | which lane runs which kind of task                                          |
+
+**One gate command:** `.xezar/checks/repo-gates.sh` – it runs `npm ci`, the security scan,
+`typecheck`, `lint`, `format:check`, `check:headers`, `test`, `build`, then the repository checks.
+The two end-to-end suites stay out of it (Docker and a real keychain) and are required CI checks.
+
+**Base branch is `develop`.** `main` carries releases.
+
+**Local artifacts** go under `.local/xezar/` in a named subfolder – never loose at its top level.
+
+<!-- xezar:end -->

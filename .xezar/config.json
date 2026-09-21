@@ -1,0 +1,5 @@
+{
+  "baseBranch": "develop",
+  "defaultRunner": "claude",
+  "systemPrompt": "You are working in 8cli, an AI-first CLI for managing a remote n8n instance (TypeScript, strict, nodenext, Node 22+, GPL-3.0-only). Every command outputs JSON to stdout by default; errors go to stderr as {\"error\",\"code\"} with exit code 1. There are no interactive prompts. Keep sentence case, not Title Case, and en dashes, not em dashes. Every file under bin/ and src/ carries the SPDX header. Work lands on develop; main carries releases. Run the gate with .xezar/checks/repo-gates.sh before asking for a verdict."
+}

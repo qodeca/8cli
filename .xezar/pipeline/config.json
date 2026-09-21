@@ -1,0 +1,44 @@
+{
+  "version": 1,
+  "baseBranch": "develop",
+  "tracker": "github",
+  "browser": { "provider": null },
+  "validation": {
+    "commands": [
+      "npm run typecheck",
+      "npm run lint",
+      "npm run format:check",
+      "npm run check:headers",
+      "npm test",
+      "npm run build"
+    ]
+  },
+  "labels": {
+    "enabled": true,
+    "pipeline": ["review", "changes-requested", "qa", "qa-failed", "merge-queue", "blocked", "do-not-merge", "design", "design-failed"],
+    "category": ["bug", "feature", "refactor", "security", "dependencies", "documentation"],
+    "meta": ["needs-qa", "skip-qa", "qa-approved", "qa-self-verified", "in-progress", "ci-monitoring", "needs-design", "design-approved", "skip-design"],
+    "priority": ["priority-low", "priority-medium", "priority-high", "priority-extreme"],
+    "risk": ["risk-low", "risk-medium", "risk-high"]
+  },
+  "qaGate": true,
+  "gates": { "failClosed": false, "requireVerdictHead": false, "designGate": true },
+  "toolchain": { "providers": ["npm"] },
+  "security": { "provider": null },
+  "ci": {
+    "maxWaitMinutes": 40,
+    "requiredChecks": ["check", "e2e", "e2e-macos"],
+    "knownLoadFlakes": []
+  },
+  "engine": { "loopStepThreshold": 20, "executorTier": "standard", "stepReview": "final" },
+  "paths": {
+    "runs": ".xezar/pipeline/runs",
+    "analysis": ".xezar/pipeline/analysis",
+    "specs": ".xezar/pipeline/specs",
+    "scripts": ".xezar/pipeline/scripts",
+    "qa": ".local/xezar/qa",
+    "designSystem": ""
+  },
+  "reviewChecklist": null,
+  "closeKeywords": ["fixes", "closes", "resolves"]
+}
