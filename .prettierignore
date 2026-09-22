@@ -7,3 +7,8 @@ THIRD-PARTY-LICENSES.md
 CHANGELOG.md
 # Vitest golden snapshots are byte-for-byte fixtures, not prettier-managed
 test/e2e/__snapshots__
+# The xezar agent pipeline's folders keep their own formatting
+.xezar
+.claude
+.agents
+.local

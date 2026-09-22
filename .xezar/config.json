@@ -1,0 +1,4 @@
+{
+  "baseBranch": "develop",
+  "systemPrompt": "Read AGENTS.md, SDLC.md, CODE_REVIEW.md and .xezar/docs/README.md before you work. 8cli is an AI-first n8n command-line tool: JSON to stdout, structured errors to stderr as {\"error\",\"code\"}, no interactive prompts. Task work targets the develop branch. Run .xezar/checks/repo-gates.sh before you hand work off. Every new .ts file under bin/ and src/ carries the SPDX header from CLAUDE.md."
+}
