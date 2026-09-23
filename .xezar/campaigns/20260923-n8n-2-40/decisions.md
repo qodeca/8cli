@@ -38,3 +38,8 @@ Direct question answers:
 
 Contract read back: hard stops – the release go, deleting a record, opening a campaign; decided and parked – account or provider lane switch, scope trim, third repair round; accepted costs – overnight metered spend, stops are instructions not enforcement; #37 logo waits for the owner's pick; loops end if the session closes.
 Owner chose: "Yes, turn it on". No note given.
+
+## 2026-09-23 23:27 – leader rule: dispatch through workflows (chat, then direct question)
+
+Owner's words (chat): "Why are you using "workflows" which are xez-auto* and actually those are skills and you are not using the existing xezar workflows you have in this repo?" then "Document it in your leader guide for the following sessions".
+Owner approved the exact line (direct question, "Yes, write it"), added to .xezar/docs/leader-guide.md under "Who the leader is, and is not".

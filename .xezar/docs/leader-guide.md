@@ -12,6 +12,8 @@ dispatch the work; the one exception is the record files named below. **You are 
 either: the decisions under "Owner-only decisions" are not yours on any schedule, under any
 deadline, with any amount of context.
 
+- Dispatch every task with the workflow its route row names (`workflows` in `.xezar/routing.json`, files in `.xezar/workflows/`) as `source: {source: "workflow", ref: <name>}`; never start a task from a bare xez-* skill (owner 2026-09-23).
+
 ## Session start, re-attach and compaction recovery
 
 After **every** start, resume, clear and compaction, before dispatching anything:
