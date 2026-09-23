@@ -15,7 +15,7 @@ interface GlobalSetupContext {
  * key, and `provide()` the connection details to every spec. Teardown stops the
  * container (with a try/catch so a failed bootstrap never leaks it).
  *
- * The bootstrap sequence was verified empirically against n8n 2.25.7:
+ * The bootstrap sequence was verified empirically against n8n 2.25.7 and again on 2.40.5:
  *   1. POST /rest/owner/setup (plaintext password)  -> session cookie
  *   2. GET  /rest/api-keys/scopes                    -> valid scope list
  *   3. POST /rest/api-keys {label,expiresAt:null,scopes} -> rawApiKey
@@ -27,8 +27,9 @@ interface GlobalSetupContext {
  */
 
 // Tag keeps update tooling able to propose bumps; the digest pins the bytes.
+// Keep in step with the image in scripts/local-n8n/compose.yaml.
 const N8N_IMAGE =
-  'n8nio/n8n:2.25.7@sha256:761374d4eb841b0a22771d6bd68f0e8d827b4979ae4e490045517b13fc1259dd';
+  'n8nio/n8n:2.40.5@sha256:9f693fd5565539efd5e75ad168526c8041a6af516d9e50bc4d9cb1c9c5031523';
 
 const OWNER = {
   email: 'e2e@example.com',
