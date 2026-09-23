@@ -22,3 +22,14 @@ Local environment choice. Owner chose: "Long-running n8n (Recommended)" – a Do
 
 Asked: PR #33 e2e fails on 2 golden snapshots changed by n8n 2.40.5 (wf get key order; dt get new sizeBytes). Fix in PR #33, or move the pin bump to #32?
 Owner chose: "Fix in PR #33 (Recommended)" – update the 2 snapshots in the same PR and note the change in BACKWARD_COMPATIBILITY.md.
+
+## 2026-09-23 23:04 – end-user docs and README added to this campaign (chat, then direct question)
+
+Owner's words (chat):
+
+> I believe the project deserves a very comprehensive end user documentation and beautiful README.md so it's github page looks amazing. It's an Open Source project so it should look great
+
+Direct question answers:
+- Docs home: "Markdown in the repo (Recommended)" – polished README.md plus a full docs/ folder; no website, no deploy.
+- Timing: "This campaign, start now (Recommended)" – added to this campaign; README and docs start after PR #33 merges, alongside #32; one final accuracy check after #32.
+- Visuals: "Terminal demo GIF, Badges, Logo / banner" – the logo is AI-drawn and the owner approves it before it goes in.

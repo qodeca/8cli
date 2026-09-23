@@ -1,8 +1,8 @@
 # Campaign 20260923-n8n-2-40
 
-Updated: 2026-09-23 23:02
+Updated: 2026-09-23 23:04
 
-Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it on. Plan: `plan.md`.
+Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it on; plus end-user docs and a polished README (added by owner, see decisions.md). Plan: `plan.md`.
 
 ## State
 
@@ -14,6 +14,10 @@ Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it 
 |---|---|---|---|
 | #31 | Local n8n 2.40.5 environment | PR #33 green at d0532ae (e2e 70/0) | 2 reviews running: b5dde695 security, da103014 cold |
 | #32 | Validate every command on 2.40.5 | held | waits for #31 merged |
+| #34 | End-user docs in docs/ | held | after #33 merges; final pass after #32 |
+| #35 | README (badges, demo, logo) | held | after #33 merges; needs #36 and #37 assets |
+| #36 | Scripted demo GIF | held | after #33 merges (needs local env) |
+| #37 | Logo and banner | held | after #33 merges; owner picks a direction before merge |
 
 ## Open pull requests
 
