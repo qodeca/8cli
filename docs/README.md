@@ -15,3 +15,5 @@ none is created empty, so on day one most of these paths do not exist yet.
 
 Each path is set by a `paths.*` key in `.xezar/pipeline/config.json`; change the key, not this
 table, if a folder moves.
+
+<!-- xezar smoke test – this PR is closed unmerged -->
