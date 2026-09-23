@@ -17,7 +17,7 @@ Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it 
 | #34 | End-user docs in docs/ | running b25718f0 (continued: phase record + merge develop, reuse PR #46) | review when handoff done |
 | #35 | README (badges, demo, logo) | held | needs #36 merged and #37 direction picked |
 | #36 | Scripted demo GIF | running 16a79cec (feature-implementation) | review when PR opens |
-| #37 | Logo and banner | running e2afa2a5 (continued after settings fix) | owner picks a direction when PR opens |
+| #37 | Logo and banner | PR #49 (3 candidates, do-not-merge) | OWNER picks a direction |
 | #38 | Local n8n creds per worktree vs shared instance (bug) | ready, not dispatched | after #32/#34/#36 stop using the instance (touches scripts/local-n8n) |
 | #39–#45 | 7 defects found by #32 validation (2 high: #39 sc status route, #42 wf publish drops settings) | ready | L3 dispatches by least file overlap (src/ – no running task owns it) |
 
