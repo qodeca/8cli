@@ -1,6 +1,8 @@
 import { execFileSync } from 'node:child_process';
+import { error, log } from 'node:console';
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { dirname, join, normalize } from 'node:path';
+import process from 'node:process';
 
 const root = process.cwd();
 const docs = [];
@@ -51,7 +53,7 @@ for (const flag of help.matchAll(/--[a-z][a-z-]*/g)) {
   if (!text.includes(flag[0])) missing.push(`global flag: ${flag[0]}`);
 }
 if (missing.length) {
-  console.error(`Documentation is missing ${[...new Set(missing)].join(', ')}`);
+  error(`Documentation is missing ${[...new Set(missing)].join(', ')}`);
   process.exit(1);
 }
-console.log(JSON.stringify({ checked: 'commands, flags, internal links' }));
+log(JSON.stringify({ checked: 'commands, flags, internal links' }));
