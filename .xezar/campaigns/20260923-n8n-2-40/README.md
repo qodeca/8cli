@@ -1,6 +1,6 @@
 # Campaign 20260923-n8n-2-40
 
-Updated: 2026-09-23 22:55
+Updated: 2026-09-23 22:56
 
 Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it on. Plan: `plan.md`.
 
@@ -12,7 +12,7 @@ Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it 
 
 | Issue | What | State | Next action |
 |---|---|---|---|
-| #31 | Local n8n 2.40.5 environment | PR #33 open, e2e will be red (2 golden snapshots changed by n8n 2.40.5) | owner decides where the snapshot fix lands |
+| #31 | Local n8n 2.40.5 environment | PR #33 open, e2e will be red (2 golden snapshots changed by n8n 2.40.5) | e6f9e61c fixing snapshots on PR #33 | then independent review (not Anthropic, not DeepSeek) |
 | #32 | Validate every command on 2.40.5 | held | waits for #31 merged |
 
 ## Open pull requests
@@ -21,7 +21,7 @@ Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it 
 
 ## Running tasks and file ownership
 
-None (df01cf60 done).
+- e6f9e61c (pi/deepseek-flash, xez-auto-continue-pr) owns test/e2e/workflow.e2e.ts, test/e2e/datatable.e2e.ts, test/e2e/**snapshots**, BACKWARD_COMPATIBILITY.md on xez/df01cf60
 
 ## Accounts
 
@@ -33,7 +33,7 @@ None (df01cf60 done).
 
 ## Owner items
 
-- #33 e2e red: wf get key order changed; dt get gained sizeBytes. Where does the fix land?
+None (snapshot fix: owner chose PR #33).
 
 ## Rules that bit
 
