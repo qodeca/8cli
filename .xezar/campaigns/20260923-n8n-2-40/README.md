@@ -1,6 +1,6 @@
 # Campaign 20260923-n8n-2-40
 
-Updated: 2026-09-23 23:22
+Updated: 2026-09-23 23:25
 
 Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it on; plus end-user docs and a polished README (added by owner, see decisions.md). Plan: `plan.md`.
 
@@ -12,7 +12,7 @@ Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it 
 
 | Issue | What | State | Next action |
 |---|---|---|---|
-| #31 | Local n8n 2.40.5 environment | PR #33 repair round 2 pushed (ec95666), CI running | scoped re-check fe3e3c7b |
+| #31 | Local n8n 2.40.5 environment | BLOCKED: PR #33 merge-ready at ec95666, merge denied by this session's permission guard | owner merges PR #33 (or allows the merge) |
 | #32 | Validate every command on 2.40.5 | held | waits for #31 merged |
 | #34 | End-user docs in docs/ | held | after #33 merges; final pass after #32 |
 | #35 | README (badges, demo, logo) | held | after #33 merges; needs #36 and #37 assets |
@@ -21,11 +21,11 @@ Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it 
 
 ## Open pull requests
 
-- #33 (xez/df01cf60) head ec95666 (round 2: incomplete env file refused before any spawn; no src change). check green, e2e running. Re-check fe3e3c7b running.
+- #33 (xez/df01cf60) head ec95666, all 3 checks green, mergeState CLEAN, label merge-queue. Security re-check fe3e3c7b APPROVE; cold review da103014 APPROVE (at d0532ae). Merge attempt denied by the Claude Code auto-mode guard ("Merge Without Review"). Branch kept (deleting a branch is a hard stop while unattended).
 
 ## Running tasks and file ownership
 
-- fe3e3c7b (codex/gpt-6-astra, default) read-only re-check of PR #33
+None.
 
 ## Accounts
 
@@ -33,11 +33,13 @@ Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it 
 |---|---|---|
 | claude × qodeca-priv | in use | – |
 | claude × gmail-priv, eqamana-priv, westagilelabs-priv | unknown | – |
-| codex × default | in use | – |
+| codex × default | unknown | – |
 
 ## Owner items
 
-None (snapshot fix: owner chose PR #33).
+- BLOCKED: merge PR #33 (`gh pr merge 33 --squash --match-head-commit ec956668a5f5f81f9b995af2b4203254522b3c27`), or add a permission rule so the leader can merge. Everything else (#32, #34–#37) waits for this merge, by owner decision.
+- Delete branch xez/df01cf60 after merge (record deletion is yours).
+- Parked calls in parked.md.
 
 ## Rules that bit
 
