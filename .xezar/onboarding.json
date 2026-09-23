@@ -77,7 +77,7 @@
       "origin": "kit-copy"
     },
     ".xezar/.gitignore": {
-      "sha256": "da7154cd75edf1d8102d5fe46f0635f4a1aa114d81251eae17f80f88ae185e83",
+      "sha256": "777ee9580e1c5c8576f04da3dc4ca8e7b2af333f2e795a8be90d480b4ad096c9",
       "origin": "kit-copy"
     },
     ".xezar/CLAUDE.md": {
@@ -125,7 +125,7 @@
       "origin": "kit-copy"
     },
     ".xezar/checks/changelog-fragments.mjs": {
-      "sha256": "47c25de586be3ed2f4820734032f18e6cf445c06891def78729a435c14d98278",
+      "sha256": "873bda47e05802f0aac67814354925cbc1d2e01c01ee70f000a33710229aa1ae",
       "origin": "kit-copy"
     },
     ".xezar/checks/ci-watch.sh": {
@@ -165,7 +165,7 @@
       "origin": "kit-copy"
     },
     ".xezar/checks/leader-context.sh": {
-      "sha256": "82e9c1c455e0cc8ff3f9b7679aeaa1fecd9276a7e21ed712c5e6463c433e1b07",
+      "sha256": "50e263d8bd6af005bbfe7bebf5afd63285c50401934aaff2219534547f93b75f",
       "origin": "kit-copy"
     },
     ".xezar/checks/lib/bootstrap.mjs": {
@@ -201,11 +201,11 @@
       "origin": "kit-copy"
     },
     ".xezar/checks/lib/project-policy.mjs": {
-      "sha256": "5d771e1487f1b731946e12f8fbfbda377ef94d3731e62eb1a6925e8ae15ebdea",
+      "sha256": "3b865ea3625ed9a4b7a8b35cdb8ee93dc6a58b9c750497a91f2171f757aa3349",
       "origin": "kit-copy"
     },
     ".xezar/checks/lib/security-scan.mjs": {
-      "sha256": "3faf836f636766ac3a0c96e818f74ddaf1504b259aab88494f95a22558d5c642",
+      "sha256": "1431428fe0cb03377fd36a6c9c996e06cbd242a4f5b91ae20544f1306ef51351",
       "origin": "kit-copy"
     },
     ".xezar/checks/local-tree.sh": {
@@ -237,7 +237,7 @@
       "origin": "kit-copy"
     },
     ".xezar/checks/route.mjs": {
-      "sha256": "8b7876396006d9089835694e323dbb3d857a38af78ff16b7d7b216723f425668",
+      "sha256": "dccfa49fb653bee107c9b5188dde802353db23c89e71508b10d92261dac1f33d",
       "origin": "kit-copy"
     },
     ".xezar/checks/security-scan.sh": {
@@ -297,7 +297,7 @@
       "origin": "kit-copy"
     },
     ".xezar/docs/leader-context-loading.md": {
-      "sha256": "b487b12102216325056930be0551688e4869c191eb0426c271a899813a4a286a",
+      "sha256": "643fc52743895a243e5d45a4c51e33033c7392b2bc2c9026ae9f51620c0cb5ad",
       "origin": "kit-copy"
     },
     ".xezar/docs/leader-guide-detail.md": {
@@ -321,7 +321,7 @@
       "origin": "kit-copy"
     },
     ".xezar/docs/routing.md": {
-      "sha256": "6f09d56d8bd03e88b3117d347e2a38b55d87108653eedf13a7a9a495906ed722",
+      "sha256": "9b60f6f6bc0d0d07861cf30737d71f150a87af002cfe6ccf8b521c20fb8eeb5c",
       "origin": "kit-copy"
     },
     ".xezar/docs/ui-operations.md": {
@@ -357,11 +357,11 @@
       "origin": "kit-copy"
     },
     ".xezar/routing.json": {
-      "sha256": "d4a2a8136ce81ab7ab45dd0b4ac564fa297011983e969cf7efb7cfe3f1a6b69f",
+      "sha256": "afd133cb94d9d88837a4eaba034823b7f0053e91cbb6ea9bf9ce6ef8e7cde733",
       "origin": "adapted"
     },
     ".xezar/routing.schema.json": {
-      "sha256": "e085b32886451026200fc07a4338c4e224f27b5cefec23fde387f3e035bef0f7",
+      "sha256": "60fc72a95601e3d3672860bce9b71ca426da9b5101e094df6d9d1ee83a7489e2",
       "origin": "kit-copy"
     },
     ".xezar/skills/xezar-acceptance.md": {
