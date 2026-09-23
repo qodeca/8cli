@@ -1,6 +1,6 @@
 # Campaign 20260923-n8n-2-40
 
-Updated: 2026-09-23 22:48
+Updated: 2026-09-23 22:55
 
 Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it on. Plan: `plan.md`.
 
@@ -12,16 +12,16 @@ Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it 
 
 | Issue | What | State | Next action |
 |---|---|---|---|
-| #31 | Local n8n 2.40.5 environment | running df01cf60 | read result, then independent review |
+| #31 | Local n8n 2.40.5 environment | PR #33 open, e2e will be red (2 golden snapshots changed by n8n 2.40.5) | owner decides where the snapshot fix lands |
 | #32 | Validate every command on 2.40.5 | held | waits for #31 merged |
 
 ## Open pull requests
 
-None.
+- #33 (xez/df01cf60) – local n8n env + e2e pin 2.40.5. No review yet. Touches .github/workflows/ci.yml (image ref only).
 
 ## Running tasks and file ownership
 
-- df01cf60 (claude/opus, qodeca-priv, xez-auto-create-pr) owns docker-compose*, scripts/**, test/e2e/setup/global.ts, docs/**
+None (df01cf60 done).
 
 ## Accounts
 
@@ -33,7 +33,7 @@ None.
 
 ## Owner items
 
-None.
+- #33 e2e red: wf get key order changed; dt get gained sizeBytes. Where does the fix land?
 
 ## Rules that bit
 
