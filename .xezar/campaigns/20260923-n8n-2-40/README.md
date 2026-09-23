@@ -1,6 +1,6 @@
 # Campaign 20260923-n8n-2-40
 
-Updated: 2026-09-23 23:04
+Updated: 2026-09-23 23:08
 
 Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it on; plus end-user docs and a polished README (added by owner, see decisions.md). Plan: `plan.md`.
 
@@ -12,7 +12,7 @@ Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it 
 
 | Issue | What | State | Next action |
 |---|---|---|---|
-| #31 | Local n8n 2.40.5 environment | PR #33 green at d0532ae (e2e 70/0) | 2 reviews running: b5dde695 security, da103014 cold |
+| #31 | Local n8n 2.40.5 environment | PR #33: security review CHANGES REQUESTED (2 blockers) | wait for cold review da103014, then one repair round covering both |
 | #32 | Validate every command on 2.40.5 | held | waits for #31 merged |
 | #34 | End-user docs in docs/ | held | after #33 merges; final pass after #32 |
 | #35 | README (badges, demo, logo) | held | after #33 merges; needs #36 and #37 assets |
@@ -21,11 +21,10 @@ Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it 
 
 ## Open pull requests
 
-- #33 (xez/df01cf60) head d0532ae, checks green, reviews pending (security: codex/gpt-6-astra; cold: claude/sonnet gmail-priv).
+- #33 (xez/df01cf60) head d0532ae, checks green. Security b5dde695: request changes – (1) keychain backend src/keychain/macos.ts:14-17 passes secret via `security -w <value>` argv (pre-existing product bug); (2) env file written before chmod when file pre-exists. Cold review da103014 pending. Formal GH review impossible (same identity as author).
 
 ## Running tasks and file ownership
 
-- b5dde695 (codex/gpt-6-astra, default) read-only review of PR #33
 - da103014 (claude/sonnet, gmail-priv) read-only review of PR #33
 
 ## Accounts
@@ -42,7 +41,8 @@ None (snapshot fix: owner chose PR #33).
 
 ## Rules that bit
 
-None yet.
+- Agents share the owner's GitHub identity: formal approve/request-changes is rejected as self-review; verdicts land as PR comments + labels.
+- SECURITY.md forbids public issues for vulnerabilities.
 
 ## Loops
 
