@@ -1,0 +1,305 @@
+// SPDX-License-Identifier: GPL-3.0-only
+// SPDX-FileCopyrightText: 2026 Qodeca sp. z o.o.
+
+// Local n8n 2.40.5 for checking 8cli by hand and by agents (docs/runbooks/local-n8n.md).
+//
+//   npm run n8n:local -- start   bring it up and seed it when it is fresh
+//   npm run n8n:local -- seed    create the owner and an API key, store them for 8cli
+//   npm run n8n:local -- reset   wipe all data, start again, seed
+//   npm run n8n:local -- stop    stop it, keeping the data
+//
+// `--store keychain|env` picks where the seed puts the credentials (default: keychain on
+// macOS, env file elsewhere). Same contract as 8cli: one JSON object to stdout, errors as
+// `{ "error", "code" }` to stderr with exit code 1, progress to stderr. No secret is ever
+// printed; secrets reach 8cli on stdin, never in process arguments.
+
+import { spawnSync } from 'node:child_process';
+import { chmodSync, existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { dirname, relative, resolve } from 'node:path';
+import {
+  childEnv,
+  cookieHeader,
+  envFileContent,
+  generatePassword,
+  localUrl,
+  parseArgs,
+  parseEnvFile,
+  UsageError,
+  type Store,
+} from './lib.js';
+
+const ROOT = resolve(import.meta.dirname, '../..');
+const COMPOSE_FILE = resolve(import.meta.dirname, 'compose.yaml');
+const CLI_ENTRY = resolve(ROOT, 'bin/8cli.ts');
+const ENV_FILE = resolve(ROOT, '.local/xezar/n8n/credentials.env');
+const OWNER_EMAIL = 'owner@example.com';
+const READY_TIMEOUT_MS = 180_000;
+const REQUEST_TIMEOUT_MS = 15_000;
+
+class ScriptError extends Error {
+  constructor(
+    message: string,
+    readonly code: string,
+  ) {
+    super(message);
+  }
+}
+
+function progress(message: string): void {
+  process.stderr.write(`[local-n8n] ${message}\n`);
+}
+
+function compose(...args: string[]): void {
+  // Docker's own output goes to stderr so stdout stays one JSON object.
+  const res = spawnSync('docker', ['compose', '-f', COMPOSE_FILE, ...args], {
+    cwd: ROOT,
+    stdio: ['ignore', 2, 2],
+  });
+  if (res.error) {
+    throw new ScriptError(`Could not run docker: ${res.error.message}`, 'ERR_NO_DOCKER');
+  }
+  if (res.status !== 0) {
+    throw new ScriptError(
+      `docker compose ${args[0]} failed (exit ${res.status})`,
+      'ERR_DOCKER_COMPOSE',
+    );
+  }
+}
+
+async function request(
+  url: string,
+  init: RequestInit = {},
+): Promise<{ status: number; json: Record<string, unknown>; setCookie: string[] }> {
+  const res = await fetch(url, {
+    ...init,
+    redirect: 'manual',
+    signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
+  });
+  let json: Record<string, unknown> = {};
+  try {
+    json = (await res.json()) as Record<string, unknown>;
+  } catch {
+    /* empty or non-JSON body */
+  }
+  return { status: res.status, json, setCookie: res.headers.getSetCookie?.() ?? [] };
+}
+
+async function waitReady(url: string): Promise<void> {
+  progress(`waiting for ${url}/healthz/readiness`);
+  const deadline = Date.now() + READY_TIMEOUT_MS;
+  while (Date.now() < deadline) {
+    try {
+      const res = await fetch(`${url}/healthz/readiness`, { signal: AbortSignal.timeout(5_000) });
+      if (res.ok) return;
+    } catch {
+      /* not listening yet */
+    }
+    await new Promise((r) => setTimeout(r, 1_000));
+  }
+  throw new ScriptError(
+    `n8n did not become ready within ${READY_TIMEOUT_MS / 1000}s`,
+    'ERR_NOT_READY',
+  );
+}
+
+/** The running n8n's version, read inside the container (settings hide it before login). */
+function n8nVersion(): string | undefined {
+  const res = spawnSync(
+    'docker',
+    ['compose', '-f', COMPOSE_FILE, 'exec', '-T', 'n8n', 'n8n', '--version'],
+    { cwd: ROOT, encoding: 'utf-8', stdio: ['ignore', 'pipe', 'ignore'] },
+  );
+  return res.status === 0 ? res.stdout.trim() || undefined : undefined;
+}
+
+async function needsOwnerSetup(url: string): Promise<boolean> {
+  const res = await request(`${url}/rest/settings`);
+  const data = res.json.data as { userManagement?: { showSetupOnFirstLoad?: boolean } } | undefined;
+  if (res.status !== 200 || !data) {
+    throw new ScriptError(`GET /rest/settings returned ${res.status}`, 'ERR_SETTINGS');
+  }
+  return data.userManagement?.showSetupOnFirstLoad === true;
+}
+
+/** Run 8cli from source; `input` is fed on stdin so secrets stay out of `ps`. */
+function run8cli(
+  args: string[],
+  opts: { input?: string; env?: Record<string, string> } = {},
+): { status: number | null; stdout: string; stderr: string } {
+  const res = spawnSync(process.execPath, ['--import', 'tsx', CLI_ENTRY, ...args], {
+    cwd: ROOT,
+    input: opts.input ?? '',
+    env: childEnv(process.env, opts.env),
+    encoding: 'utf-8',
+  });
+  if (res.error) {
+    throw new ScriptError(`Could not run 8cli: ${res.error.message}`, 'ERR_RUN_8CLI');
+  }
+  return { status: res.status, stdout: res.stdout, stderr: res.stderr };
+}
+
+/** The 8cli `{ "error", "code" }` from stderr, without echoing anything else it printed. */
+function cliFailure(stderr: string): string {
+  try {
+    const parsed = JSON.parse(stderr.trim().split('\n').pop() ?? '') as { code?: string };
+    if (parsed.code) return parsed.code;
+  } catch {
+    /* not JSON */
+  }
+  return 'unknown error';
+}
+
+function storeCredentials(
+  store: Store,
+  creds: { url: string; apiKey: string; email: string; password: string },
+): void {
+  if (store === 'env') {
+    mkdirSync(dirname(ENV_FILE), { recursive: true });
+    writeFileSync(ENV_FILE, envFileContent(creds), { mode: 0o600 });
+    chmodSync(ENV_FILE, 0o600); // an existing file keeps its old mode on write
+    return;
+  }
+  const key = run8cli(['--url', creds.url, 'auth', 'set-api-key', '--value', '-'], {
+    input: creds.apiKey,
+  });
+  if (key.status !== 0) {
+    throw new ScriptError(
+      `8cli auth set-api-key failed: ${cliFailure(key.stderr)}`,
+      'ERR_STORE_API_KEY',
+    );
+  }
+  const login = run8cli(
+    ['--url', creds.url, 'auth', 'set-credentials', '--email', creds.email, '--password', '-'],
+    { input: creds.password },
+  );
+  if (login.status !== 0) {
+    throw new ScriptError(
+      `8cli auth set-credentials failed: ${cliFailure(login.stderr)}`,
+      'ERR_STORE_CREDENTIALS',
+    );
+  }
+}
+
+/** Env overrides that make a spawned 8cli read the stored credentials. */
+function storedEnv(store: Store): Record<string, string> | undefined {
+  if (store === 'keychain') return {};
+  if (!existsSync(ENV_FILE)) return undefined;
+  const values = parseEnvFile(readFileSync(ENV_FILE, 'utf-8'));
+  return values.N8N_API_KEY ? values : undefined;
+}
+
+/** `8cli auth verify` against the instance with the stored credentials. */
+function verifyStored(url: string, store: Store): boolean {
+  const env = storedEnv(store);
+  if (!env) return false;
+  return run8cli(['--url', url, 'auth', 'verify'], { env }).status === 0;
+}
+
+async function createOwnerAndKey(url: string, store: Store): Promise<void> {
+  const password = generatePassword();
+  progress(`creating the owner ${OWNER_EMAIL}`);
+  const setup = await request(`${url}/rest/owner/setup`, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({
+      email: OWNER_EMAIL,
+      firstName: 'Local',
+      lastName: 'Owner',
+      password,
+    }),
+  });
+  const cookie = cookieHeader(setup.setCookie);
+  if (setup.status !== 200 || !cookie) {
+    throw new ScriptError(`Owner setup failed (status ${setup.status})`, 'ERR_OWNER_SETUP');
+  }
+
+  // Ask n8n which scopes a public-API key may hold, and grant them all.
+  const scopes = await request(`${url}/rest/api-keys/scopes`, { headers: { cookie } });
+  const scopeList = (scopes.json.data as string[] | undefined) ?? [];
+  if (scopes.status !== 200 || scopeList.length === 0) {
+    throw new ScriptError(`No API-key scopes (status ${scopes.status})`, 'ERR_API_KEY_SCOPES');
+  }
+
+  progress('creating the API key');
+  const key = await request(`${url}/rest/api-keys`, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json', cookie },
+    body: JSON.stringify({ label: '8cli-local', expiresAt: null, scopes: scopeList }),
+  });
+  const apiKey = (key.json.data as { rawApiKey?: string } | undefined)?.rawApiKey;
+  if (!apiKey) {
+    throw new ScriptError(`API-key creation failed (status ${key.status})`, 'ERR_API_KEY_CREATE');
+  }
+
+  progress(store === 'keychain' ? 'storing in the macOS keychain' : 'writing the env file');
+  storeCredentials(store, { url, apiKey, email: OWNER_EMAIL, password });
+}
+
+async function seed(url: string, store: Store): Promise<'created' | 'already'> {
+  if (await needsOwnerSetup(url)) {
+    await createOwnerAndKey(url, store);
+    if (!verifyStored(url, store)) {
+      throw new ScriptError('8cli auth verify failed with the new API key', 'ERR_VERIFY');
+    }
+    return 'created';
+  }
+  if (verifyStored(url, store)) {
+    return 'already';
+  }
+  throw new ScriptError(
+    'n8n already has an owner, but 8cli has no working credentials for it in the ' +
+      `${store} store. Run \`npm run n8n:local -- reset${store === 'env' ? ' --store env' : ''}\` ` +
+      'to start clean (this deletes the local n8n data).',
+    'ERR_ALREADY_OWNED',
+  );
+}
+
+function credentialsLocation(store: Store, url: string): Record<string, string> {
+  return store === 'keychain'
+    ? { store, keychainService: '8cli', keychainAccountPrefix: url }
+    : { store, envFile: relative(ROOT, ENV_FILE) };
+}
+
+async function main(): Promise<void> {
+  const { command, store } = parseArgs(process.argv.slice(2), process.platform);
+  const url = localUrl(process.env.N8N_LOCAL_PORT);
+  if (store === 'keychain' && process.platform !== 'darwin') {
+    throw new UsageError('The keychain store needs macOS; use --store env');
+  }
+
+  if (command === 'stop') {
+    compose('stop');
+    process.stdout.write(`${JSON.stringify({ command, url, status: 'stopped' })}\n`);
+    return;
+  }
+
+  if (command === 'reset') {
+    progress('removing the container and its data volume');
+    compose('down', '--volumes', '--remove-orphans');
+  }
+  if (command !== 'seed') {
+    compose('up', '--detach', '--wait');
+  }
+  await waitReady(url);
+  const seeded = await seed(url, store);
+  const result = {
+    command,
+    url,
+    version: n8nVersion(),
+    seeded,
+    credentials: credentialsLocation(store, url),
+  };
+  process.stdout.write(`${JSON.stringify(result)}\n`);
+}
+
+main().catch((err: unknown) => {
+  const code =
+    err instanceof ScriptError
+      ? err.code
+      : err instanceof UsageError
+        ? 'ERR_USAGE'
+        : 'ERR_LOCAL_N8N';
+  const message = err instanceof Error ? err.message : String(err);
+  process.stderr.write(`${JSON.stringify({ error: message, code })}\n`);
+  process.exit(1);
+});
