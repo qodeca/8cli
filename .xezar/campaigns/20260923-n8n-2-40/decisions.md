@@ -17,3 +17,8 @@ Local environment choice. Owner chose: "Long-running n8n (Recommended)" – a Do
 ## Standing rules
 
 - Target is free Community n8n (no license). License-gated groups (variable, project, folder, source-control) are validated against the gated-error contract, not as working features.
+
+## 2026-09-23 22:56 – where the 2.40.5 snapshot fix lands (direct question)
+
+Asked: PR #33 e2e fails on 2 golden snapshots changed by n8n 2.40.5 (wf get key order; dt get new sizeBytes). Fix in PR #33, or move the pin bump to #32?
+Owner chose: "Fix in PR #33 (Recommended)" – update the 2 snapshots in the same PR and note the change in BACKWARD_COMPATIBILITY.md.
