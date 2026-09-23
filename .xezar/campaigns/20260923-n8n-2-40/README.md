@@ -14,10 +14,10 @@ Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it 
 |---|---|---|---|
 | #31 | Local n8n 2.40.5 environment | DONE – #33 merged as fb4c612, issue closed | – |
 | #32 | Validate every command on 2.40.5 | PR #50 open (draft) | review; merge unblocks #39-#43 |
-| #34 | End-user docs in docs/ | PR #46, cold review 299619f9 running | act on verdict |
+| #34 | End-user docs in docs/ | PR #46 REQUEST CHANGES (1 blocker, 7 major) | repair round 1 |
 | #35 | README (badges, demo, logo) | held | needs #36 merged and #37 direction picked |
 | #36 | Scripted demo GIF | PR #48 open (draft) | review, then QA |
-| #37 | Logo and banner | PR #49; owner picked Cut eight; e2afa2a5 finalizing | design review |
+| #37 | Logo and banner | PR #49 finalized (Cut eight, head 3f46266) | design review, then drop do-not-merge |
 | #38 | Local n8n creds per worktree vs shared instance (bug) | ready, not dispatched | after #32/#34/#36 stop using the instance (touches scripts/local-n8n) |
 | #39–#45 | 7 defects found by #32 validation (2 high: #39 sc status route, #42 wf publish drops settings) | #45 running dbe24a51; #39-#43 held (each edits test/e2e/**, owned by 94c2ff6c); #44 held (workflow.ts overlap) | dispatch after #32 merges |
 
@@ -28,8 +28,6 @@ Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it 
 ## Running tasks and file ownership
 
 - PR #50 (#32, not merged) holds docs/validation/**, test/e2e/** until it merges
-- e2afa2a5 (codex/gpt-6-astra, default, #37 finalize) owns assets/brand/**
-- 299619f9 (claude/opus, qodeca-priv, review PR #46) owns nothing (read-only)
 - dbe24a51 (pi/deepseek-flash, #45) owns src/cli.ts, src/formatters/**, its unit test, BACKWARD_COMPATIBILITY.md
 
 ## Accounts
