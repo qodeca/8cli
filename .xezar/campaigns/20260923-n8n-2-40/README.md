@@ -1,6 +1,6 @@
 # Campaign 20260923-n8n-2-40
 
-Updated: 2026-09-23 23:13
+Updated: 2026-09-23 23:16
 
 Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it on; plus end-user docs and a polished README (added by owner, see decisions.md). Plan: `plan.md`.
 
@@ -12,7 +12,7 @@ Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it 
 
 | Issue | What | State | Next action |
 |---|---|---|---|
-| #31 | Local n8n 2.40.5 environment | PR #33 repaired at 3bd4964, CI running | security re-check 3e110750 |
+| #31 | Local n8n 2.40.5 environment | PR #33 repair round 2 running (b819c7b2); round 3 would be parked | then scoped re-check on codex/gpt-6-astra |
 | #32 | Validate every command on 2.40.5 | held | waits for #31 merged |
 | #34 | End-user docs in docs/ | held | after #33 merges; final pass after #32 |
 | #35 | README (badges, demo, logo) | held | after #33 merges; needs #36 and #37 assets |
@@ -21,11 +21,11 @@ Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it 
 
 ## Open pull requests
 
-- #33 (xez/df01cf60) head 3bd4964 (repair round 1: ee87dbd, 3bd4964), CI running. Security b5dde695: request changes – (1) keychain backend src/keychain/macos.ts:14-17 passes secret via `security -w <value>` argv (pre-existing product bug); (2) env file written before chmod when file pre-exists. Cold review da103014: APPROVE, one nit (document why sizeBytes 4096 is stable). Formal GH review impossible (same identity as author).
+- #33 (xez/df01cf60) head 3bd4964, CI green. Re-check 3e110750: both original blockers FIXED; new Major – incomplete env file lets auth verify fall back to keychain reads (src/config.ts:81-90). Repair round 2 running.
 
 ## Running tasks and file ownership
 
-- 3e110750 (codex/gpt-6-astra, default) read-only security re-check of PR #33
+- b819c7b2 (pi/deepseek-flash, repair round 2) owns scripts/local-n8n/**, test/local-n8n.test.ts on xez/df01cf60
 
 ## Accounts
 
