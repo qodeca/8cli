@@ -14,5 +14,6 @@
       "type": "string",
       "index": 0
     }
-  ]
+  ],
+  "sizeBytes": 4096
 }
