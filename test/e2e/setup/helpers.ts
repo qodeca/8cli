@@ -81,6 +81,19 @@ export async function run8cli(
   return { exitCode: result.exitCode ?? 0, stdout, stderr, json };
 }
 
+/**
+ * n8n's license refusal as 8cli relays it: "Your license does not allow for
+ * feat:…" (public API) or "Plan lacks license for this feature" (internal API).
+ * A gated test asserts this, not just the CLI's catch-all code – a code-only
+ * check also passes on a 404 from a route that does not exist (#39).
+ */
+export const LICENSE_GATED = /license/i;
+
+/** The `error` message of a failed CLI run's structured stderr. */
+export function errorMessage(r: CliResult): string {
+  return (JSON.parse(r.stderr) as { error: string }).error;
+}
+
 /** Typed accessor for a CLI result's parsed stdout JSON (centralizes the cast). */
 export function json<T>(r: CliResult): T {
   return r.json as T;
@@ -146,10 +159,91 @@ export async function createWorkflowFixture(
   });
   if (!res.ok) throw new Error(`workflow fixture create failed: ${res.status}`);
   const wf = (await res.json()) as { id: string; name: string };
-  track(async () => {
-    await apiFetch(`/api/v1/workflows/${wf.id}`, { method: 'DELETE' });
-  });
+  trackWorkflowDeletion(wf.id);
   return { id: wf.id, name: wf.name };
+}
+
+/** n8n 2.40's 409 while a deactivate is still settling; a retry succeeds. */
+export const STILL_UNPUBLISHING = 'Workflow is still being unpublished';
+
+/**
+ * Register a workflow's deletion for cleanup. n8n 2.40 refuses to delete a
+ * published (active) workflow (409), so unpublish first – a no-op on an
+ * inactive one – or a test that fails while the workflow is active leaks it.
+ * Unpublishing finishes asynchronously, so the delete is retried while n8n
+ * still reports it in progress.
+ */
+export function trackWorkflowDeletion(id: string): void {
+  track(async () => {
+    await apiFetch(`/api/v1/workflows/${id}/deactivate`, { method: 'POST' });
+    await waitFor(`workflow ${id} deletion`, async () => {
+      const res = await apiFetch(`/api/v1/workflows/${id}`, { method: 'DELETE' });
+      if (res.ok || res.status === 404) return true;
+      const body = await res.text();
+      if (res.status === 409 && body.includes(STILL_UNPUBLISHING)) return undefined;
+      throw new Error(`workflow ${id} cleanup failed: ${res.status} ${body}`);
+    });
+  });
+}
+
+export interface WebhookWorkflowFixture extends WorkflowFixture {
+  /** Production webhook URL; a GET starts one execution. */
+  webhookUrl: string;
+}
+
+/**
+ * Create and activate a workflow with a single GET webhook trigger, so a test
+ * can produce real executions by calling `webhookUrl`. The webhook path is
+ * unique per fixture; cleanup unpublishes and deletes the workflow (which also
+ * removes its executions).
+ */
+export async function createWebhookWorkflowFixture(): Promise<WebhookWorkflowFixture> {
+  const name = uniqueName('hook');
+  const path = name;
+  const res = await apiFetch('/api/v1/workflows', {
+    method: 'POST',
+    body: JSON.stringify({
+      name,
+      nodes: [
+        {
+          id: 'hook1',
+          name: 'Webhook',
+          type: 'n8n-nodes-base.webhook',
+          typeVersion: 2,
+          position: [0, 0],
+          webhookId: path,
+          parameters: { path, httpMethod: 'GET', responseMode: 'onReceived' },
+        },
+      ],
+      connections: {},
+      settings: { executionOrder: 'v1' },
+    }),
+  });
+  if (!res.ok) throw new Error(`webhook fixture create failed: ${res.status}`);
+  const wf = (await res.json()) as { id: string; name: string };
+  trackWorkflowDeletion(wf.id);
+  const on = await apiFetch(`/api/v1/workflows/${wf.id}/activate`, { method: 'POST' });
+  if (!on.ok) throw new Error(`webhook fixture activate failed: ${on.status}`);
+  return { id: wf.id, name: wf.name, webhookUrl: `${inject('n8nUrl')}/webhook/${path}` };
+}
+
+/**
+ * Poll `probe` until it returns a value that is not undefined, or fail after
+ * `timeoutMs`. For state n8n settles asynchronously (an execution is saved
+ * after the webhook answers); never a fixed sleep.
+ */
+export async function waitFor<T>(
+  label: string,
+  probe: () => Promise<T | undefined>,
+  timeoutMs = 15_000,
+): Promise<T> {
+  const deadline = Date.now() + timeoutMs;
+  for (;;) {
+    const value = await probe();
+    if (value !== undefined) return value;
+    if (Date.now() > deadline) throw new Error(`timed out waiting for ${label}`);
+    await new Promise((r) => setTimeout(r, 250));
+  }
 }
 
 /** A unique, prefixed, collision-resistant resource name. */
