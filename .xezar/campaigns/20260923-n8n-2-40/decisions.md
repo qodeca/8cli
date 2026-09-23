@@ -53,3 +53,9 @@ Direct question – where the merge permission lives. Owner chose: "Commit it to
 
 Asked: the Bash(gh pr merge *) rule in .claude/settings.json fails catalog-check (it reaches read-only reviewers too). Where should it live?
 Owner chose: "Leader only (Recommended)" – remove it from .claude/settings.json; add --allowedTools "Bash(gh pr merge *)" to scripts/xezar-leader.sh.
+
+## 2026-09-24 00:01 – logo direction for #37 (chat)
+
+Owner's words (chat), after PR #49 offered Prompt eight, JSON frame and Cut eight:
+
+> I like the Cut eight (option 3)
