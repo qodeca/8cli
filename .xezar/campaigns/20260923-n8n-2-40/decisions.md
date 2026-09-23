@@ -43,3 +43,8 @@ Owner chose: "Yes, turn it on". No note given.
 
 Owner's words (chat): "Why are you using "workflows" which are xez-auto* and actually those are skills and you are not using the existing xezar workflows you have in this repo?" then "Document it in your leader guide for the following sessions".
 Owner approved the exact line (direct question, "Yes, write it"), added to .xezar/docs/leader-guide.md under "Who the leader is, and is not".
+
+## 2026-09-23 23:30 – leader may merge PRs itself (chat, then direct question)
+
+Owner's words (chat): "Why it waits for you merge? It all should be done by you"
+Direct question – where the merge permission lives. Owner chose: "Commit it to the repo" (.claude/settings.json, allow gh pr merge).
