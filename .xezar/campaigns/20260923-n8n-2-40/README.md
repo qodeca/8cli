@@ -1,6 +1,6 @@
 # Campaign 20260923-n8n-2-40
 
-Updated: 2026-09-23 23:45
+Updated: 2026-09-23 23:48
 
 Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it on; plus end-user docs and a polished README (added by owner, see decisions.md). Plan: `plan.md`.
 
@@ -17,7 +17,7 @@ Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it 
 | #34 | End-user docs in docs/ | b25718f0 continued after XEZ:ASK (docs baseline 85535e2) | review; add validation link after #32 |
 | #35 | README (badges, demo, logo) | held | needs #36 merged and #37 direction picked |
 | #36 | Scripted demo GIF | running 16a79cec (feature-implementation) | review when PR opens |
-| #37 | Logo and banner | running e2afa2a5 (visual-asset): 3 candidates, PR do-not-merge | owner picks a direction |
+| #37 | Logo and banner | BLOCKED e2afa2a5: gate fails on Bash(gh pr merge *) in .claude/settings.json (catalog-check) | owner decides where the merge rule lives |
 | #38 | Local n8n creds per worktree vs shared instance (bug) | ready, not dispatched | after #32/#34/#36 stop using the instance (touches scripts/local-n8n) |
 
 ## Open pull requests
@@ -42,6 +42,7 @@ None.
 
 ## Owner items
 
+- BLOCKED: `.xezar/checks/catalog-check.mjs:491-496` refuses any non-reading Bash rule in .claude/settings.json – the engine adds project allow rules to READ-ONLY review steps too (xezar #849), so every reviewer agent could merge. Every task's gate now fails. Owner picks: move the rule to the leader launch only (scripts/xezar-leader.sh --allowedTools), or other.
 - Delete branch xez/df01cf60 (record deletion is yours; unattended hard stop).
 - Parked calls in parked.md.
 
