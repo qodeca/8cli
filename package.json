@@ -43,6 +43,7 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "check:headers": "bash scripts/check-headers.sh",
+    "check:docs": "npm run build && node scripts/check-docs.mjs",
     "prepublishOnly": "npm run build",
     "n8n:local": "tsx scripts/local-n8n/local-n8n.ts"
   },

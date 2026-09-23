@@ -1,17 +1,20 @@
-# Documents
+# 8cli documentation
 
-Where each kind of committed document lives. **A folder appears when its first document does** –
-none is created empty, so on day one most of these paths do not exist yet.
+8cli is an AI-first n8n command-line tool. Commands write JSON to stdout; failures write a
+structured JSON error to stderr and exit with code 1.
 
-| Path                | What lands there                                                       | Who it is for                                    |
-| ------------------- | ---------------------------------------------------------------------- | ------------------------------------------------ |
-| `docs/designs`      | one folder per designed feature, and the index `README.md`             | whoever builds or reviews a command's surface    |
-| `docs/architecture` | decision records, architecture pages, structure diagrams               | maintainers changing how 8cli is built           |
-| `docs/spikes`       | the findings page of a spike; never its prototype code                 | whoever decides whether to build the thing       |
-| `docs/runbooks`     | what to do when an alert fires, how a deploy is rolled back            | whoever is on the hook when it breaks            |
-| `docs/deprecations` | what goes, its replacement, the dates                                  | users and scripts that depend on the old surface |
-| `docs/performance`  | how a number was measured, and the baselines                           | whoever claims something got faster or slower    |
-| `docs/migrations`   | one page per schema, data or format move, with a `reversibility:` line | whoever runs or rolls back the move              |
+## Start here
 
-Each path is set by a `paths.*` key in `.xezar/pipeline/config.json`; change the key, not this
-table, if a folder moves.
+- [Getting started](getting-started.md) – install, connect and verify.
+- [Configuration and credentials](configuration.md) – keychain, environment variables and config.
+- [Command reference](reference/README.md) – every command group and option.
+- [Guides](guides/README.md) – AI agents, jq, CI and workflow backup.
+- [Troubleshooting](troubleshooting.md) – common setup and API problems.
+- [n8n 2.40.5 validation report](validation/n8n-2.40.5.md) – compatibility evidence maintained separately.
+- [Design notes](designs/README.md) – contributor-facing material.
+
+## Community and Enterprise
+
+The local n8n 2.40.5 Community edition has no license. `var`, `proj`, `folder` and `sc` are
+license-gated there: the CLI returns n8n's structured failure rather than a feature result.
+Use an appropriately licensed n8n instance for those groups.
