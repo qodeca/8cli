@@ -1,6 +1,6 @@
 # Campaign 20260923-n8n-2-40
 
-Updated: 2026-09-23 22:56
+Updated: 2026-09-23 23:02
 
 Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it on. Plan: `plan.md`.
 
@@ -12,16 +12,17 @@ Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it 
 
 | Issue | What | State | Next action |
 |---|---|---|---|
-| #31 | Local n8n 2.40.5 environment | PR #33 open, e2e will be red (2 golden snapshots changed by n8n 2.40.5) | e6f9e61c fixing snapshots on PR #33 | then independent review (not Anthropic, not DeepSeek) |
+| #31 | Local n8n 2.40.5 environment | PR #33 green at d0532ae (e2e 70/0) | 2 reviews running: b5dde695 security, da103014 cold |
 | #32 | Validate every command on 2.40.5 | held | waits for #31 merged |
 
 ## Open pull requests
 
-- #33 (xez/df01cf60) – local n8n env + e2e pin 2.40.5. No review yet. Touches .github/workflows/ci.yml (image ref only).
+- #33 (xez/df01cf60) head d0532ae, checks green, reviews pending (security: codex/gpt-6-astra; cold: claude/sonnet gmail-priv).
 
 ## Running tasks and file ownership
 
-- e6f9e61c (pi/deepseek-flash, xez-auto-continue-pr) owns test/e2e/workflow.e2e.ts, test/e2e/datatable.e2e.ts, test/e2e/**snapshots**, BACKWARD_COMPATIBILITY.md on xez/df01cf60
+- b5dde695 (codex/gpt-6-astra, default) read-only review of PR #33
+- da103014 (claude/sonnet, gmail-priv) read-only review of PR #33
 
 ## Accounts
 
@@ -29,7 +30,7 @@ Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it 
 |---|---|---|
 | claude × qodeca-priv | in use | – |
 | claude × gmail-priv, eqamana-priv, westagilelabs-priv | unknown | – |
-| codex × default | unknown | – |
+| codex × default | in use | – |
 
 ## Owner items
 
