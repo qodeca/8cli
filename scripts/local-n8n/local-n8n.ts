@@ -12,7 +12,8 @@
 // `--store keychain` is refused: the keychain store is disabled until the keychain backend
 // keeps secrets out of process arguments. Same contract as 8cli: one JSON object to stdout,
 // errors as `{ "error", "code" }` to stderr with exit code 1, progress to stderr. No secret
-// is ever printed or passed in process arguments.
+// is ever printed or passed in process arguments. A spawned 8cli only ever sees a complete
+// set of stored credentials, so its config resolution cannot fall back to the keychain.
 
 import { spawnSync } from 'node:child_process';
 import { existsSync, readFileSync } from 'node:fs';
@@ -26,6 +27,7 @@ import {
   parseArgs,
   parseEnvFile,
   ScriptError,
+  storedCredentialsEnv,
   UsageError,
   writeSecretFile,
 } from './lib.js';
@@ -119,10 +121,14 @@ function run8cli(
   args: string[],
   opts: { env?: Record<string, string> } = {},
 ): { status: number | null; stdout: string; stderr: string } {
+  // The child's environment is built from the stored values, with every credential field set
+  // explicitly, so its config resolution has nothing to look up in the keychain. This is the
+  // spawn boundary: an incomplete set is refused before the child is spawned.
+  const credentials = storedCredentialsEnv(opts.env ?? {});
   const res = spawnSync(process.execPath, ['--import', 'tsx', CLI_ENTRY, ...args], {
     cwd: ROOT,
     input: '',
-    env: childEnv(process.env, opts.env),
+    env: childEnv(process.env, credentials),
     encoding: 'utf-8',
   });
   if (res.error) {
@@ -140,11 +146,14 @@ function storeCredentials(creds: {
   writeSecretFile(ENV_FILE, envFileContent(creds));
 }
 
-/** Env overrides that make a spawned 8cli read the stored credentials. */
+/**
+ * The explicit environment for a spawned 8cli, read from the stored file, or `undefined`
+ * when the file does not exist. An env file that exists but is incomplete is refused here,
+ * so a child can never resolve a missing credential from the keychain.
+ */
 function storedEnv(): Record<string, string> | undefined {
   if (!existsSync(ENV_FILE)) return undefined;
-  const values = parseEnvFile(readFileSync(ENV_FILE, 'utf-8'));
-  return values.N8N_API_KEY ? values : undefined;
+  return storedCredentialsEnv(parseEnvFile(readFileSync(ENV_FILE, 'utf-8')));
 }
 
 /** `8cli auth verify` against the instance with the stored credentials. */
@@ -226,6 +235,11 @@ async function main(): Promise<void> {
     process.stdout.write(`${JSON.stringify({ command, url, status: 'stopped' })}\n`);
     return;
   }
+
+  // Refuse an incomplete env file before any child process is spawned: a spawned 8cli would
+  // resolve the missing credential from the keychain. `reset` rewrites the file, so it is
+  // exempt.
+  if (command !== 'reset') storedEnv();
 
   if (command === 'reset') {
     progress('removing the container and its data volume');

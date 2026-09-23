@@ -130,6 +130,36 @@ export function parseEnvFile(content: string): Record<string, string> {
 }
 
 /**
+ * The credential fields a spawned 8cli needs from the env file. `resolveConfig`
+ * (src/config.ts) falls back to the keychain for any of them that is absent, so all three
+ * must be set explicitly or the child reads the developer's keychain.
+ */
+export const CREDENTIAL_FIELDS = ['N8N_API_KEY', 'N8N_EMAIL', 'N8N_PASSWORD'] as const;
+
+/**
+ * The explicit `N8N_*` environment for a spawned 8cli, built from the stored values, or a
+ * structured error when a credential is missing or empty. Every field is set here, so the
+ * child's config resolution can never reach the keychain for a missing one.
+ */
+export function storedCredentialsEnv(values: Record<string, string>): Record<string, string> {
+  const incomplete = CREDENTIAL_FIELDS.filter((field) => (values[field] ?? '').trim() === '');
+  if (incomplete.length > 0) {
+    throw new ScriptError(
+      `The stored credentials are incomplete (missing or empty: ${incomplete.join(', ')}). ` +
+        'Run `npm run n8n:local -- reset` to start clean (this deletes the local n8n data), ' +
+        'or `npm run n8n:local -- seed` on a fresh instance.',
+      'ERR_ENV_FILE_INCOMPLETE',
+    );
+  }
+  return {
+    N8N_URL: values.N8N_URL ?? '',
+    N8N_API_KEY: values.N8N_API_KEY,
+    N8N_EMAIL: values.N8N_EMAIL,
+    N8N_PASSWORD: values.N8N_PASSWORD,
+  };
+}
+
+/**
  * The environment for a spawned 8cli: the host's, minus every `N8N_*` variable, plus
  * `extra`. Without the strip a host `N8N_URL` or `N8N_API_KEY` could leak into the check
  * of the stored credentials, and it would test the wrong key.

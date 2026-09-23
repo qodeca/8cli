@@ -4,6 +4,7 @@
 import { spawnSync } from 'node:child_process';
 import {
   chmodSync,
+  cpSync,
   lstatSync,
   mkdirSync,
   mkdtempSync,
@@ -26,9 +27,30 @@ import {
   parseArgs,
   parseEnvFile,
   ScriptError,
+  storedCredentialsEnv,
   UsageError,
   writeSecretFile,
 } from '../scripts/local-n8n/lib.js';
+
+const completeCredentials = {
+  N8N_URL: 'http://localhost:5678',
+  N8N_API_KEY: 'key',
+  N8N_EMAIL: 'owner@example.com',
+  N8N_PASSWORD: 'Local8cli-A1',
+};
+
+function withoutCredential(key: string): Record<string, string> {
+  const values: Record<string, string> = { ...completeCredentials };
+  delete values[key];
+  return values;
+}
+
+/** The three ways a stored env file can be incomplete. */
+const incompleteCredentials: Array<[string, Record<string, string>]> = [
+  ['a missing API key', withoutCredential('N8N_API_KEY')],
+  ['a missing email', withoutCredential('N8N_EMAIL')],
+  ['an empty password', { ...completeCredentials, N8N_PASSWORD: '' }],
+];
 
 describe('local-n8n parseArgs', () => {
   it('defaults to the env file store', () => {
@@ -156,6 +178,85 @@ describe('local-n8n childEnv', () => {
     );
     expect(env).toEqual({ PATH: '/bin', N8N_API_KEY: 'stored' });
   });
+});
+
+describe('local-n8n storedCredentialsEnv', () => {
+  it('passes every credential field to the child explicitly', () => {
+    // Every field is present, so `resolveConfig` in the child has nothing to look up in the
+    // keychain.
+    expect(storedCredentialsEnv(completeCredentials)).toEqual(completeCredentials);
+  });
+
+  for (const [name, values] of incompleteCredentials) {
+    it(`refuses ${name} with ERR_ENV_FILE_INCOMPLETE`, () => {
+      let caught: unknown;
+      try {
+        storedCredentialsEnv(values);
+      } catch (err) {
+        caught = err;
+      }
+      expect(caught).toBeInstanceOf(ScriptError);
+      expect((caught as ScriptError).code).toBe('ERR_ENV_FILE_INCOMPLETE');
+      expect((caught as ScriptError).message).toMatch(/reset/);
+    });
+  }
+});
+
+describe('local-n8n incomplete stored credentials', () => {
+  let dir: string;
+  let scriptDir: string;
+
+  beforeEach(() => {
+    dir = mkdtempSync(join(tmpdir(), 'local-n8n-script-'));
+    scriptDir = join(dir, 'scripts', 'local-n8n');
+    mkdirSync(scriptDir, { recursive: true });
+    // A copy of the script whose repository root is this temp directory, so the test reads
+    // and writes its own env file, never the developer's `.local/xezar/n8n/credentials.env`.
+    for (const file of ['local-n8n.ts', 'lib.ts']) {
+      cpSync(resolve(import.meta.dirname, '../scripts/local-n8n', file), join(scriptDir, file));
+    }
+  });
+
+  afterEach(() => {
+    rmSync(dir, { recursive: true, force: true });
+  });
+
+  function writeStoredEnv(values: Record<string, string>): void {
+    const envDir = join(dir, '.local', 'xezar', 'n8n');
+    mkdirSync(envDir, { recursive: true });
+    const content = Object.entries(values)
+      .map(([key, value]) => `${key}='${value}'`)
+      .join('\n');
+    writeFileSync(join(envDir, 'credentials.env'), `${content}\n`);
+  }
+
+  function start(): { status: number | null; stdout: string; stderr: string } {
+    return spawnSync(
+      process.execPath,
+      ['--import', 'tsx', join(scriptDir, 'local-n8n.ts'), 'start'],
+      // An empty PATH means neither docker nor a keychain helper can be found, so reaching
+      // one would fail differently. A refusal with ERR_ENV_FILE_INCOMPLETE therefore proves
+      // nothing was spawned.
+      { encoding: 'utf-8', input: '', env: { ...process.env, PATH: '' } },
+    );
+  }
+
+  for (const [name, values] of incompleteCredentials) {
+    it(`refuses ${name} before spawning any child process`, () => {
+      writeStoredEnv(values);
+
+      const result = start();
+
+      expect(result.status).toBe(1);
+      expect(result.stdout).toBe('');
+      const error = JSON.parse(result.stderr.trim()) as { error: string; code: string };
+      expect(error.code).toBe('ERR_ENV_FILE_INCOMPLETE');
+      expect(error.error).toMatch(/reset/);
+      // No child process ran: docker prints nothing, and its absence would surface as
+      // ERR_NO_DOCKER instead of this refusal.
+      expect(result.stderr).not.toContain('[local-n8n]');
+    });
+  }
 });
 
 describe('local-n8n writeSecretFile', () => {
