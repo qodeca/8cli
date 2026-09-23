@@ -19,3 +19,23 @@ printf '%s' "$N8N_API_KEY" | 8cli --url https://n8n.example.test --api-key - aut
 
 `auth verify` returns an object with `url` and `authenticated`. List commands return arrays;
 use `--table` only when a human-readable table is wanted. See [configuration](configuration.md).
+
+Against the local n8n 2.40.5 fixture, the verification command returned:
+
+```json
+{
+  "url": "http://localhost:5678",
+  "authenticated": true
+}
+```
+
+The first workflow in the same fixture was:
+
+```json
+{
+  "id": "Jr53yjULv3JYJRgF",
+  "name": "Daily sales report",
+  "active": false,
+  "updatedAt": "2026-09-23T21:41:31.336Z"
+}
+```

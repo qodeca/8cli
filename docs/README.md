@@ -10,7 +10,6 @@ structured JSON error to stderr and exit with code 1.
 - [Command reference](reference/README.md) – every command group and option.
 - [Guides](guides/README.md) – AI agents, jq, CI and workflow backup.
 - [Troubleshooting](troubleshooting.md) – common setup and API problems.
-- [n8n 2.40.5 validation report](validation/n8n-2.40.5.md) – compatibility evidence maintained separately.
 - [Design notes](designs/README.md) – contributor-facing material.
 
 ## Community and Enterprise

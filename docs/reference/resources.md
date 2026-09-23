@@ -15,3 +15,12 @@ This group is license-gated on Community n8n. Errors: `ERR_PROJECT_LIST`, `ERR_P
 
 `user list` returns users and `user get <id>` returns `id`, `email`, `firstName`, `lastName`, and
 `role`. Errors: `ERR_USER_LIST`, `ERR_USER_GET`.
+
+The local Community fixture returned this real license-gated response for `var list`:
+
+```json
+{
+  "error": "Your license does not allow for feat:variables. To enable feat:variables, please upgrade to a license that supports this feature.",
+  "code": "ERR_VARIABLE_LIST"
+}
+```

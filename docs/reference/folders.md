@@ -11,3 +11,12 @@ workflow files with the n8n folder tree and returns `moved` and `created`. Commu
 license-gated for this group. Errors include `ERR_NO_CREDENTIALS`, `ERR_FOLDER_TREE`,
 `ERR_FOLDER_CREATE`, `ERR_FOLDER_DELETE`, `ERR_FOLDER_MOVE`, `ERR_FOLDER_SYNC`,
 `ERR_FOLDER_NOT_FOUND`, `ERR_WORKFLOW_NOT_FOUND`, and `ERR_DIR_NOT_FOUND`.
+
+On the local Community fixture, `folder tree` returned:
+
+```json
+{
+  "error": "Plan lacks license for this feature",
+  "code": "ERR_FOLDER_TREE"
+}
+```

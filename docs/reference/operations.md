@@ -13,3 +13,12 @@ their planned action. Errors include `ERR_DATATABLE_LIST`, `ERR_DATATABLE_GET`,
 `sc status` shows source-control status. `sc pull [--force]` requests a pull and `sc push [--force]`
 always returns `ERR_NOT_SUPPORTED`, because the n8n public API has no push operation. Source control
 is license-gated on Community n8n. Other source-control failures use `ERR_SOURCE_CONTROL`.
+
+The local Community fixture returned the following from `sc status`:
+
+```json
+{
+  "error": "not found",
+  "code": "ERR_SOURCE_CONTROL"
+}
+```
