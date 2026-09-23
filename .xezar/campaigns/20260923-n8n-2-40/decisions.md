@@ -33,3 +33,8 @@ Direct question answers:
 - Docs home: "Markdown in the repo (Recommended)" – polished README.md plus a full docs/ folder; no website, no deploy.
 - Timing: "This campaign, start now (Recommended)" – added to this campaign; README and docs start after PR #33 merges, alongside #32; one final accuracy check after #32.
 - Visuals: "Terminal demo GIF, Badges, Logo / banner" – the logo is AI-drawn and the owner approves it before it goes in.
+
+## 2026-09-23 23:05 – unattended mode on (/xez-unattended-on, direct question)
+
+Contract read back: hard stops – the release go, deleting a record, opening a campaign; decided and parked – account or provider lane switch, scope trim, third repair round; accepted costs – overnight metered spend, stops are instructions not enforcement; #37 logo waits for the owner's pick; loops end if the session closes.
+Owner chose: "Yes, turn it on". No note given.
