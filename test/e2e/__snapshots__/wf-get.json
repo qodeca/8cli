@@ -1,45 +1,45 @@
 {
-  "updatedAt": "<timestamp>",
-  "createdAt": "<timestamp>",
   "id": "<id>",
   "name": "snapshot-fixture",
   "description": null,
   "active": false,
+  "activeVersionId": null,
+  "createdAt": "<timestamp>",
+  "updatedAt": "<timestamp>",
   "isArchived": false,
+  "versionId": "<versionId>",
+  "versionCounter": 1,
+  "sourceWorkflowId": null,
+  "triggerCount": "<number>",
   "nodes": [],
   "connections": {},
+  "nodeGroups": [],
   "settings": {
     "executionOrder": "v1"
   },
   "staticData": null,
-  "meta": null,
-  "nodeGroups": [],
   "pinData": null,
-  "versionId": "<versionId>",
-  "activeVersionId": null,
-  "versionCounter": 1,
-  "triggerCount": "<number>",
-  "sourceWorkflowId": null,
+  "meta": null,
+  "tags": [],
   "shared": [
     {
-      "updatedAt": "<timestamp>",
-      "createdAt": "<timestamp>",
       "role": "workflow:owner",
       "workflowId": "<workflowId>",
       "projectId": "<projectId>",
       "project": {
-        "updatedAt": "<timestamp>",
-        "createdAt": "<timestamp>",
         "id": "<id>",
         "name": "E2E Tester <e2e@example.com>",
         "type": "personal",
         "icon": null,
         "description": null,
         "customTelemetryTags": [],
-        "creatorId": "<creatorId>"
-      }
+        "creatorId": "<creatorId>",
+        "createdAt": "<timestamp>",
+        "updatedAt": "<timestamp>"
+      },
+      "createdAt": "<timestamp>",
+      "updatedAt": "<timestamp>"
     }
   ],
-  "tags": [],
   "activeVersion": null
 }

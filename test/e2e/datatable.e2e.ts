@@ -138,6 +138,7 @@ describe('datatable rows --limit and --table', () => {
     });
     const r = await run8cli(['dt', 'get', id], apiEnv());
     expect(r.exitCode).toBe(0);
+    // sizeBytes 4096 is SQLite's default page size for an empty table on the pinned n8n image – not machine-dependent.
     await expect(snapshotJson(r.json)).toMatchFileSnapshot('./__snapshots__/dt-get.json');
   });
 });

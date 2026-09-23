@@ -168,6 +168,7 @@ npm test                           # Unit tests (Vitest, test/**/*.test.ts)
 npm run test:e2e                   # E2e: built CLI vs real n8n in Docker (Testcontainers)
 npm run test:e2e:macos             # E2e: real macOS keychain (no Docker)
 npm run check:headers              # Verify every source file has the SPDX header
+npm run n8n:local -- start         # Local n8n 2.40.5 in Docker, seeded (docs/runbooks/local-n8n.md)
 npx tsx bin/8cli.ts --help         # Run raw TS directly via tsx (no build needed for dev)
 npm run build                      # Clean + compile to dist/ (tsc) – the published artifact
 node dist/bin/8cli.js --help       # Run the compiled CLI (what installed users get)
