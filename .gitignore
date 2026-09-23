@@ -3,3 +3,11 @@ dist/
 coverage/
 *.tsbuildinfo
 .DS_Store
+
+# Xezar – local runtime state and per-machine skill installs (never committed)
+/.local/
+/.agents/skills/xez-*
+/.claude/skills/xez-*
+/skills-lock.json
+/.claude/settings.local.json
+/.claude/CLAUDE.md

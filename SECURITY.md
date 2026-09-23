@@ -35,3 +35,19 @@ Please include, where possible:
 
 This project is at an early stage (0.x). Only the latest released version receives security
 fixes.
+
+## What is not a vulnerability
+
+8cli runs with the caller's own n8n API key. Anything it does, the caller can already do against
+the n8n API with that key. `--insecure` is an explicit opt-in to plain HTTP. Traffic sent that
+way can be read on the network, by design.
+
+## If nobody answers
+
+If a private report gets no answer within one week, contact the owners of the `qodeca` GitHub
+organisation. This is a last resort. It is not a second place to report.
+
+## What this project promises
+
+Secrets are never written to config files. They live only in the OS keychain. The CLI never
+prompts, and errors go to stderr as JSON. HTTPS is the default.

@@ -212,3 +212,16 @@ Bundled third-party notices live in `THIRD-PARTY-LICENSES.md`; regenerate it wit
 - One file per command group (not one-file-per-subcommand)
 - Errors always to stderr as structured JSON
 - Success output always to stdout as JSON (unless `--table`)
+
+## Xezar agent pipeline
+
+<!-- xezar:onboarding – section added by xez-onboard-opinionated -->
+
+This repository is run by a Xezar project leader. Process lives in `SDLC.md`, review rules in
+`CODE_REVIEW.md`, agent rules in `AGENTS.md`, compatibility promises in
+`BACKWARD_COMPATIBILITY.md`, and the pipeline's own files under `.xezar/` (`.xezar/CLAUDE.md`).
+
+- A plain `claude` session here is an ordinary session. Only `./scripts/xezar-leader.sh` (it sets
+  `XEZAR_LEADER=1`) starts the leader, which loads `.xezar/docs/leader-guide.md`.
+- The engine runs in its own terminal: `xezar --single-project --no-open`.
+- The agent gate is `.xezar/checks/repo-gates.sh`; pull requests target `develop`.
