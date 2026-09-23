@@ -1,11 +1,13 @@
 // SPDX-License-Identifier: GPL-3.0-only
 // SPDX-FileCopyrightText: 2026 Qodeca sp. z o.o.
 
-import { Command } from 'commander';
+import { Command, CommanderError } from 'commander';
 import { createRequire } from 'node:module';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import { existsSync } from 'node:fs';
+
+import { outputError } from './formatters/index.js';
 
 // Import command registrars
 import { registerAuthCommands } from './commands/auth.js';
@@ -54,6 +56,30 @@ export function run(): void {
     .option('--dry', 'Dry-run mode – preview changes without applying', false)
     .option('--verbose', 'Enable verbose logging to stderr', false)
     .option('--insecure', 'Allow plaintext-HTTP n8n URLs (sends the API key in clear text)', false);
+
+  // Commander's own usage errors – a missing required option or argument, an
+  // unknown option or command – must obey the AI-first error contract too:
+  // `{ "error", "code" }` JSON on stderr with exit code 1. Silencing only the
+  // output configuration's `outputError` hook suppresses commander's plain-text
+  // line without touching `writeErr`, which stays available for anything else.
+  // `--help` and `--version` write to stdout and exit 0 before an error is ever
+  // raised, so they are re-exited unchanged.
+  program.configureOutput({
+    outputError: () => {},
+  });
+  program.exitOverride((err: CommanderError) => {
+    if (err.exitCode === 0) {
+      // `--help`, `--version` and `help` already wrote to stdout; re-exit 0.
+      process.exit(0);
+    }
+    if (err.code === 'commander.help') {
+      // The bare invocation and `help <unknown>` display help on stderr with exit 1.
+      // That is a help display, not one of the usage errors routed to JSON, so let
+      // commander exit 1 with the text it already wrote.
+      return;
+    }
+    outputError(err.message.replace(/^error:\s*/, ''), 'ERR_USAGE', err.exitCode);
+  });
 
   // Register all command groups
   registerAuthCommands(program);
