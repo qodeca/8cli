@@ -3,7 +3,7 @@
 # SPDX-FileCopyrightText: 2026 Qodeca sp. z o.o.
 """Render with an already installed Chrome. Never installs a renderer.
 
-Usage: python3 assets/brand/candidates/render.py /absolute/path/to/chrome
+Usage: python3 assets/brand/render.py /absolute/path/to/chrome
 """
 from pathlib import Path
 import os
@@ -19,7 +19,7 @@ import xml.etree.ElementTree as ET
 def main():
     chrome = Path(sys.argv[1]).resolve(strict=True)
     root = Path(__file__).resolve().parent
-    scratch = root.parents[2] / '.local/xezar/scratch/brand'
+    scratch = root.parents[1] / '.local/xezar/scratch/brand'
     scratch.mkdir(parents=True, exist_ok=True)
     for source in sorted(root.rglob('*.svg')):
         element = ET.parse(source).getroot()

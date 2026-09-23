@@ -1,9 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-labelledby="title">
-<!-- SPDX-License-Identifier: GPL-3.0-only -->
-<!-- SPDX-FileCopyrightText: 2026 Qodeca sp. z o.o. -->
-<title id="title">8cli – Prompt eight – logo, dark theme</title>
-<g transform="translate(64 64) scale(3)"><g fill="none" stroke="#65E7C2" stroke-width="10" stroke-linejoin="round" stroke-linecap="square">
-<path d="M30 16H88L108 36V50L94 64L108 78V92L88 112H30L16 98V78L30 64L16 50V30Z"/>
-<path d="M44 37L58 48L44 59M44 73L58 84L44 95M76 95H85"/>
-</g></g>
-</svg>
