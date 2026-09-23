@@ -1,6 +1,6 @@
 # Campaign 20260923-n8n-2-40
 
-Updated: 2026-09-23 23:50
+Updated: 2026-09-23 23:51
 
 Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it on; plus end-user docs and a polished README (added by owner, see decisions.md). Plan: `plan.md`.
 
@@ -19,10 +19,11 @@ Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it 
 | #36 | Scripted demo GIF | running 16a79cec (feature-implementation) | review when PR opens |
 | #37 | Logo and banner | BLOCKED e2afa2a5: gate fails on Bash(gh pr merge *) in .claude/settings.json (catalog-check) | owner decides where the merge rule lives |
 | #38 | Local n8n creds per worktree vs shared instance (bug) | ready, not dispatched | after #32/#34/#36 stop using the instance (touches scripts/local-n8n) |
+| #39–#45 | 7 defects found by #32 validation (2 high: #39 sc status route, #42 wf publish drops settings) | ready, held | dispatch after the settings fix lands (every gate fails until then) |
 
 ## Open pull requests
 
-None.
+- #46 (xez/b25718f0, #34 docs) opened by the agent BEFORE readiness/handoff; no labels, no review, no phase record. CI 3/3 green. Not mergeable until the task finishes its workflow and is reviewed.
 
 ## Running tasks and file ownership
 
