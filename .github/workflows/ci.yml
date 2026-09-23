@@ -40,6 +40,7 @@ jobs:
       - run: npm run format:check
       - run: npm test
       - run: npm run build
+      - run: npm run check:docs
       - run: npm audit --audit-level=high
 
   # Black-box e2e: spawn the built binary against a real n8n in Docker
