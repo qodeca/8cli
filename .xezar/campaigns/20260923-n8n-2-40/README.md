@@ -14,7 +14,7 @@ Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it 
 |---|---|---|---|
 | #31 | Local n8n 2.40.5 environment | DONE – #33 merged as fb4c612, issue closed | – |
 | #32 | Validate every command on 2.40.5 | PR #50 open (draft) | review; merge unblocks #39-#43 |
-| #34 | End-user docs in docs/ | PR #46 REQUEST CHANGES (1 blocker, 7 major) | repair round 1 |
+| #34 | End-user docs in docs/ | PR #46 REQUEST CHANGES (1 blocker, 7 major) | repair round 1 running 1110ac83 (Refs #34 until #32 accuracy pass) |
 | #35 | README (badges, demo, logo) | held | needs #36 merged and #37 direction picked |
 | #36 | Scripted demo GIF | PR #48 open (draft) | review, then QA |
 | #37 | Logo and banner | PR #49 finalized (Cut eight, head 3f46266) | design review, then drop do-not-merge |
@@ -28,6 +28,8 @@ Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it 
 ## Running tasks and file ownership
 
 - PR #50 (#32, not merged) holds docs/validation/**, test/e2e/** until it merges
+- 3608c587 (claude/sonnet, qodeca-priv, review PR #48), 58f2eead (claude/sonnet, gmail-priv, review PR #50), 9e5a96e6 (claude/opus, qodeca-priv, design review PR #49) – read-only
+- 1110ac83 (claude/opus, qodeca-priv, PR #46 repair 1) owns docs/** except docs/validation/** and docs/runbooks/**, scripts/check-docs.mjs, check:docs in package.json, one step in .github/workflows/ci.yml
 - dbe24a51 (pi/deepseek-flash, #45) owns src/cli.ts, src/formatters/**, its unit test, BACKWARD_COMPATIBILITY.md
 
 ## Accounts
