@@ -1,6 +1,6 @@
 # Campaign 20260923-n8n-2-40
 
-Updated: 2026-09-23 23:55
+Updated: 2026-09-24 00:00
 
 Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it on; plus end-user docs and a polished README (added by owner, see decisions.md). Plan: `plan.md`.
 
@@ -14,12 +14,12 @@ Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it 
 |---|---|---|---|
 | #31 | Local n8n 2.40.5 environment | DONE – #33 merged as fb4c612, issue closed | – |
 | #32 | Validate every command on 2.40.5 | running 94c2ff6c (integration-tests) | review when PR opens |
-| #34 | End-user docs in docs/ | running b25718f0 (continued: phase record + merge develop, reuse PR #46) | review when handoff done |
+| #34 | End-user docs in docs/ | PR #46, cold review 299619f9 running | act on verdict |
 | #35 | README (badges, demo, logo) | held | needs #36 merged and #37 direction picked |
 | #36 | Scripted demo GIF | running 16a79cec (feature-implementation) | review when PR opens |
 | #37 | Logo and banner | PR #49 (3 candidates, do-not-merge) | OWNER picks a direction |
 | #38 | Local n8n creds per worktree vs shared instance (bug) | ready, not dispatched | after #32/#34/#36 stop using the instance (touches scripts/local-n8n) |
-| #39–#45 | 7 defects found by #32 validation (2 high: #39 sc status route, #42 wf publish drops settings) | ready | L3 dispatches by least file overlap (src/ – no running task owns it) |
+| #39–#45 | 7 defects found by #32 validation (2 high: #39 sc status route, #42 wf publish drops settings) | #45 running dbe24a51; #39-#43 held (each edits test/e2e/**, owned by 94c2ff6c); #44 held (workflow.ts overlap) | dispatch after #32 merges |
 
 ## Open pull requests
 
@@ -28,9 +28,9 @@ Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it 
 ## Running tasks and file ownership
 
 - 94c2ff6c (claude/opus, qodeca-priv, #32) owns docs/validation/**, test/e2e/**
-- b25718f0 (codex/gpt-5.6-terra, default, #34) owns docs/** except docs/validation/** and docs/runbooks/**, plus its docs-check script
 - 16a79cec (claude/opus, gmail-priv, #36) owns scripts/demo/**, assets/demo/**, one package.json script line
-- e2afa2a5 (codex/gpt-6-astra, default, #37) owns assets/brand/**
+- 299619f9 (claude/opus, qodeca-priv, review PR #46) owns nothing (read-only)
+- dbe24a51 (pi/deepseek-flash, #45) owns src/cli.ts, src/formatters/**, its unit test, BACKWARD_COMPATIBILITY.md
 
 ## Accounts
 
