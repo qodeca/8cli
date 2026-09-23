@@ -17,7 +17,7 @@ Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it 
 | #34 | End-user docs in docs/ | PR #46, cold review 299619f9 running | act on verdict |
 | #35 | README (badges, demo, logo) | held | needs #36 merged and #37 direction picked |
 | #36 | Scripted demo GIF | running 16a79cec (feature-implementation) | review when PR opens |
-| #37 | Logo and banner | PR #49 (3 candidates, do-not-merge) | OWNER picks a direction |
+| #37 | Logo and banner | PR #49; owner picked Cut eight | finalize on PR #49, then design review |
 | #38 | Local n8n creds per worktree vs shared instance (bug) | ready, not dispatched | after #32/#34/#36 stop using the instance (touches scripts/local-n8n) |
 | #39–#45 | 7 defects found by #32 validation (2 high: #39 sc status route, #42 wf publish drops settings) | #45 running dbe24a51; #39-#43 held (each edits test/e2e/**, owned by 94c2ff6c); #44 held (workflow.ts overlap) | dispatch after #32 merges |
 
