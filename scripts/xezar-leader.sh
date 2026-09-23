@@ -31,4 +31,4 @@ fi
 # XEZAR_LEADER=1 is what tells the SessionStart hook that THIS session is the leader. Any other
 # session in the checkout gets no leader guide.
 export XEZAR_LEADER=1
-exec claude --dangerously-load-development-channels server:xezar "$@"
+exec claude --dangerously-load-development-channels server:xezar --allowedTools "Bash(gh pr merge *)" "$@"

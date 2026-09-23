@@ -48,3 +48,8 @@ Owner approved the exact line (direct question, "Yes, write it"), added to .xeza
 
 Owner's words (chat): "Why it waits for you merge? It all should be done by you"
 Direct question – where the merge permission lives. Owner chose: "Commit it to the repo" (.claude/settings.json, allow gh pr merge).
+
+## 2026-09-23 23:50 – merge permission for the leader only (direct question)
+
+Asked: the Bash(gh pr merge *) rule in .claude/settings.json fails catalog-check (it reaches read-only reviewers too). Where should it live?
+Owner chose: "Leader only (Recommended)" – remove it from .claude/settings.json; add --allowedTools "Bash(gh pr merge *)" to scripts/xezar-leader.sh.
