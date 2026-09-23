@@ -20,6 +20,11 @@ meaning of an existing one.
 JSON on stdout: list commands print arrays, get commands print objects, write commands report
 `{ "files": [...] }`. A field may be added; an existing field is not removed, renamed or retyped.
 
+Key order is not part of this contract: a get command passes n8n's response through, so the order
+of the keys follows the n8n version it talks to. Against n8n 2.40.5, `wf get` returns the 2.40.5
+key order, and `dt get` carries the new top-level `sizeBytes` field that 2.40.5 added. Both are
+n8n-side changes – no 8cli code changed for them.
+
 ## 4. Errors and exit codes
 
 Errors are `{ "error": "...", "code": "ERR_..." }` on stderr with exit code 1. Error codes are a
