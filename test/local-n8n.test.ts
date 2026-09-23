@@ -1,42 +1,88 @@
 // SPDX-License-Identifier: GPL-3.0-only
 // SPDX-FileCopyrightText: 2026 Qodeca sp. z o.o.
 
-import { describe, expect, it } from 'vitest';
+import { spawnSync } from 'node:child_process';
+import {
+  chmodSync,
+  lstatSync,
+  mkdirSync,
+  mkdtempSync,
+  readdirSync,
+  readFileSync,
+  rmSync,
+  statSync,
+  symlinkSync,
+  writeFileSync,
+} from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join, resolve } from 'node:path';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import {
   childEnv,
   cookieHeader,
-  defaultStore,
   envFileContent,
   generatePassword,
   localUrl,
   parseArgs,
   parseEnvFile,
+  ScriptError,
   UsageError,
+  writeSecretFile,
 } from '../scripts/local-n8n/lib.js';
 
 describe('local-n8n parseArgs', () => {
-  it('defaults to the keychain on macOS and an env file elsewhere', () => {
-    expect(parseArgs(['start'], 'darwin')).toEqual({ command: 'start', store: 'keychain' });
-    expect(parseArgs(['start'], 'linux')).toEqual({ command: 'start', store: 'env' });
-    expect(defaultStore('win32')).toBe('env');
+  it('defaults to the env file store', () => {
+    expect(parseArgs(['start'])).toEqual({ command: 'start', store: 'env' });
   });
 
   it('accepts every command and an explicit store in any order', () => {
     for (const command of ['start', 'seed', 'reset', 'stop']) {
-      expect(parseArgs([command], 'darwin').command).toBe(command);
+      expect(parseArgs([command]).command).toBe(command);
     }
-    expect(parseArgs(['--store', 'env', 'seed'], 'darwin')).toEqual({
-      command: 'seed',
-      store: 'env',
-    });
+    expect(parseArgs(['--store', 'env', 'seed'])).toEqual({ command: 'seed', store: 'env' });
   });
 
   it('rejects a missing, unknown or repeated command and a bad store', () => {
-    expect(() => parseArgs([], 'darwin')).toThrow(UsageError);
-    expect(() => parseArgs(['up'], 'darwin')).toThrow(/Unexpected argument "up"/);
-    expect(() => parseArgs(['start', 'stop'], 'darwin')).toThrow(UsageError);
-    expect(() => parseArgs(['start', '--store'], 'darwin')).toThrow(/--store must be/);
-    expect(() => parseArgs(['start', '--store', 'file'], 'darwin')).toThrow(/--store must be/);
+    expect(() => parseArgs([])).toThrow(UsageError);
+    expect(() => parseArgs(['up'])).toThrow(/Unexpected argument "up"/);
+    expect(() => parseArgs(['start', 'stop'])).toThrow(UsageError);
+    expect(() => parseArgs(['start', '--store'])).toThrow(/--store must be/);
+    expect(() => parseArgs(['start', '--store', 'file'])).toThrow(/--store must be/);
+  });
+
+  it('refuses the keychain store with ERR_STORE_DISABLED', () => {
+    let caught: unknown;
+    try {
+      parseArgs(['seed', '--store', 'keychain']);
+    } catch (err) {
+      caught = err;
+    }
+    expect(caught).toBeInstanceOf(ScriptError);
+    expect((caught as ScriptError).code).toBe('ERR_STORE_DISABLED');
+    expect((caught as ScriptError).message).toMatch(/keychain store is disabled/);
+  });
+});
+
+describe('local-n8n script', () => {
+  it('refuses --store keychain with a structured error and exit 1, before touching Docker', () => {
+    const refused = spawnSync(
+      process.execPath,
+      [
+        '--import',
+        'tsx',
+        resolve(import.meta.dirname, '../scripts/local-n8n/local-n8n.ts'),
+        'start',
+        '--store',
+        'keychain',
+      ],
+      // An empty PATH means docker cannot be found, so reaching it would fail differently.
+      { encoding: 'utf-8', input: '', env: { ...process.env, PATH: '' } },
+    );
+    expect(refused.status).toBe(1);
+    expect(refused.stdout).toBe('');
+    const error = JSON.parse(refused.stderr.trim()) as { error: string; code: string };
+    expect(error.code).toBe('ERR_STORE_DISABLED');
+    expect(error.error).toMatch(/keychain store is disabled/);
   });
 });
 
@@ -109,5 +155,61 @@ describe('local-n8n childEnv', () => {
       { N8N_API_KEY: 'stored' },
     );
     expect(env).toEqual({ PATH: '/bin', N8N_API_KEY: 'stored' });
+  });
+});
+
+describe('local-n8n writeSecretFile', () => {
+  let dir: string;
+  let target: string;
+
+  beforeEach(() => {
+    dir = mkdtempSync(join(tmpdir(), 'local-n8n-'));
+    target = join(dir, 'n8n', 'credentials.env');
+  });
+
+  afterEach(() => {
+    rmSync(dir, { recursive: true, force: true });
+  });
+
+  it('creates the file 0600 in a 0700 directory', () => {
+    writeSecretFile(target, 'N8N_API_KEY=new\n');
+    expect(readFileSync(target, 'utf-8')).toBe('N8N_API_KEY=new\n');
+    expect(statSync(target).mode & 0o777).toBe(0o600);
+    expect(statSync(join(dir, 'n8n')).mode & 0o777).toBe(0o700);
+  });
+
+  it('replaces a pre-existing 0644 file with a 0600 one holding the new content', () => {
+    mkdirSync(join(dir, 'n8n'));
+    writeFileSync(target, 'old\n');
+    chmodSync(target, 0o644);
+    expect(statSync(target).mode & 0o777).toBe(0o644);
+    const before = statSync(target).ino;
+
+    writeSecretFile(target, 'N8N_API_KEY=new\n');
+
+    expect(readFileSync(target, 'utf-8')).toBe('N8N_API_KEY=new\n');
+    expect(statSync(target).mode & 0o777).toBe(0o600);
+    // A new inode: the secret never went into the old, readable file.
+    expect(statSync(target).ino).not.toBe(before);
+    expect(readdirSync(join(dir, 'n8n'))).toEqual(['credentials.env']);
+  });
+
+  it('refuses a symlink at the target and leaves the link and its target alone', () => {
+    mkdirSync(join(dir, 'n8n'));
+    const elsewhere = join(dir, 'elsewhere.txt');
+    writeFileSync(elsewhere, 'untouched\n', { mode: 0o644 });
+    symlinkSync(elsewhere, target);
+
+    let caught: unknown;
+    try {
+      writeSecretFile(target, 'N8N_API_KEY=new\n');
+    } catch (err) {
+      caught = err;
+    }
+    expect(caught).toBeInstanceOf(ScriptError);
+    expect((caught as ScriptError).code).toBe('ERR_ENV_FILE_SYMLINK');
+    expect(lstatSync(target).isSymbolicLink()).toBe(true);
+    expect(readFileSync(elsewhere, 'utf-8')).toBe('untouched\n');
+    expect(readdirSync(join(dir, 'n8n'))).toEqual(['credentials.env']);
   });
 });

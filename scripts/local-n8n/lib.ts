@@ -5,11 +5,25 @@
 // without Docker (test/local-n8n.test.ts).
 
 import { randomBytes } from 'node:crypto';
+import {
+  chmodSync,
+  closeSync,
+  constants,
+  fsyncSync,
+  lstatSync,
+  mkdirSync,
+  openSync,
+  renameSync,
+  unlinkSync,
+  writeSync,
+} from 'node:fs';
+import { basename, dirname, join } from 'node:path';
 
 export const COMMANDS = ['start', 'seed', 'reset', 'stop'] as const;
 export type Command = (typeof COMMANDS)[number];
 
-export const STORES = ['keychain', 'env'] as const;
+/** The protected env file is the only store, on every platform. */
+export const STORES = ['env'] as const;
 export type Store = (typeof STORES)[number];
 
 export interface ParsedArgs {
@@ -19,18 +33,30 @@ export interface ParsedArgs {
 
 export class UsageError extends Error {}
 
-/** The macOS keychain is the only one 8cli implements; everywhere else use an env file. */
-export function defaultStore(platform: NodeJS.Platform): Store {
-  return platform === 'darwin' ? 'keychain' : 'env';
+/** A failure with its own `ERR_*` code, printed as `{ "error", "code" }`. */
+export class ScriptError extends Error {
+  constructor(
+    message: string,
+    readonly code: string,
+  ) {
+    super(message);
+  }
 }
 
-export function parseArgs(argv: string[], platform: NodeJS.Platform): ParsedArgs {
+export function parseArgs(argv: string[]): ParsedArgs {
   let command: Command | undefined;
-  let store = defaultStore(platform);
+  let store: Store = 'env';
   for (let i = 0; i < argv.length; i += 1) {
     const arg = argv[i];
     if (arg === '--store') {
       const value = argv[i + 1];
+      if (value === 'keychain') {
+        throw new ScriptError(
+          'The keychain store is disabled until the keychain backend keeps secrets out of ' +
+            'process arguments; use the env file store (--store env, the default)',
+          'ERR_STORE_DISABLED',
+        );
+      }
       if (!(STORES as readonly string[]).includes(value ?? '')) {
         throw new UsageError(`--store must be one of: ${STORES.join(', ')}`);
       }
@@ -48,7 +74,7 @@ export function parseArgs(argv: string[], platform: NodeJS.Platform): ParsedArgs
   return { command, store };
 }
 
-/** The URL 8cli is pointed at; the keychain entries are keyed by this exact string. */
+/** The URL 8cli is pointed at. */
 export function localUrl(port: string | undefined): string {
   const value = port ?? '5678';
   if (!/^\d{1,5}$/.test(value) || Number(value) < 1 || Number(value) > 65535) {
@@ -105,8 +131,8 @@ export function parseEnvFile(content: string): Record<string, string> {
 
 /**
  * The environment for a spawned 8cli: the host's, minus every `N8N_*` variable, plus
- * `extra`. Without the strip a host `N8N_API_KEY` would shadow the keychain entry the
- * seed just wrote, and the check would test the wrong key.
+ * `extra`. Without the strip a host `N8N_URL` or `N8N_API_KEY` could leak into the check
+ * of the stored credentials, and it would test the wrong key.
  */
 export function childEnv(
   host: NodeJS.ProcessEnv,
@@ -117,4 +143,58 @@ export function childEnv(
     if (!key.startsWith('N8N_')) out[key] = value;
   }
   return { ...out, ...extra };
+}
+
+/**
+ * Write a secret file so no byte of it is ever readable by anyone else: the directory is
+ * made 0700, the content goes to a fresh 0600 temp file beside the target (created with
+ * O_EXCL, never reused), is fsynced, and is renamed over the target in one step. A
+ * symlink, or anything that is not a regular file, at the target is refused.
+ */
+export function writeSecretFile(path: string, content: string): void {
+  const dir = dirname(path);
+  mkdirSync(dir, { recursive: true, mode: 0o700 });
+  chmodSync(dir, 0o700);
+
+  let existing: ReturnType<typeof lstatSync> | undefined;
+  try {
+    existing = lstatSync(path);
+  } catch (err) {
+    if ((err as NodeJS.ErrnoException).code !== 'ENOENT') throw err;
+  }
+  if (existing?.isSymbolicLink()) {
+    throw new ScriptError(`Refusing to write through a symlink at ${path}`, 'ERR_ENV_FILE_SYMLINK');
+  }
+  if (existing && !existing.isFile()) {
+    throw new ScriptError(`${path} exists and is not a regular file`, 'ERR_ENV_FILE_TYPE');
+  }
+
+  const temp = join(dir, `.${basename(path)}.${randomBytes(8).toString('hex')}.tmp`);
+  const fd = openSync(
+    temp,
+    constants.O_WRONLY | constants.O_CREAT | constants.O_EXCL | constants.O_NOFOLLOW,
+    0o600,
+  );
+  try {
+    const data = Buffer.from(content, 'utf-8');
+    let offset = 0;
+    while (offset < data.length) {
+      offset += writeSync(fd, data, offset, data.length - offset);
+    }
+    fsyncSync(fd);
+    closeSync(fd);
+    renameSync(temp, path);
+  } catch (err) {
+    try {
+      closeSync(fd);
+    } catch {
+      /* already closed */
+    }
+    try {
+      unlinkSync(temp);
+    } catch {
+      /* already gone */
+    }
+    throw err;
+  }
 }

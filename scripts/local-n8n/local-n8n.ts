@@ -8,14 +8,15 @@
 //   npm run n8n:local -- reset   wipe all data, start again, seed
 //   npm run n8n:local -- stop    stop it, keeping the data
 //
-// `--store keychain|env` picks where the seed puts the credentials (default: keychain on
-// macOS, env file elsewhere). Same contract as 8cli: one JSON object to stdout, errors as
-// `{ "error", "code" }` to stderr with exit code 1, progress to stderr. No secret is ever
-// printed; secrets reach 8cli on stdin, never in process arguments.
+// The seed stores the credentials in a protected env file (mode 600) on every platform.
+// `--store keychain` is refused: the keychain store is disabled until the keychain backend
+// keeps secrets out of process arguments. Same contract as 8cli: one JSON object to stdout,
+// errors as `{ "error", "code" }` to stderr with exit code 1, progress to stderr. No secret
+// is ever printed or passed in process arguments.
 
 import { spawnSync } from 'node:child_process';
-import { chmodSync, existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
-import { dirname, relative, resolve } from 'node:path';
+import { existsSync, readFileSync } from 'node:fs';
+import { relative, resolve } from 'node:path';
 import {
   childEnv,
   cookieHeader,
@@ -24,8 +25,9 @@ import {
   localUrl,
   parseArgs,
   parseEnvFile,
+  ScriptError,
   UsageError,
-  type Store,
+  writeSecretFile,
 } from './lib.js';
 
 const ROOT = resolve(import.meta.dirname, '../..');
@@ -35,15 +37,6 @@ const ENV_FILE = resolve(ROOT, '.local/xezar/n8n/credentials.env');
 const OWNER_EMAIL = 'owner@example.com';
 const READY_TIMEOUT_MS = 180_000;
 const REQUEST_TIMEOUT_MS = 15_000;
-
-class ScriptError extends Error {
-  constructor(
-    message: string,
-    readonly code: string,
-  ) {
-    super(message);
-  }
-}
 
 function progress(message: string): void {
   process.stderr.write(`[local-n8n] ${message}\n`);
@@ -121,14 +114,14 @@ async function needsOwnerSetup(url: string): Promise<boolean> {
   return data.userManagement?.showSetupOnFirstLoad === true;
 }
 
-/** Run 8cli from source; `input` is fed on stdin so secrets stay out of `ps`. */
+/** Run 8cli from source; credentials reach it through the environment, never argv. */
 function run8cli(
   args: string[],
-  opts: { input?: string; env?: Record<string, string> } = {},
+  opts: { env?: Record<string, string> } = {},
 ): { status: number | null; stdout: string; stderr: string } {
   const res = spawnSync(process.execPath, ['--import', 'tsx', CLI_ENTRY, ...args], {
     cwd: ROOT,
-    input: opts.input ?? '',
+    input: '',
     env: childEnv(process.env, opts.env),
     encoding: 'utf-8',
   });
@@ -138,64 +131,30 @@ function run8cli(
   return { status: res.status, stdout: res.stdout, stderr: res.stderr };
 }
 
-/** The 8cli `{ "error", "code" }` from stderr, without echoing anything else it printed. */
-function cliFailure(stderr: string): string {
-  try {
-    const parsed = JSON.parse(stderr.trim().split('\n').pop() ?? '') as { code?: string };
-    if (parsed.code) return parsed.code;
-  } catch {
-    /* not JSON */
-  }
-  return 'unknown error';
-}
-
-function storeCredentials(
-  store: Store,
-  creds: { url: string; apiKey: string; email: string; password: string },
-): void {
-  if (store === 'env') {
-    mkdirSync(dirname(ENV_FILE), { recursive: true });
-    writeFileSync(ENV_FILE, envFileContent(creds), { mode: 0o600 });
-    chmodSync(ENV_FILE, 0o600); // an existing file keeps its old mode on write
-    return;
-  }
-  const key = run8cli(['--url', creds.url, 'auth', 'set-api-key', '--value', '-'], {
-    input: creds.apiKey,
-  });
-  if (key.status !== 0) {
-    throw new ScriptError(
-      `8cli auth set-api-key failed: ${cliFailure(key.stderr)}`,
-      'ERR_STORE_API_KEY',
-    );
-  }
-  const login = run8cli(
-    ['--url', creds.url, 'auth', 'set-credentials', '--email', creds.email, '--password', '-'],
-    { input: creds.password },
-  );
-  if (login.status !== 0) {
-    throw new ScriptError(
-      `8cli auth set-credentials failed: ${cliFailure(login.stderr)}`,
-      'ERR_STORE_CREDENTIALS',
-    );
-  }
+function storeCredentials(creds: {
+  url: string;
+  apiKey: string;
+  email: string;
+  password: string;
+}): void {
+  writeSecretFile(ENV_FILE, envFileContent(creds));
 }
 
 /** Env overrides that make a spawned 8cli read the stored credentials. */
-function storedEnv(store: Store): Record<string, string> | undefined {
-  if (store === 'keychain') return {};
+function storedEnv(): Record<string, string> | undefined {
   if (!existsSync(ENV_FILE)) return undefined;
   const values = parseEnvFile(readFileSync(ENV_FILE, 'utf-8'));
   return values.N8N_API_KEY ? values : undefined;
 }
 
 /** `8cli auth verify` against the instance with the stored credentials. */
-function verifyStored(url: string, store: Store): boolean {
-  const env = storedEnv(store);
+function verifyStored(url: string): boolean {
+  const env = storedEnv();
   if (!env) return false;
   return run8cli(['--url', url, 'auth', 'verify'], { env }).status === 0;
 }
 
-async function createOwnerAndKey(url: string, store: Store): Promise<void> {
+async function createOwnerAndKey(url: string): Promise<void> {
   const password = generatePassword();
   progress(`creating the owner ${OWNER_EMAIL}`);
   const setup = await request(`${url}/rest/owner/setup`, {
@@ -231,41 +190,36 @@ async function createOwnerAndKey(url: string, store: Store): Promise<void> {
     throw new ScriptError(`API-key creation failed (status ${key.status})`, 'ERR_API_KEY_CREATE');
   }
 
-  progress(store === 'keychain' ? 'storing in the macOS keychain' : 'writing the env file');
-  storeCredentials(store, { url, apiKey, email: OWNER_EMAIL, password });
+  progress('writing the env file');
+  storeCredentials({ url, apiKey, email: OWNER_EMAIL, password });
 }
 
-async function seed(url: string, store: Store): Promise<'created' | 'already'> {
+async function seed(url: string): Promise<'created' | 'already'> {
   if (await needsOwnerSetup(url)) {
-    await createOwnerAndKey(url, store);
-    if (!verifyStored(url, store)) {
+    await createOwnerAndKey(url);
+    if (!verifyStored(url)) {
       throw new ScriptError('8cli auth verify failed with the new API key', 'ERR_VERIFY');
     }
     return 'created';
   }
-  if (verifyStored(url, store)) {
+  if (verifyStored(url)) {
     return 'already';
   }
   throw new ScriptError(
     'n8n already has an owner, but 8cli has no working credentials for it in the ' +
-      `${store} store. Run \`npm run n8n:local -- reset${store === 'env' ? ' --store env' : ''}\` ` +
-      'to start clean (this deletes the local n8n data).',
+      'env file. Run `npm run n8n:local -- reset` to start clean (this deletes the local ' +
+      'n8n data).',
     'ERR_ALREADY_OWNED',
   );
 }
 
-function credentialsLocation(store: Store, url: string): Record<string, string> {
-  return store === 'keychain'
-    ? { store, keychainService: '8cli', keychainAccountPrefix: url }
-    : { store, envFile: relative(ROOT, ENV_FILE) };
+function credentialsLocation(): Record<string, string> {
+  return { store: 'env', envFile: relative(ROOT, ENV_FILE) };
 }
 
 async function main(): Promise<void> {
-  const { command, store } = parseArgs(process.argv.slice(2), process.platform);
+  const { command } = parseArgs(process.argv.slice(2));
   const url = localUrl(process.env.N8N_LOCAL_PORT);
-  if (store === 'keychain' && process.platform !== 'darwin') {
-    throw new UsageError('The keychain store needs macOS; use --store env');
-  }
 
   if (command === 'stop') {
     compose('stop');
@@ -281,13 +235,13 @@ async function main(): Promise<void> {
     compose('up', '--detach', '--wait');
   }
   await waitReady(url);
-  const seeded = await seed(url, store);
+  const seeded = await seed(url);
   const result = {
     command,
     url,
     version: n8nVersion(),
     seeded,
-    credentials: credentialsLocation(store, url),
+    credentials: credentialsLocation(),
   };
   process.stdout.write(`${JSON.stringify(result)}\n`);
 }

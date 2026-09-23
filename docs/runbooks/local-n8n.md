@@ -28,15 +28,19 @@ npm run n8n:local -- seed
 Creates the owner user (`owner@example.com`, random password) and a full-scope API key, then
 stores them where 8cli reads them. `start` and `reset` run this for you. No secret is printed.
 
-| Store              | Where                                                                                       | How 8cli picks it up                                                      |
-| ------------------ | ------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
-| `keychain` (macOS) | macOS keychain, service `8cli`, via `8cli auth set-api-key` and `8cli auth set-credentials` | `npx tsx bin/8cli.ts --url http://localhost:5678 wf list`                 |
-| `env` (elsewhere)  | `.local/xezar/n8n/credentials.env`, mode 600, gitignored                                    | `set -a; . .local/xezar/n8n/credentials.env; set +a`, then `8cli wf list` |
+The credentials go to `.local/xezar/n8n/credentials.env` on every platform. The file is gitignored
+and mode 600 in a mode 700 directory; it is replaced in one step, never rewritten in place, and a
+symlink at that path is refused (`ERR_ENV_FILE_SYMLINK`). Load it before running 8cli:
 
-The keychain is the default on macOS and the env file everywhere else. Pick one with
-`--store keychain` or `--store env` on any command. Seeding an instance that already has an
-owner, when the chosen store has no working key for it, fails with `ERR_ALREADY_OWNED` – run
-`reset`.
+```bash
+set -a; . .local/xezar/n8n/credentials.env; set +a
+npx tsx bin/8cli.ts wf list
+```
+
+`--store env` is accepted and is the default. `--store keychain` is refused with
+`ERR_STORE_DISABLED`: the keychain store is disabled until the keychain backend keeps secrets out
+of process arguments. Seeding an instance that already has an owner, when the env file has no
+working key for it, fails with `ERR_ALREADY_OWNED` – run `reset`.
 
 ## Reset
 
