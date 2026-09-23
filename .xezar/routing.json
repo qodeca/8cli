@@ -4,7 +4,7 @@
   "schemaVersion": 1,
   "defaults": {
     "source": "xezar-skills",
-    "version": 1
+    "version": 2
   },
   "leader": {
     "tool": "claude",
@@ -25,7 +25,7 @@
     "codex": {
       "usesLogins": true,
       "rotation": [
-        "codex-main"
+        "default"
       ],
       "unlimitedLogins": []
     },
@@ -80,6 +80,28 @@
       "imageGeneration": true,
       "local": false,
       "enforcesToolLimits": true,
+      "advisoryOnly": false
+    },
+    "codex/gpt-6-sol": {
+      "tool": "codex",
+      "model": "gpt-6-sol",
+      "vendor": "openai",
+      "tier": "strong",
+      "vision": true,
+      "imageGeneration": true,
+      "local": false,
+      "enforcesToolLimits": false,
+      "advisoryOnly": false
+    },
+    "codex/gpt-6-luna": {
+      "tool": "codex",
+      "model": "gpt-6-luna",
+      "vendor": "openai",
+      "tier": "cheap",
+      "vision": true,
+      "imageGeneration": true,
+      "local": false,
+      "enforcesToolLimits": false,
       "advisoryOnly": false
     },
     "codex/gpt-5.6-sol": {
@@ -372,7 +394,7 @@
       "trigger": "The work is collecting what already happened into a record; nothing new is decided.",
       "lanes": [
         "pi/deepseek-api/deepseek-flash",
-        "codex/gpt-5.6-luna",
+        "codex/gpt-6-luna",
         "claude/sonnet"
       ],
       "never": [
@@ -395,7 +417,7 @@
       "trigger": "Paths, counts, renames, link fixes: no sentence has to be composed.",
       "lanes": [
         "pi/deepseek-api/deepseek-flash",
-        "codex/gpt-5.6-luna",
+        "codex/gpt-6-luna",
         "codex/gpt-5.6-terra",
         "claude/sonnet"
       ],
@@ -432,7 +454,7 @@
       "trigger": "Someone has to decide what the paragraph says, not just where it points.",
       "lanes": [
         "codex/gpt-5.6-terra",
-        "codex/gpt-5.6-sol",
+        "codex/gpt-6-sol",
         "claude/opus",
         "pi/deepseek-api/deepseek-flash"
       ],
@@ -453,14 +475,14 @@
       "trigger": "The output is a judgement or a design, and the work is larger than one file.",
       "lanes": [
         "claude/opus",
-        "codex/gpt-5.6-sol"
+        "codex/gpt-6-sol"
       ],
       "never": [
         {
           "tier": "cheap"
         },
         {
-          "lane": "codex/gpt-5.6-luna",
+          "lane": "codex/gpt-6-luna",
           "why": "owner's preference"
         }
       ],
@@ -506,7 +528,7 @@
       "trigger": "The question is how the system is cut, what owns what, or a quality the whole must hold, and the answer will bind work beyond this one feature.",
       "lanes": [
         "claude/opus",
-        "codex/gpt-5.6-sol"
+        "codex/gpt-6-sol"
       ],
       "never": [
         {
@@ -528,7 +550,7 @@
       "trigger": "Somebody cannot decide until they know whether something is possible, how hard it is or how it behaves, and the way to find out is to try it.",
       "lanes": [
         "claude/opus",
-        "codex/gpt-5.6-sol"
+        "codex/gpt-6-sol"
       ],
       "never": [
         {
@@ -547,7 +569,7 @@
       "trigger": "Something people depend on has to be retired, and nothing may be removed until who is affected, the replacement and the dates are written down.",
       "lanes": [
         "claude/opus",
-        "codex/gpt-5.6-sol"
+        "codex/gpt-6-sol"
       ],
       "never": [
         {
@@ -566,7 +588,7 @@
       "trigger": "A surface has to be designed before anything is implemented: the flow, what is seen first, every state.",
       "lanes": [
         "claude/opus",
-        "codex/gpt-5.6-sol"
+        "codex/gpt-6-sol"
       ],
       "never": [
         {
@@ -593,7 +615,7 @@
       "trigger": "The verdict depends on looking at a rendered screen or a mockup.",
       "lanes": [
         "claude/opus",
-        "codex/gpt-5.6-sol"
+        "codex/gpt-6-sol"
       ],
       "never": [
         {
@@ -603,7 +625,7 @@
           "local": true
         },
         {
-          "lane": "codex/gpt-5.6-luna",
+          "lane": "codex/gpt-6-luna",
           "why": "owner's preference"
         },
         {
@@ -624,7 +646,7 @@
       "trigger": "The change is to what every design is built from (a token, a component, a page of the system), not to one feature.",
       "lanes": [
         "claude/opus",
-        "codex/gpt-5.6-sol"
+        "codex/gpt-6-sol"
       ],
       "never": [
         {
@@ -650,7 +672,7 @@
       "trigger": "The flow has already landed and the surface now needs its look: components, tokens, layout, every state in both themes.",
       "lanes": [
         "claude/opus",
-        "codex/gpt-5.6-sol"
+        "codex/gpt-6-sol"
       ],
       "never": [
         {
@@ -707,7 +729,7 @@
       "trigger": "Structure or data has to be drawn (an architecture diagram, a sequence, a chart from real numbers), usually as text such as Mermaid, SVG or a plotting script, and the figure has to be correct before it is handsome.",
       "lanes": [
         "codex/gpt-6-astra",
-        "codex/gpt-5.6-sol",
+        "codex/gpt-6-sol",
         "claude/opus",
         "codex/gpt-5.6-terra",
         "claude/sonnet"
@@ -733,7 +755,7 @@
       "lanes": [
         "pi/deepseek-api/deepseek-flash",
         "codex/gpt-5.6-terra",
-        "codex/gpt-5.6-sol",
+        "codex/gpt-6-sol",
         "claude/sonnet"
       ],
       "never": [
@@ -742,7 +764,7 @@
         }
       ],
       "notes": [
-        "A test-only fix may go to codex/gpt-5.6-luna.",
+        "A test-only fix may go to codex/gpt-6-luna.",
         "A pi write opens a draft PR that needs a full Claude review."
       ]
     },
@@ -757,7 +779,7 @@
       "trigger": "Something is broken and nobody can yet name the file or write the failing test: the cause has to be found and proved before it is fixed.",
       "lanes": [
         "claude/opus",
-        "codex/gpt-5.6-sol",
+        "codex/gpt-6-sol",
         "claude/sonnet"
       ],
       "never": [
@@ -784,7 +806,7 @@
       "trigger": "The change spans files and the design is settled.",
       "lanes": [
         "claude/opus",
-        "codex/gpt-5.6-sol",
+        "codex/gpt-6-sol",
         "pi/deepseek-api/deepseek-flash"
       ],
       "never": [
@@ -808,7 +830,7 @@
       "trigger": "The change alters what a person sees on a screen.",
       "lanes": [
         "claude/opus",
-        "codex/gpt-5.6-sol"
+        "codex/gpt-6-sol"
       ],
       "never": [
         {
@@ -818,7 +840,7 @@
           "local": true
         },
         {
-          "lane": "codex/gpt-5.6-luna",
+          "lane": "codex/gpt-6-luna",
           "why": "owner's preference"
         },
         {
@@ -838,7 +860,7 @@
       "trigger": "The change is to the pipeline's own tooling rather than the product.",
       "lanes": [
         "claude/opus",
-        "codex/gpt-5.6-sol"
+        "codex/gpt-6-sol"
       ],
       "never": [
         {
@@ -857,7 +879,7 @@
       "trigger": "A merge stopped on a conflict and the resolution needs judgement.",
       "lanes": [
         "codex/gpt-5.6-terra",
-        "codex/gpt-5.6-sol",
+        "codex/gpt-6-sol",
         "claude/sonnet",
         "pi/deepseek-api/deepseek-flash",
         "claude/opus"
@@ -887,7 +909,7 @@
       "lanes": [
         "pi/deepseek-api/deepseek-flash",
         "codex/gpt-5.6-terra",
-        "codex/gpt-5.6-sol",
+        "codex/gpt-6-sol",
         "claude/sonnet",
         "claude/haiku"
       ],
@@ -940,7 +962,7 @@
       "narrows": "bounded-bug-fix",
       "lanes": [
         "claude/opus",
-        "codex/gpt-5.6-sol",
+        "codex/gpt-6-sol",
         "codex/gpt-5.6-terra",
         "claude/sonnet"
       ],
@@ -961,7 +983,7 @@
       "trigger": "The product's code has to be restructured and nothing a user or a caller can observe may change.",
       "lanes": [
         "claude/opus",
-        "codex/gpt-5.6-sol"
+        "codex/gpt-6-sol"
       ],
       "never": [
         {
@@ -983,7 +1005,7 @@
       "trigger": "Something that already exists outside the code (rows, files, a config people wrote by hand) has to move to a new shape.",
       "lanes": [
         "claude/opus",
-        "codex/gpt-5.6-sol"
+        "codex/gpt-6-sol"
       ],
       "never": [
         {
@@ -1005,7 +1027,7 @@
       "trigger": "People cannot tell what a part of the system is doing, and the change adds signals and changes no behaviour.",
       "lanes": [
         "codex/gpt-5.6-terra",
-        "codex/gpt-5.6-sol",
+        "codex/gpt-6-sol",
         "claude/sonnet",
         "claude/opus"
       ],
@@ -1026,7 +1048,7 @@
       "trigger": "Text has to become translatable, or a language the owner has listed has to be added or brought up to date.",
       "lanes": [
         "codex/gpt-5.6-terra",
-        "codex/gpt-5.6-sol",
+        "codex/gpt-6-sol",
         "claude/sonnet"
       ],
       "never": [
@@ -1053,7 +1075,7 @@
       "trigger": "A user-visible behaviour has to be protected by a test that drives the real interface in a browser, again and again, with nobody watching.",
       "lanes": [
         "claude/opus",
-        "codex/gpt-5.6-sol",
+        "codex/gpt-6-sol",
         "claude/sonnet"
       ],
       "never": [
@@ -1081,7 +1103,7 @@
       "lanes": [
         "codex/gpt-5.6-terra",
         "pi/deepseek-api/deepseek-flash",
-        "codex/gpt-5.6-sol",
+        "codex/gpt-6-sol",
         "claude/sonnet"
       ],
       "never": [
@@ -1104,7 +1126,7 @@
       "trigger": "The thing to prove is that two parts work together (a handler and its database, a client and an API, a command and the file system), not that one part works alone.",
       "lanes": [
         "claude/opus",
-        "codex/gpt-5.6-sol",
+        "codex/gpt-6-sol",
         "codex/gpt-5.6-terra",
         "claude/sonnet"
       ],
@@ -1125,7 +1147,7 @@
       "trigger": "The job is the suite that pins past bugs: fixes with no test that fails without them, tests that guard nothing, or a test to retire.",
       "lanes": [
         "claude/opus",
-        "codex/gpt-5.6-sol"
+        "codex/gpt-6-sol"
       ],
       "never": [
         {
@@ -1144,7 +1166,7 @@
       "trigger": "The question is whether something is fast enough, and the owner has stated the budget it answers to.",
       "lanes": [
         "claude/opus",
-        "codex/gpt-5.6-sol"
+        "codex/gpt-6-sol"
       ],
       "never": [
         {
@@ -1174,7 +1196,7 @@
           "why": "owner's preference"
         },
         {
-          "lane": "codex/gpt-5.6-luna",
+          "lane": "codex/gpt-6-luna",
           "why": "owner's preference"
         }
       ],
@@ -1224,7 +1246,7 @@
       "trigger": "One verdict has to be answered or fixed.",
       "lanes": [
         "pi/deepseek-api/deepseek-flash",
-        "codex/gpt-5.6-sol",
+        "codex/gpt-6-sol",
         "codex/gpt-5.6-terra",
         "claude/sonnet"
       ],
@@ -1248,7 +1270,7 @@
       "trigger": "Several verdicts disagree, or they interact.",
       "lanes": [
         "claude/opus",
-        "codex/gpt-5.6-sol"
+        "codex/gpt-6-sol"
       ],
       "never": [
         {
@@ -1324,7 +1346,7 @@
       "trigger": "A finished change has to be checked against each accepted criterion of its issue, one by one, by running it.",
       "lanes": [
         "claude/opus",
-        "codex/gpt-5.6-sol",
+        "codex/gpt-6-sol",
         "codex/gpt-5.6-terra",
         "claude/sonnet"
       ],
@@ -1364,7 +1386,7 @@
           "why": "owner's preference"
         },
         {
-          "lane": "codex/gpt-5.6-luna",
+          "lane": "codex/gpt-6-luna",
           "why": "owner's preference"
         },
         {
