@@ -1,6 +1,6 @@
 # Campaign 20260923-n8n-2-40
 
-Updated: 2026-09-23 23:16
+Updated: 2026-09-23 23:22
 
 Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it on; plus end-user docs and a polished README (added by owner, see decisions.md). Plan: `plan.md`.
 
@@ -12,7 +12,7 @@ Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it 
 
 | Issue | What | State | Next action |
 |---|---|---|---|
-| #31 | Local n8n 2.40.5 environment | PR #33 repair round 2 running (b819c7b2); round 3 would be parked | then scoped re-check on codex/gpt-6-astra |
+| #31 | Local n8n 2.40.5 environment | PR #33 repair round 2 pushed (ec95666), CI running | scoped re-check fe3e3c7b |
 | #32 | Validate every command on 2.40.5 | held | waits for #31 merged |
 | #34 | End-user docs in docs/ | held | after #33 merges; final pass after #32 |
 | #35 | README (badges, demo, logo) | held | after #33 merges; needs #36 and #37 assets |
@@ -21,11 +21,11 @@ Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it 
 
 ## Open pull requests
 
-- #33 (xez/df01cf60) head 3bd4964, CI green. Re-check 3e110750: both original blockers FIXED; new Major – incomplete env file lets auth verify fall back to keychain reads (src/config.ts:81-90). Repair round 2 running.
+- #33 (xez/df01cf60) head ec95666 (round 2: incomplete env file refused before any spawn; no src change). check green, e2e running. Re-check fe3e3c7b running.
 
 ## Running tasks and file ownership
 
-- b819c7b2 (pi/deepseek-flash, repair round 2) owns scripts/local-n8n/**, test/local-n8n.test.ts on xez/df01cf60
+- fe3e3c7b (codex/gpt-6-astra, default) read-only re-check of PR #33
 
 ## Accounts
 
