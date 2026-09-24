@@ -69,7 +69,7 @@ Held: #43 (owner chose --force; after #44 merges, workflow.ts); #40, #41 (public
 
 ## Loops
 
-L1 938ef26a (*/10), L2 dec6abf1 (:07), L3 5cb982ac (*/30), re-created 14:01. Unattended off. Leader attached to xezar.
+L1 938ef26a (*/10), L2 dec6abf1 (:07), L3 5cb982ac (*/30), re-created 14:01. Unattended ON since 14:24, restarts 0/3. Leader attached to xezar.
 
 ## Restart
 
