@@ -28,7 +28,7 @@ To report a vulnerability in 8cli, follow the [security policy](../SECURITY.md).
   execution data can contain sensitive business data (for example a webhook payload); treat
   saved workflow files and execution dumps like any other private data.
 
-## Keeping secrets out of process arguments
+## Keeping the literal secret out of the command you type
 
 Anything on a command line can be seen by other users of the same machine (with `ps`) and ends
 up in your shell history.
@@ -79,7 +79,8 @@ backups a key that can only read.
 
 - Use `https://` for anything that is not on your own machine.
 - Keep keys in environment variables or the keychain, never in `8cli.json` or a script.
-- Pipe secrets into the `auth` commands with `-`.
+- Pipe secrets into the `auth` commands with `-` so the literal secret is not in the command
+  you type.
 - Keep saved workflow files and execution dumps out of public repositories unless you have
   checked them.
 - Run [`audit run`](reference/audit.md) now and then to see n8n's own security findings.
