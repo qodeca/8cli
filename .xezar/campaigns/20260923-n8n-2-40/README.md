@@ -1,6 +1,6 @@
 # Campaign 20260923-n8n-2-40
 
-Updated: 2026-09-24 16:19
+Updated: 2026-09-24 16:25
 
 Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it on; plus end-user docs and a polished README (added by owner, see decisions.md). Plan: `plan.md`.
 
@@ -29,14 +29,17 @@ Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it 
 
 - #46 (xez/b25718f0, #34 docs) opened by the agent BEFORE readiness/handoff; no labels, no review, no phase record. CI 3/3 green. Not mergeable until the task finishes its workflow and is reviewed.
 
-## Running tasks and file ownership (16:19)
+## Running tasks and file ownership (16:25)
 
 | Task | Item | Owns |
 |---|---|---|
-| f534c0a8 | #67 folder --dry (pi) | src/commands/folder.ts, a unit test, test/e2e/folder.e2e.ts (dry-run cases), CHANGELOG.md line |
+| f534c0a8 | #67 folder --dry (pi) – PR #73, at handoff | src/commands/folder.ts, a unit test, test/e2e/folder.e2e.ts (dry-run cases), CHANGELOG.md line |
 | 705ea61d | #43 wf delete --force (pi) | src/commands/workflow.ts (wf delete), a unit test, test/e2e/workflow.e2e.ts (delete cases), docs/reference wf delete page, CHANGELOG.md line |
+| e080520d | #40 user role (pi) | src/client/public-api.ts (listUsers/getUser), a unit test, test/e2e/user.e2e.ts, test/e2e/__snapshots__/user-get.json, CHANGELOG.md line |
+| 6411a602 | PR #71 acceptance (codex/gpt-6-sol) | read-only; temp git repo |
+| dc288c48 | PR #73 review (claude/opus qodeca-priv) | read-only |
 
-Queued (2-gate-run ceiling): #40, #41, #72 (all touch src/client/public-api.ts).
+Queued (2-gate-run ceiling): #41, #72 (src/client/public-api.ts – overlap with #40).
 
 ## Accounts
 
