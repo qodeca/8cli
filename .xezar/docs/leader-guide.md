@@ -140,6 +140,9 @@ Standing rules the owner added with `xez-add-rule`, each in their exact words wi
   tasks, 4 metered-tool tasks, load 18) and file overlap; the engine's
   `gateSlots` lease queues check suites that reach the gate at the same
   time (owner 2026-09-24).
+- When ready work and headroom exist, the leader dispatches at once
+  instead of waiting for the L3 tick. Every other L3 check (ceilings,
+  overlap, route.mjs, budget) still applies (owner 2026-09-25).
 
 ## One-page checklist
 

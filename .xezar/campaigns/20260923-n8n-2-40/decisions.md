@@ -132,3 +132,7 @@ Owner, in chat: "You mentioned only two concurrent implementation tasks but the 
 ## 2026-09-24 19:08 – Dependency bumps stay out of 0.2.0
 
 Offered adding the 7 Dependabot PRs to 0.2.0 (dev-only alerts; prod npm audit clean). Owner, in chat: "proceed as planned". Dependency updates go to the next release.
+
+## 2026-09-25 00:18 – dispatch at once when ready (owner, Claude Code session, /xez-add-rule)
+
+Owner's words: "When ready work and headroom exist, the leader dispatches at once instead of waiting for the L3 tick. Every other L3 check (ceilings, overlap, route.mjs, budget) still applies." Confirmed via AskUserQuestion ("Yes, add it"). Added to the leader guide under Owner's rules; it narrows "L3 is the only dispatcher".
