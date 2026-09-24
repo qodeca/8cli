@@ -6,7 +6,7 @@ Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it 
 
 ## State
 
-- Base `develop` at d2d0001. Merges this campaign: 21 (#33, #50, #48, #49, #51, #55, #54, #59, #46, #56, #63, #58, #68, #65, #71, #73, #75, #79, #74, #78, #80). Checkpoints met: 1 (#31 closed).
+- Base `develop` at 62214b5. Merges this campaign: 22 (#33, #50, #48, #49, #51, #55, #54, #59, #46, #56, #63, #58, #68, #65, #71, #73, #75, #79, #74, #78, #80, #81). Checkpoints met: 1 (#31 closed).
 
 ## Work
 
@@ -37,7 +37,7 @@ Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it 
 
 
 
-Running (19:15): 2e679dea re-check PR #81 (claude/sonnet); 6b5548f3 acceptance 2 PR #81 (codex/gpt-6-sol). Both read-only. Then merge, release 0.2.0 (owner-authorised).
+Ready (19:23): release 0.2.0 from develop at 62214b5 (owner-authorised, decisions.md) – release-prep, then develop -> main PR, signed tag, GitHub Release, owner approves the release environment.
 
 ## Accounts
 
