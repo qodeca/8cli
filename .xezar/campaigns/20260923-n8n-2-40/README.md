@@ -49,18 +49,18 @@ Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it 
 | codex × default | in use (2 tasks) | – |
 | pi (own accounts) | in use (1 task) | – |
 
-## Running file ownership (10:20)
+## Running file ownership (10:48)
 
 | Task | Item | Owns |
 |---|---|---|
-| 2a62c04f | PR #46 security sign-off (codex/gpt-6-astra) | read-only |
-| a643a7db | PR #46 scoped code check (claude/sonnet gmail-priv) | read-only |
-| 6c7c84ed | PR #63 security review (claude/opus qodeca-priv) | read-only |
-| 6c3649cc | PR #63 code review (claude/sonnet qodeca-priv) | read-only |
-| d88ba358 | PR #58 repair 1 (claude/opus gmail-priv) | test/e2e/folder.e2e.ts, test/e2e/COVERAGE.md folder move row |
-| 2cdc672f | PR #56 scoped re-check (claude/sonnet gmail-priv) | read-only |
+| 81d115b5 | PR #54 conflict repair (codex/gpt-5.6-terra) | CHANGELOG.md, src/config.ts, test/config.test.ts (conflicted files) |
+| 9ae876a8 | PR #59 conflict repair (codex/gpt-5.6-terra) | CHANGELOG.md, CLAUDE.md, src/commands/workflow.ts, tests (conflicted files) |
+| af3066da | PR #46 S-15 + paste fix (codex/gpt-6-sol) | docs/** |
+| d50f9e19 | #35 README (codex/gpt-6-sol) | README.md |
+| 9c3448ef | PR #56 acceptance (claude/opus qodeca-priv) | read-only; own n8n container |
+| 5a667102 | PR #58 scoped re-check (claude/sonnet qodeca-priv) | read-only |
 
-Held: #40, #41 (public-api.ts, wait on PR #56 merge); #43, #44 (workflow.ts, wait on PR #59 merge); #38 (local n8n).
+Held: PR #63 repair (src/config.ts – after #54 merges); #40, #41 (after PR #56 merges); #43, #44 (after PR #59 merges); #38 (local n8n).
 
 ## Owner items
 
