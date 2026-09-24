@@ -6,7 +6,7 @@ Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it 
 
 ## State
 
-- Base `develop` at c5b41c0. Merges this campaign: 10 (#33, #50, #48, #49, #51, #55, #54, #59, #46, #56). Checkpoints met: 1 (#31 closed).
+- Base `develop` at 72bfb39. Merges this campaign: 11 (#33, #50, #48, #49, #51, #55, #54, #59, #46, #56, #63). Checkpoints met: 1 (#31 closed).
 
 ## Work
 
@@ -35,7 +35,6 @@ Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it 
 |---|---|---|
 | 140e6482 | PR #58 conflict repair 2 (codex/gpt-5.6-terra) | CHANGELOG.md (PR #58 branch) |
 | c4fdabbc | #38 local n8n credentials (pi) | scripts/local-n8n/**, its test, docs/runbooks/local-n8n.md |
-| b8bb8392 | PR #63 re-check 2 (claude/sonnet gmail-priv) | read-only |
 
 Queued (2-gate-run ceiling): PR #68 conflict repair (CHANGELOG.md); #40, #41 (public-api.ts – overlap with PR #68); #67 (test/e2e/folder.e2e.ts – overlap with PR #58). Held: #43 (--force, after #44 merges).
 

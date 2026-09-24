@@ -24,6 +24,11 @@ For each setting 8cli takes the first value it finds:
 
 So `--url` beats `N8N_URL`, which beats `url` in `8cli.json`.
 
+If the URL comes only from a config file, 8cli refuses an API key from `--api-key` or
+`N8N_API_KEY`, or login credentials from `N8N_EMAIL` or `N8N_PASSWORD`, with
+`ERR_CONFIG_SOURCE_MISMATCH`. Set `--url` or `N8N_URL` alongside those credentials, or use
+keychain credentials stored for the file's URL.
+
 ## Environment variables
 
 | Variable       | Holds                                                   |
@@ -67,8 +72,9 @@ Any other key is ignored.
 }
 ```
 
-Check what 8cli made of it with [`config show`](reference/config.md). In this run `N8N_URL`
-was unset, so the URL came from the file, and `N8N_API_KEY` held a demo value:
+Check what 8cli made of it with [`config show`](reference/config.md). In this example `N8N_URL`
+is unset, so the URL comes from the file; the API key comes from the keychain account for
+that URL:
 
 ```bash
 8cli config show
