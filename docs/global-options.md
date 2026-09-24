@@ -37,6 +37,9 @@ Options:
 
 ```bash
 read -rs N8N_API_KEY && export N8N_API_KEY
+```
+
+```bash
 8cli --url https://n8n.example.com wf list
 ```
 

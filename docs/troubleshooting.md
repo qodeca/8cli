@@ -12,7 +12,13 @@ the same. Set both:
 
 ```bash
 export N8N_URL=https://n8n.example.com
+```
+
+```bash
 read -rs N8N_API_KEY && export N8N_API_KEY
+```
+
+```bash
 8cli auth verify
 ```
 

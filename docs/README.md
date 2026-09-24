@@ -6,7 +6,13 @@ never stops to ask a question.
 
 ```bash
 export N8N_URL=https://n8n.example.com
+```
+
+```bash
 read -rs N8N_API_KEY && export N8N_API_KEY
+```
+
+```bash
 8cli wf list | jq -r '.[].name'
 ```
 

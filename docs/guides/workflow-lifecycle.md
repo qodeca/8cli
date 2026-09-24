@@ -47,7 +47,9 @@ Without a `8cli.json` the folder is `workflow-files`. Run every command from the
 }
 ```
 
-Each file is named `<id>_<name>.json` and holds the full workflow. Commit them:
+Each file is named `<id>_<name>.json` and holds the full workflow. Check exported files for
+embedded secrets before committing; use a private backup repository and review contents before
+publication. Then commit them:
 
 ```bash
 git add workflows && git commit -m "Back up n8n workflows"

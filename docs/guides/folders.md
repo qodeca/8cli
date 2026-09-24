@@ -41,7 +41,13 @@ folder requests.
 ```bash
 export N8N_URL=https://n8n.example.com
 export N8N_EMAIL=ops@example.com
+```
+
+```bash
 read -rs N8N_PASSWORD && export N8N_PASSWORD
+```
+
+```bash
 8cli folder tree
 ```
 
