@@ -136,3 +136,8 @@ Offered adding the 7 Dependabot PRs to 0.2.0 (dev-only alerts; prod npm audit cl
 ## 2026-09-25 00:18 – dispatch at once when ready (owner, Claude Code session, /xez-add-rule)
 
 Owner's words: "When ready work and headroom exist, the leader dispatches at once instead of waiting for the L3 tick. Every other L3 check (ceilings, overlap, route.mjs, budget) still applies." Confirmed via AskUserQuestion ("Yes, add it"). Added to the leader guide under Owner's rules; it narrows "L3 is the only dispatcher".
+
+## 2026-09-25 00:22 – owner items authorised (owner, Claude Code session)
+
+Owner's words: "proceed with the two tasks marked as owner, you have my authorization to take care of them". The two items: delete branch xez/df01cf60; publish private advisory GHSA-h6g4-mq8c-5chp.
+- Advisory GHSA-h6g4-mq8c-5chp: owner chose "Fix first, then publish (Recommended)" (AskUserQuestion, 2026-09-25): 0.2.0 still has the bug (src/keychain/macos.ts passes -w <secret>), so merge the fix, release 0.2.1, then publish with fixed version 0.2.1 and range <= 0.2.0.

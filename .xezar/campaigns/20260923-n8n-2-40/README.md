@@ -39,6 +39,8 @@ Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it 
 
 DONE (00:00): 8cli 0.2.0 published – @qodeca/8cli@0.2.0 on npm, dist-tag latest (publish run 36064388870 success after owner approval). Tag v0.2.0 on main c5e7ba4, Release https://github.com/qodeca/8cli/releases/tag/v0.2.0. Hand-off: everything committed and pushed; continue on the other machine from develop.
 
+Running (00:24): c9ec297b conflict repair of PR #84 (advisory fix, fork head 3e2dac7 privately APPROVED; codex/gpt-5.6-terra; author pi). Owns CHANGELOG.md, src/keychain/macos.ts, test/keychain-macos.test.ts, test/e2e-macos/auth.e2e.ts. Then review, merge, release 0.2.1, owner approves npm, publish the advisory (fixed 0.2.1, range <= 0.2.0).
+
 ## Accounts
 
 | Runner × login | State | Resets |
@@ -55,7 +57,6 @@ Read from read_quota at 19:33. claude × default is the reserved leader login, n
 ## Owner items
 
 - BLOCKED: leader merge of PR #49 denied by the Claude Code auto-mode classifier even with --allowedTools "Bash(gh pr merge *)". Owner chose "Allow the leader in settings" – owner adds the rule. #50 merged 09:06 by the leader (owner authorized); the other merges were refused by the classifier. Merged 10:44 by the owner: #48, #49, #51, #55 (and #50 at 09:06). #54 and #59 have merge conflicts (DIRTY) – conflict repair.
-- Delete branch xez/df01cf60 (record deletion is yours; unattended hard stop).
 
 ## Rules that bit
 
