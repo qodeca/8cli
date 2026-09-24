@@ -14,6 +14,7 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed
 
+- `wf activate` and `wf deactivate` now call n8n's `POST /workflows/{id}/publish` and `/unpublish` routes where they exist, falling back to the deprecated `/activate` and `/deactivate` on older n8n; command names, flags and JSON output are unchanged (#44).
 - `wf publish` no longer drops workflow settings other than `executionOrder`: it keeps every settings key n8n accepts and drops only the unknown keys n8n rejects (#42).
 
 ### Changed
