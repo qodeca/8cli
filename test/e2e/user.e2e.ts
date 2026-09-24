@@ -39,3 +39,17 @@ describe('user list / get', () => {
     await expect(snapshotJson(r.json)).toMatchFileSnapshot('./__snapshots__/user-get.json');
   });
 });
+
+// n8n returns `role` only with includeRole=true, which 8cli now sends, so the
+// role the commands map is present (#40).
+describe('user role', () => {
+  it('list and get include the owner role (#40)', async () => {
+    const list = await run8cli(['user', 'list'], apiEnv());
+    const owner = json<Array<{ id: string; email: string; role?: string }>>(list).find(
+      (u) => u.email === 'e2e@example.com',
+    )!;
+    expect(owner.role).toBe('global:owner');
+    const r = await run8cli(['user', 'get', owner.id], apiEnv());
+    expect(json<{ role?: string }>(r).role).toBe('global:owner');
+  });
+});

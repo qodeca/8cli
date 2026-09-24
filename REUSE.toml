@@ -16,3 +16,26 @@ path = "**"
 precedence = "aggregate"
 SPDX-FileCopyrightText = "2026 Qodeca sp. z o.o."
 SPDX-License-Identifier = "GPL-3.0-only"
+
+# Files copied from the xezar-skills kit (github.com/qodeca/xezar-skills) keep the collection's
+# MIT licence, not the project's.
+[[annotations]]
+path = [
+  ".xezar/workflows/**",
+  ".xezar/checks/**",
+  ".xezar/skills/**",
+  ".xezar/docs/**",
+  ".xezar/pipeline/trackers/**",
+  ".xezar/pipeline/toolchains/**",
+  ".xezar/pipeline/security/**",
+  ".xezar/pipeline/labels.json",
+  ".xezar/routing.json",
+  ".xezar/routing.schema.json",
+  ".xezar/loops.json",
+  ".xezar/.gitignore",
+  ".claude/settings.json",
+  "scripts/xezar-leader.sh",
+]
+precedence = "override"
+SPDX-FileCopyrightText = ["2026 Qodeca", "2026 Open Mercato"]
+SPDX-License-Identifier = "MIT"

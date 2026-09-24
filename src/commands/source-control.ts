@@ -6,12 +6,27 @@ import { resolveConfig } from '../config.js';
 import { PublicApiClient } from '../client/public-api.js';
 import { outputError, outputJson } from '../formatters/index.js';
 
+/** Directions n8n's GET /source-control/status accepts. */
+type SourceControlDirection = 'pull' | 'push';
+
+/**
+ * Validate the --direction value before any request is made. n8n requires the
+ * query param and only accepts "pull" or "push"; anything else is a usage
+ * error, not an API error.
+ */
+function parseDirection(value: string): SourceControlDirection {
+  if (value === 'pull' || value === 'push') return value;
+  outputError(`Invalid --direction "${value}" – expected "pull" or "push"`, 'ERR_USAGE');
+}
+
 export function registerSourceControlCommands(program: Command): void {
   const sc = program.command('source-control').alias('sc').description('Source control operations');
 
   sc.command('status')
     .description('Show source control status')
-    .action(async () => {
+    .option('--direction <direction>', 'Direction to preview: "pull" or "push"', 'pull')
+    .action(async (opts: { direction: string }) => {
+      const direction = parseDirection(opts.direction);
       try {
         const parentOpts = program.opts();
         const config = await resolveConfig(parentOpts);
@@ -19,7 +34,7 @@ export function registerSourceControlCommands(program: Command): void {
           outputError('No n8n URL or API key configured', 'ERR_NO_CONFIG');
         }
         const client = new PublicApiClient(config.url, config.apiKey, config.verbose);
-        const result = await client.getSourceControlStatus();
+        const result = await client.getSourceControlStatus(direction);
         outputJson(result);
       } catch (err) {
         outputError(err instanceof Error ? err.message : String(err), 'ERR_SOURCE_CONTROL');

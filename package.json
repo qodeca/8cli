@@ -1,6 +1,6 @@
 {
   "name": "@qodeca/8cli",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "description": "n8n remote management CLI – AI-first, JSON-native",
   "type": "module",
   "license": "GPL-3.0-only",
@@ -43,7 +43,9 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "check:headers": "bash scripts/check-headers.sh",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "npm run build",
+    "n8n:local": "tsx scripts/local-n8n/local-n8n.ts",
+    "demo:record": "bash scripts/demo/record.sh"
   },
   "dependencies": {
     "chalk": "^5.4",

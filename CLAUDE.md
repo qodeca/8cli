@@ -80,6 +80,12 @@ src/
 
 CLI flags → env vars → config file → keychain → defaults
 
+Security exception: a config-file URL cannot be combined with `N8N_API_KEY`,
+`N8N_EMAIL`, `N8N_PASSWORD` or `--api-key`. `resolveConfig` exits with
+`ERR_CONFIG_SOURCE_MISMATCH` before keychain lookup or any request. Supply `N8N_URL`
+or `--url` with those credentials, or use credentials stored in the keychain for
+the config-file URL.
+
 | Source      | Example                                                       |
 | ----------- | ------------------------------------------------------------- |
 | CLI flags   | `--url https://n8n.example.com --api-key eyJ...`              |
@@ -112,9 +118,9 @@ Secrets are **never** stored in config files. They live in the OS keychain:
 
 These are already handled in the code but important to know:
 
-1. `PUT /workflows/{id}` rejects extra fields – only send: `name`, `nodes`, `connections`, `settings` (only `executionOrder`), `staticData`
+1. `PUT /workflows/{id}` rejects extra fields – only send: `name`, `nodes`, `connections`, `settings`, `staticData`
 2. `active` is read-only on PUT – always strip from publish payload
-3. Settings only accepts `executionOrder` – strip all other settings keys
+3. Settings accepts n8n's known keys (`executionOrder`, `timezone`, `saveDataSuccessExecution`, `errorWorkflow`, …) – the schema is strict, so only an unknown key is rejected (`Unrecognized key(s) in object: '<key>'`). `publish` keeps the known keys and drops the unknown ones
 4. Public API doesn't expose folder info – internal API (cookie auth) needed for folders
 5. Execution data needs `?includeData=true` query param on GET
 
@@ -168,6 +174,7 @@ npm test                           # Unit tests (Vitest, test/**/*.test.ts)
 npm run test:e2e                   # E2e: built CLI vs real n8n in Docker (Testcontainers)
 npm run test:e2e:macos             # E2e: real macOS keychain (no Docker)
 npm run check:headers              # Verify every source file has the SPDX header
+npm run n8n:local -- start         # Local n8n 2.40.5 in Docker, seeded (docs/runbooks/local-n8n.md)
 npx tsx bin/8cli.ts --help         # Run raw TS directly via tsx (no build needed for dev)
 npm run build                      # Clean + compile to dist/ (tsc) – the published artifact
 node dist/bin/8cli.js --help       # Run the compiled CLI (what installed users get)
@@ -212,3 +219,16 @@ Bundled third-party notices live in `THIRD-PARTY-LICENSES.md`; regenerate it wit
 - One file per command group (not one-file-per-subcommand)
 - Errors always to stderr as structured JSON
 - Success output always to stdout as JSON (unless `--table`)
+
+## Xezar agent pipeline
+
+<!-- xezar:onboarding – section added by xez-onboard-opinionated -->
+
+This repository is run by a Xezar project leader. Process lives in `SDLC.md`, review rules in
+`CODE_REVIEW.md`, agent rules in `AGENTS.md`, compatibility promises in
+`BACKWARD_COMPATIBILITY.md`, and the pipeline's own files under `.xezar/` (`.xezar/CLAUDE.md`).
+
+- A plain `claude` session here is an ordinary session. Only `./scripts/xezar-leader.sh` (it sets
+  `XEZAR_LEADER=1`) starts the leader, which loads `.xezar/docs/leader-guide.md`.
+- The engine runs in its own terminal: `xezar --single-project --no-open`.
+- The agent gate is `.xezar/checks/repo-gates.sh`; pull requests target `develop`.

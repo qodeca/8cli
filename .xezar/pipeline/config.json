@@ -1,0 +1,48 @@
+{
+  "version": 1,
+  "baseBranch": "develop",
+  "tracker": "github",
+  "browser": { "provider": null },
+  "validation": {
+    "commands": [
+      "npm run typecheck",
+      "npm run lint",
+      "npm run format:check",
+      "npm test",
+      "npm run build",
+      "npm run check:headers"
+    ]
+  },
+  "labels": {
+    "enabled": true,
+    "pipeline": ["review", "changes-requested", "qa", "qa-failed", "design", "design-failed", "merge-queue", "blocked", "do-not-merge"],
+    "category": ["bug", "feature", "refactor", "security", "dependencies", "documentation"],
+    "meta": ["needs-qa", "skip-qa", "qa-approved", "qa-self-verified", "in-progress", "ci-monitoring", "needs-design", "skip-design", "design-approved"],
+    "priority": ["priority-low", "priority-medium", "priority-high", "priority-extreme"],
+    "risk": ["risk-low", "risk-medium", "risk-high"]
+  },
+  "qaGate": true,
+  "gates": { "failClosed": false, "requireVerdictHead": true, "designGate": true },
+  "toolchain": { "providers": ["npm"] },
+  "ci": { "maxWaitMinutes": 40, "requiredChecks": ["check", "e2e", "e2e-macos"] },
+  "engine": { "loopStepThreshold": 20, "executorTier": "standard", "stepReview": "final" },
+  "deploy": { "environments": [], "rollback": [] },
+  "performance": { "budgets": [] },
+  "localisation": { "locales": [] },
+  "paths": {
+    "runs": ".xezar/pipeline/runs",
+    "specs": ".xezar/pipeline/specs",
+    "scripts": ".xezar/pipeline/scripts",
+    "qa": ".local/xezar/qa",
+    "designSystem": "docs/design-system",
+    "designs": "docs/designs",
+    "architecture": "docs/architecture",
+    "spikes": "docs/spikes",
+    "runbooks": "docs/runbooks",
+    "deprecations": "docs/deprecations",
+    "performance": "docs/performance",
+    "migrations": "docs/migrations"
+  },
+  "reviewChecklist": "CODE_REVIEW.md",
+  "closeKeywords": []
+}

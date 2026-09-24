@@ -1,0 +1,33 @@
+# SPDX-License-Identifier: GPL-3.0-only
+# SPDX-FileCopyrightText: 2026 Qodeca sp. z o.o.
+#
+# Long-running local n8n for checking 8cli by hand and by agents. Free Community
+# edition, no license. Drive it with `npm run n8n:local -- <start|seed|reset|stop>`
+# (docs/runbooks/local-n8n.md), not with `docker compose` directly, so the seed
+# step runs.
+
+name: 8cli-local-n8n
+
+services:
+  n8n:
+    # Tag keeps update tooling able to propose bumps; the digest pins the bytes.
+    # Keep in step with N8N_IMAGE in test/e2e/setup/global.ts.
+    image: n8nio/n8n:2.40.5@sha256:9f693fd5565539efd5e75ad168526c8041a6af516d9e50bc4d9cb1c9c5031523
+    restart: unless-stopped
+    ports:
+      # Loopback only: the instance is never reachable from the network.
+      - '127.0.0.1:${N8N_LOCAL_PORT:-5678}:5678'
+    environment:
+      N8N_DIAGNOSTICS_ENABLED: 'false'
+      N8N_VERSION_NOTIFICATIONS_ENABLED: 'false'
+      N8N_PERSONALIZATION_ENABLED: 'false'
+      N8N_PUBLIC_API_DISABLED: 'false'
+      N8N_USER_MANAGEMENT_DISABLED: 'false'
+      # Plain http on localhost: a secure cookie would block the browser login.
+      N8N_SECURE_COOKIE: 'false'
+      DB_TYPE: sqlite
+    volumes:
+      - n8n_data:/home/node/.n8n
+
+volumes:
+  n8n_data:

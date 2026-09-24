@@ -9,10 +9,13 @@ import {
   apiEnv,
   apiFetch,
   createWorkflowFixture,
+  errorMessage,
   json,
   run8cli,
+  STILL_UNPUBLISHING,
   track,
   uniqueName,
+  waitFor,
 } from './setup/helpers.js';
 import { snapshotJson } from './setup/redact.js';
 
@@ -78,6 +81,25 @@ describe('wf activate / deactivate', () => {
     expect(off.exitCode).toBe(0);
     expect(json<{ active: boolean }>(off).active).toBe(false);
   });
+
+  // #44: n8n 2.40 marks /activate and /deactivate deprecated and serves /publish and
+  // /unpublish instead. `--verbose` makes the CLI log the request path, so the endpoint
+  // it actually called is observable black-box; without the fix the first line is
+  // /activate and this test fails. The fallback for n8n without those routes (2.25.7
+  // answers 405) is covered by the unit test in test/workflow-activate-endpoints.test.ts.
+  it('uses the non-deprecated /publish and /unpublish endpoints on n8n 2.40', async () => {
+    const wf = await createWorkflowFixture({ withTrigger: true });
+
+    const on = await run8cli(['--verbose', 'wf', 'activate', wf.id], apiEnv());
+    expect(on.exitCode).toBe(0);
+    expect(on.stderr).toContain(`/api/v1/workflows/${wf.id}/publish`);
+    expect(on.stderr).not.toContain(`/api/v1/workflows/${wf.id}/activate`);
+
+    const off = await run8cli(['--verbose', 'wf', 'deactivate', wf.id], apiEnv());
+    expect(off.exitCode).toBe(0);
+    expect(off.stderr).toContain(`/api/v1/workflows/${wf.id}/unpublish`);
+    expect(off.stderr).not.toContain(`/api/v1/workflows/${wf.id}/deactivate`);
+  });
 });
 
 describe('wf delete', () => {
@@ -85,7 +107,14 @@ describe('wf delete', () => {
     const wf = await createWorkflowFixture();
     const dry = await run8cli(['wf', 'delete', wf.id, '--dry'], apiEnv());
     expect(dry.exitCode).toBe(0);
-    expect(dry.json).toMatchObject({ dryRun: true, deleted: false });
+    // #43: --dry now also says whether an unpublish would come first.
+    expect(dry.json).toMatchObject({
+      dryRun: true,
+      id: wf.id,
+      deleted: false,
+      wouldUnpublish: false,
+      wouldBeRefused: false,
+    });
     // Still present
     const got = await run8cli(['wf', 'get', wf.id], apiEnv());
     expect(got.exitCode).toBe(0);
@@ -221,5 +250,218 @@ describe('wf save (all workflows)', () => {
     const save = await run8cli(['wf', 'save', '--dir', dir], apiEnv());
     expect(save.exitCode).toBe(0);
     expect(json<{ files: string[] }>(save).files).toHaveLength(count);
+  });
+});
+
+// ── n8n 2.40.5 validation (#32) ──────────────────────────────────────────────
+
+const SCHEDULE_NODE = {
+  id: 'sched1',
+  name: 'Schedule',
+  type: 'n8n-nodes-base.scheduleTrigger',
+  typeVersion: 1.2,
+  position: [0, 0],
+  parameters: { rule: { interval: [{ field: 'hours', hoursInterval: 1 }] } },
+};
+
+describe('wf delete of a published workflow (changed in n8n 2.40, #43)', () => {
+  it('is refused while active and succeeds after deactivate', async () => {
+    const wf = await createWorkflowFixture({ withTrigger: true });
+    expect((await run8cli(['wf', 'activate', wf.id], apiEnv())).exitCode).toBe(0);
+
+    const refused = await run8cli(['wf', 'delete', wf.id], apiEnv());
+    expect(refused).toFailWithCode('ERR_WORKFLOW_DELETE');
+    expect(refused.stderr).toContain('Cannot delete a published workflow');
+    // #43: the unflagged refusal now names the way out.
+    expect(errorMessage(refused)).toContain('wf deactivate');
+    expect((await run8cli(['wf', 'get', wf.id], apiEnv())).exitCode).toBe(0); // nothing half-deleted
+
+    expect((await run8cli(['wf', 'deactivate', wf.id], apiEnv())).exitCode).toBe(0);
+    // Unpublishing settles asynchronously in 2.40: a delete straight after
+    // deactivate may get a transient 409, which is the only refusal retried.
+    const del = await waitFor('wf delete after deactivate', async () => {
+      const r = await run8cli(['wf', 'delete', wf.id], apiEnv());
+      if (r.exitCode === 0) return r;
+      expect(r).toFailWithCode('ERR_WORKFLOW_DELETE');
+      expect(errorMessage(r)).toContain(STILL_UNPUBLISHING);
+      return undefined;
+    });
+    expect(del.json).toEqual({ id: wf.id, deleted: true });
+    expect(await run8cli(['wf', 'get', wf.id], apiEnv())).toFailWithCode('ERR_WORKFLOW_GET');
+  });
+
+  it('--dry on a published workflow follows --force and changes nothing', async () => {
+    const wf = await createWorkflowFixture({ withTrigger: true });
+    expect((await run8cli(['wf', 'activate', wf.id], apiEnv())).exitCode).toBe(0);
+
+    // The preview says what this run would do: without --force n8n would refuse the
+    // delete; with it the workflow would be unpublished first. Neither sends a write
+    // request (the --force run must not unpublish behind the preview).
+    for (const [args, wouldUnpublish, wouldBeRefused] of [
+      [['wf', 'delete', wf.id, '--dry'], false, true],
+      [['wf', 'delete', wf.id, '--force', '--dry'], true, false],
+    ] as const) {
+      const dry = await run8cli([...args], apiEnv());
+      expect(dry.exitCode).toBe(0);
+      expect(dry.json).toMatchObject({
+        dryRun: true,
+        id: wf.id,
+        deleted: false,
+        wouldUnpublish,
+        wouldBeRefused,
+      });
+    }
+
+    const got = await run8cli(['wf', 'get', wf.id], apiEnv());
+    expect(got.exitCode).toBe(0);
+    expect(json<{ active: boolean }>(got).active).toBe(true); // still published
+  });
+
+  it('deletes a published workflow in one step with --force', async () => {
+    const wf = await createWorkflowFixture({ withTrigger: true });
+    expect((await run8cli(['wf', 'activate', wf.id], apiEnv())).exitCode).toBe(0);
+
+    // 2.40 unpublishes asynchronously, so this one invocation must wait the settling
+    // state out itself – no waitFor around it, or the retry would not be exercised.
+    const del = await run8cli(['wf', 'delete', wf.id, '--force'], apiEnv());
+    expect(del.exitCode).toBe(0);
+    expect(del.json).toEqual({ id: wf.id, deleted: true });
+    expect(await run8cli(['wf', 'get', wf.id], apiEnv())).toFailWithCode('ERR_WORKFLOW_GET');
+  });
+});
+
+describe('wf publish to an active workflow', () => {
+  it('updates the published version, not only the draft', async () => {
+    const wf = await createWorkflowFixture({ withTrigger: true });
+    expect((await run8cli(['wf', 'activate', wf.id], apiEnv())).exitCode).toBe(0);
+    const dir = mkdtempSync(join(tmpdir(), '8cli-live-'));
+    expect((await run8cli(['wf', 'save', '--id', wf.id, '--dir', dir], apiEnv())).exitCode).toBe(0);
+    const path = join(dir, readdirSync(dir)[0]);
+    const local = JSON.parse(readFileSync(path, 'utf-8')) as {
+      nodes: Array<typeof SCHEDULE_NODE>;
+    };
+    local.nodes[0].parameters.rule.interval[0].hoursInterval = 2;
+    writeFileSync(path, JSON.stringify(local));
+
+    const pub = await run8cli(['wf', 'publish', '--file', path], apiEnv());
+    expect(pub.exitCode).toBe(0);
+    expect(json<{ errors: unknown[] }>(pub).errors).toEqual([]);
+
+    const remote = (await (await apiFetch(`/api/v1/workflows/${wf.id}`)).json()) as {
+      active: boolean;
+      versionId: string;
+      activeVersionId: string | null;
+      activeVersion: { nodes: Array<typeof SCHEDULE_NODE> } | null;
+    };
+    expect(remote.active).toBe(true);
+    expect(remote.activeVersionId).toBe(remote.versionId);
+    expect(remote.activeVersion?.nodes[0].parameters.rule.interval[0].hoursInterval).toBe(2);
+  });
+});
+
+describe('n8n PUT /workflows/{id} gotchas (CLAUDE.md)', () => {
+  // Raw requests: these lock n8n's side of the boundary that stripForPublish()
+  // relies on, so a future n8n bump shows exactly which rule moved.
+  async function put(id: string, body: Record<string, unknown>): Promise<[number, string]> {
+    const res = await apiFetch(`/api/v1/workflows/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(body),
+    });
+    return [res.status, await res.text()];
+  }
+
+  it('accepts the stripped shape and refuses each field the gotchas name', async () => {
+    const wf = await createWorkflowFixture({ withTrigger: true });
+    const base = {
+      name: wf.name,
+      nodes: [SCHEDULE_NODE],
+      connections: {},
+      settings: { executionOrder: 'v1' },
+    };
+
+    // Positive control: exactly what stripForPublish() sends.
+    expect((await put(wf.id, { ...base, staticData: null }))[0]).toBe(200);
+
+    // Gotcha 1: extra top-level fields are rejected.
+    const [junkStatus, junkBody] = await put(wf.id, { ...base, junkField: 1 });
+    expect(junkStatus).toBe(400);
+    expect(junkBody).toContain('junkField');
+    expect(await put(wf.id, { ...base, id: wf.id })).toEqual([
+      400,
+      expect.stringContaining('request/body/id is read-only'),
+    ]);
+
+    // Gotcha 2: active is read-only.
+    expect(await put(wf.id, { ...base, active: true })).toEqual([
+      400,
+      expect.stringContaining('request/body/active is read-only'),
+    ]);
+
+    // Gotcha 3 (corrected for #42): unknown settings keys are rejected…
+    const [bogusStatus, bogusBody] = await put(wf.id, {
+      ...base,
+      settings: { executionOrder: 'v1', bogusKey: 1 },
+    });
+    expect(bogusStatus).toBe(400);
+    expect(bogusBody).toContain('bogusKey');
+    // …but n8n's own settings keys are accepted, so executionOrder-only is not required.
+    expect(
+      (
+        await put(wf.id, { ...base, settings: { executionOrder: 'v1', timezone: 'Europe/Warsaw' } })
+      )[0],
+    ).toBe(200);
+    // Every key in stripForPublish()'s allowlist is one n8n accepts – this is the list that
+    // must move together with the pinned n8n version.
+    const knownSettings = {
+      saveExecutionProgress: true,
+      saveManualExecutions: false,
+      saveDataErrorExecution: 'all',
+      saveDataSuccessExecution: 'none',
+      executionTimeout: 3600,
+      errorWorkflow: 'err-wf-id',
+      timezone: 'Europe/Warsaw',
+      executionOrder: 'v1',
+      binaryMode: 'separate',
+      callerPolicy: 'workflowsFromSameOwner',
+      callerIds: 'id-1,id-2',
+      timeSavedMode: 'fixed',
+      timeSavedPerExecution: 30,
+      redactionPolicy: 'non-manual',
+      availableInMCP: true,
+      customTelemetryTags: [{ key: 'team', value: 'ops' }],
+      credentialResolverId: 'resolver-1',
+    };
+    expect(await put(wf.id, { ...base, settings: knownSettings })).toEqual([
+      200,
+      expect.anything(),
+    ]);
+
+    // settings itself is required.
+    const noSettings = { name: base.name, nodes: base.nodes, connections: base.connections };
+    expect(await put(wf.id, noSettings)).toEqual([
+      400,
+      expect.stringContaining("must have required property 'settings'"),
+    ]);
+  });
+
+  it('wf publish keeps a settings key n8n accepts (#42)', async () => {
+    const wf = await createWorkflowFixture();
+    const dir = mkdtempSync(join(tmpdir(), '8cli-settings-'));
+    const file = join(dir, `${wf.id}_settings.json`);
+    writeFileSync(
+      file,
+      JSON.stringify({
+        id: wf.id,
+        name: wf.name,
+        nodes: [],
+        connections: {},
+        settings: { executionOrder: 'v1', timezone: 'Europe/Warsaw' },
+      }),
+    );
+    expect((await run8cli(['wf', 'publish', '--file', file], apiEnv())).exitCode).toBe(0);
+    const got = await run8cli(['wf', 'get', wf.id], apiEnv());
+    expect(json<{ settings: Record<string, unknown> }>(got).settings.timezone).toBe(
+      'Europe/Warsaw',
+    );
   });
 });
