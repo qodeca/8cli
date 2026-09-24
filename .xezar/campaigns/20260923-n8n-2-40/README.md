@@ -43,14 +43,14 @@ Ready (19:32): independent review of release PR #82 at 359dc3f (author claude/so
 
 | Runner × login | State | Resets |
 |---|---|---|
-| claude × qodeca-priv | ok – 5h 3%, weekly 42% | 5h 22:49, weekly 2026-09-28 18:59 |
-| claude × gmail-priv | ok – 5h 3%, weekly 31% | 5h 22:59, weekly 2026-09-25 20:59 |
+| claude × qodeca-priv | ok – 5h 13%, weekly 43% | 5h 22:50, weekly 2026-09-28 19:00 |
+| claude × gmail-priv | ok – 5h 9%, weekly 31% | 5h 22:59, weekly 2026-09-25 20:59 |
 | claude × eqamana-priv | out (weekly 100%) | 2026-09-26 17:59 |
 | claude × westagilelabs-priv | out (weekly 100%) | 2026-09-25 08:59 |
-| codex × codex-cli | ok – weekly 19% | weekly 2026-09-29 14:45 |
+| codex × codex-cli | ok – weekly 20% | weekly 2026-09-29 14:45 |
 | pi (own accounts) | not reported by read_quota | – |
 
-Read from read_quota at 18:34. claude × default is the reserved leader login, not in any rotation.
+Read from read_quota at 19:33. claude × default is the reserved leader login, not in any rotation.
 
 ## Owner items
 
