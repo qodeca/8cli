@@ -64,3 +64,8 @@ Owner's words (chat), after PR #49 offered Prompt eight, JSON frame and Cut eigh
 
 Asked: the leader's squash-merge of PR #49 (design-approved, CI green) was denied by the Claude Code auto-mode classifier. Owner merges it, or allow the leader in settings?
 Owner chose: "Allow the leader in settings". The owner adds the rule; the leader does not edit its own permissions.
+
+## 2026-09-24 08:18 – PR #46 third repair round (direct question)
+
+Asked: the security re-check of PR #46 at fce0311 found 4 more major points (S-4 docs wording; S-5 symlinked docs dir, S-6 existence probe, S-7 super-linear heading regex in scripts/check-docs.mjs). Third repair round: simpler script (drop link/heading checks), or fix everything?
+Owner chose: "Round 3, fix everything".
