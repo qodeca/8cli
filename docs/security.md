@@ -52,12 +52,11 @@ up in your shell history.
 8cli refuses to send your API key over plain `http://`, with one exception for your own
 machine:
 
-| URL                                      | Allowed?                            |
-| ---------------------------------------- | ----------------------------------- |
-| `https://…`                              | Yes                                 |
-| `http://localhost…`, `http://127.0.0.1…` | Yes – traffic stays on your machine |
-| `http://[::1]…`                          | No in 8cli 0.1.2 – use `127.0.0.1`  |
-| Any other `http://…`                     | Only with `--insecure`              |
+| URL                                                       | Allowed?                            |
+| --------------------------------------------------------- | ----------------------------------- |
+| `https://…`                                               | Yes                                 |
+| `http://localhost…`, `http://127.0.0.1…`, `http://[::1]…` | Yes – traffic stays on your machine |
+| Any other `http://…`                                      | Only with `--insecure`              |
 
 `--insecure` means anyone on the network path can read your API key. Use it only on a network
 you control, and prefer putting n8n behind HTTPS.

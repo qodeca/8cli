@@ -44,9 +44,8 @@ keychain stored for that URL. Replace it with `auth set-api-key` or remove it wi
 ### `Refusing to use an insecure (http://) URL`
 
 8cli will not send your API key over plain HTTP. Use `https://`. For n8n on your own machine,
-`http://localhost` and `http://127.0.0.1` work without any flag. For other plain-HTTP URLs on a
-trusted network, add `--insecure`. `http://[::1]` is refused in 8cli 0.1.2; use
-`http://127.0.0.1` instead. See [security notes](security.md#plain-http-urls).
+`http://localhost`, `http://127.0.0.1` and `http://[::1]` work without any flag. For other
+plain-HTTP URLs on a trusted network, add `--insecure`. See [security notes](security.md#plain-http-urls).
 
 ### `fetch failed`
 
