@@ -8,9 +8,10 @@
 //   npm run n8n:local -- reset   wipe all data, start again, seed
 //   npm run n8n:local -- stop    stop it, keeping the data
 //
-// The seed stores the credentials in a protected env file (mode 600) in the MAIN checkout,
-// shared by every git worktree (the compose project name is fixed, so every worktree targets
-// one container), so the whole repository seeds and reads one instance. `--store keychain` is
+// The seed stores the credentials in a protected env file (mode 600) inside the git common
+// directory, shared by every git worktree (the compose project name is fixed, so every worktree
+// targets one container), so the whole repository seeds and reads one instance. An instance
+// seeded before that, with a per-checkout file, is adopted rather than reset. `--store keychain` is
 // refused: the keychain store is disabled until the keychain backend keeps secrets out of
 // process arguments. Same contract as 8cli: one JSON object to stdout, errors as
 // `{ "error", "code" }` to stderr with exit code 1, progress to stderr. No secret is ever
@@ -18,8 +19,7 @@
 // stored credentials, so its config resolution cannot fall back to the keychain.
 
 import { spawnSync } from 'node:child_process';
-import { existsSync, readFileSync } from 'node:fs';
-import { resolve } from 'node:path';
+import { dirname, resolve } from 'node:path';
 import {
   childEnv,
   cookieHeader,
@@ -27,7 +27,9 @@ import {
   generatePassword,
   localUrl,
   parseArgs,
+  legacyCredentialsFiles,
   parseEnvFile,
+  readRegularFile,
   ScriptError,
   sharedCredentialsFile,
   storedCredentialsEnv,
@@ -77,11 +79,21 @@ function gitCommonDir(): string {
   return dir;
 }
 
-/** The shared credentials file, next to the one instance rather than inside a worktree. */
-let envFileCache: string | undefined;
+/** The shared credentials file, and the per-checkout files it replaced. */
+let pathsCache: { shared: string; legacy: string[] } | undefined;
+function credentialPaths(): { shared: string; legacy: string[] } {
+  if (!pathsCache) {
+    const common = gitCommonDir();
+    pathsCache = {
+      shared: sharedCredentialsFile(common),
+      legacy: legacyCredentialsFiles(ROOT, common),
+    };
+  }
+  return pathsCache;
+}
+
 function envFile(): string {
-  envFileCache ??= sharedCredentialsFile(gitCommonDir());
-  return envFileCache;
+  return credentialPaths().shared;
 }
 
 function compose(...args: string[]): void {
@@ -187,21 +199,69 @@ function storeCredentials(creds: {
 }
 
 /**
- * The explicit environment for a spawned 8cli, read from the stored file, or `undefined`
- * when the file does not exist. An env file that exists but is incomplete is refused here,
- * so a child can never resolve a missing credential from the keychain.
+ * The explicit environment for a spawned 8cli, read from `file`, or `undefined` when the file
+ * does not exist. An env file that exists but is incomplete is refused here, so a child can
+ * never resolve a missing credential from the keychain; a symlink or a non-regular file is
+ * refused by `readRegularFile`.
  */
+function envFrom(file: string): Record<string, string> | undefined {
+  const content = readRegularFile(file);
+  if (content === undefined) return undefined;
+  return storedCredentialsEnv(parseEnvFile(content));
+}
+
 function storedEnv(): Record<string, string> | undefined {
-  const file = envFile();
-  if (!existsSync(file)) return undefined;
-  return storedCredentialsEnv(parseEnvFile(readFileSync(file, 'utf-8')));
+  return envFrom(envFile());
+}
+
+/** `8cli auth verify` against the instance with the given credentials. */
+function verifies(url: string, env: Record<string, string>): boolean {
+  return run8cli(['--url', url, 'auth', 'verify'], { env }).status === 0;
 }
 
 /** `8cli auth verify` against the instance with the stored credentials. */
 function verifyStored(url: string): boolean {
   const env = storedEnv();
   if (!env) return false;
-  return run8cli(['--url', url, 'auth', 'verify'], { env }).status === 0;
+  return verifies(url, env);
+}
+
+/**
+ * Adopt a per-checkout credentials file from before the shared one (issue #38): the first
+ * legacy file that `auth verify` accepts is copied into the shared file through
+ * `writeSecretFile`. Answers the adopted path, if any, and the files that were found but did
+ * not work. An incomplete file is not adopted; a symlink or a non-regular file is
+ * refused outright.
+ */
+function adoptLegacy(url: string): { adoptedFrom?: string; rejected: string[] } {
+  const rejected: string[] = [];
+  for (const file of credentialPaths().legacy) {
+    let env: Record<string, string> | undefined;
+    try {
+      env = envFrom(file);
+    } catch (err) {
+      if (err instanceof ScriptError && err.code === 'ERR_ENV_FILE_INCOMPLETE') {
+        rejected.push(file);
+        continue;
+      }
+      throw err;
+    }
+    if (!env) continue;
+    progress(`checking the credentials in ${file}`);
+    if (!verifies(url, env)) {
+      rejected.push(file);
+      continue;
+    }
+    progress(`adopting them into ${envFile()}`);
+    storeCredentials({
+      url,
+      apiKey: env.N8N_API_KEY,
+      email: env.N8N_EMAIL,
+      password: env.N8N_PASSWORD,
+    });
+    return { adoptedFrom: file, rejected };
+  }
+  return { rejected };
 }
 
 async function createOwnerAndKey(url: string): Promise<void> {
@@ -244,27 +304,47 @@ async function createOwnerAndKey(url: string): Promise<void> {
   storeCredentials({ url, apiKey, email: OWNER_EMAIL, password });
 }
 
-async function seed(url: string): Promise<'created' | 'already'> {
+async function seed(
+  url: string,
+): Promise<{ seeded: 'created' | 'already' | 'adopted'; adoptedFrom?: string }> {
   if (await needsOwnerSetup(url)) {
     await createOwnerAndKey(url);
     if (!verifyStored(url)) {
       throw new ScriptError('8cli auth verify failed with the new API key', 'ERR_VERIFY');
     }
-    return 'created';
+    return { seeded: 'created' };
   }
-  if (verifyStored(url)) {
-    return 'already';
+  const shared = envFile();
+  const stored = storedEnv();
+  if (stored && verifies(url, stored)) {
+    return { seeded: 'already' };
   }
+  let rejected: string[] = [];
+  if (!stored) {
+    const adoption = adoptLegacy(url);
+    if (adoption.adoptedFrom) return { seeded: 'adopted', adoptedFrom: adoption.adoptedFrom };
+    rejected = adoption.rejected;
+  }
+  const legacy = credentialPaths().legacy;
   throw new ScriptError(
-    'n8n already has an owner, but 8cli has no working credentials for it in the ' +
-      'env file. Run `npm run n8n:local -- reset` to start clean (this deletes the local ' +
-      'n8n data).',
+    'n8n already has an owner, but 8cli has no working credentials for it. ' +
+      (stored
+        ? `The shared env file ${shared} does not pass auth verify. `
+        : `There is no shared env file ${shared}, and no per-checkout file from before it ` +
+          `passes auth verify (checked: ${legacy.join(', ')}` +
+          (rejected.length > 0 ? `; found but not working: ${rejected.join(', ')}` : '') +
+          '). ') +
+      'If another checkout of this repository seeded the instance, copy its file into the ' +
+      `shared location and run the command again: \`mkdir -p ${dirname(shared)} && ` +
+      `chmod 700 ${dirname(shared)} && cp <that checkout>/.local/xezar/n8n/credentials.env ` +
+      `${shared} && chmod 600 ${shared}\`. Only when no working copy exists, run ` +
+      '`npm run n8n:local -- reset` to start clean (this deletes the local n8n data).',
     'ERR_ALREADY_OWNED',
   );
 }
 
-function credentialsLocation(): Record<string, string> {
-  return { store: 'env', envFile: envFile() };
+function credentialsLocation(adoptedFrom?: string): Record<string, string> {
+  return { store: 'env', envFile: envFile(), ...(adoptedFrom ? { adoptedFrom } : {}) };
 }
 
 async function main(): Promise<void> {
@@ -290,13 +370,13 @@ async function main(): Promise<void> {
     compose('up', '--detach', '--wait');
   }
   await waitReady(url);
-  const seeded = await seed(url);
+  const { seeded, adoptedFrom } = await seed(url);
   const result = {
     command,
     url,
     version: n8nVersion(),
     seeded,
-    credentials: credentialsLocation(),
+    credentials: credentialsLocation(adoptedFrom),
   };
   process.stdout.write(`${JSON.stringify(result)}\n`);
 }

@@ -30,7 +30,7 @@ for tool in vhs ffmpeg jq docker; do
   command -v "$tool" >/dev/null 2>&1 || fail "$tool is not installed" "ERR_NO_$(echo "$tool" | tr '[:lower:]' '[:upper:]')"
 done
 
-# The credentials live with the main checkout (the one n8n instance is shared by every
+# The credentials live in the git common dir (the one n8n instance is shared by every
 # worktree); the script reports the path it wrote, so there is one source of truth for it.
 ENV_FILE="$(npm run -s n8n:local -- start | jq -r '.credentials.envFile // empty')"
 
