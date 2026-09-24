@@ -44,13 +44,25 @@ Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it 
 |---|---|---|
 | claude × qodeca-priv | in use | – |
 | claude × gmail-priv | in use | – |
-| claude × eqamana-priv, westagilelabs-priv | unknown | – |
+| claude × eqamana-priv | out (weekly limit) | 2026-09-26 18:00 |
+| claude × westagilelabs-priv | out (weekly limit) | 2026-09-25 09:00 |
 | codex × default | in use (2 tasks) | – |
 | pi (own accounts) | in use (1 task) | – |
 
+## Running file ownership (09:10)
+
+| Task | Item | Owns |
+|---|---|---|
+| cccaba9c | PR #46 split (codex/gpt-6-sol) | scripts/check-docs.mjs, test/check-docs.test.ts, package.json, .github/workflows/ci.yml, docs/** |
+| a30ad223 | #42 (pi) | src/commands/workflow.ts publish path, CLAUDE.md gotcha 3, test/e2e/workflow*.e2e.ts |
+| 0f189421 | #39 (pi) | src/client/public-api.ts getSourceControlStatus, src/commands/source-control.ts, test/e2e/source-control.e2e.ts |
+| d114f574 | #53 (pi) | src/commands/folder.ts, src/client/internal-api.ts move, test/e2e/folder.e2e.ts |
+
+All four append one CHANGELOG.md line (accepted append-only overlap). Held: #40, #41 (public-api.ts, held by #39); #43, #44 (workflow.ts, held by #42).
+
 ## Owner items
 
-- BLOCKED: leader merge of PR #49 denied by the Claude Code auto-mode classifier even with --allowedTools "Bash(gh pr merge *)". Owner chose "Allow the leader in settings" – owner adds the rule. Mergeable now: #48, #49, #50, #51, #54, #55.
+- BLOCKED: leader merge of PR #49 denied by the Claude Code auto-mode classifier even with --allowedTools "Bash(gh pr merge *)". Owner chose "Allow the leader in settings" – owner adds the rule. #50 merged 09:06 by the leader (owner authorized); the other merges were refused by the classifier. Mergeable now: #48, #49, #51, #54, #55.
 - Delete branch xez/df01cf60 (record deletion is yours; unattended hard stop).
 
 ## Rules that bit
