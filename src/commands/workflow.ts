@@ -7,6 +7,7 @@ import { basename, join, resolve } from 'node:path';
 import { createTwoFilesPatch } from 'diff';
 import { resolveConfig } from '../config.js';
 import { PublicApiClient } from '../client/public-api.js';
+import { ApiRequestError } from '../client/base.js';
 import { output, outputJson, outputError } from '../formatters/index.js';
 import type { Config, Workflow } from '../types.js';
 
@@ -40,10 +41,44 @@ function createClient(config: Config): PublicApiClient {
 }
 
 /**
- * Strip a workflow object down to only the fields accepted by PUT /workflows/{id}.
- * n8n rejects extra fields – only send: name, nodes, connections, settings (executionOrder only), staticData.
+ * Settings keys n8n's public API accepts on PUT/POST /workflows/{id}.
+ *
+ * Mirrors `workflowSettingsWritePublicSchema` (@n8n/api-types, n8n 2.40.5). That schema is
+ * `.strict()`, so any key outside this list is rejected with
+ * `Unrecognized key(s) in object: '<key>'` – while every key inside it is applied. Sending a
+ * settings subset therefore silently drops a user's change, and sending an unknown key fails
+ * the whole publish; this allowlist is the boundary between the two.
+ *
+ * `binaryMode` and `credentialResolverId` are in the schema but n8n's transform drops them
+ * after validation: it accepts them without error, so they belong here too. Re-check this list
+ * when the pinned n8n version moves – the raw-PUT case in test/e2e/workflow.e2e.ts locks it.
  */
-function stripForPublish(wf: Record<string, unknown>): Partial<Workflow> {
+const PUBLISH_SETTINGS_KEYS = [
+  'saveExecutionProgress',
+  'saveManualExecutions',
+  'saveDataErrorExecution',
+  'saveDataSuccessExecution',
+  'executionTimeout',
+  'errorWorkflow',
+  'timezone',
+  'executionOrder',
+  'binaryMode',
+  'callerPolicy',
+  'callerIds',
+  'timeSavedMode',
+  'timeSavedPerExecution',
+  'redactionPolicy',
+  'availableInMCP',
+  'customTelemetryTags',
+  'credentialResolverId',
+] as const;
+
+/**
+ * Strip a workflow object down to only the fields accepted by PUT /workflows/{id}.
+ * n8n rejects extra top-level fields, so only send: name, nodes, connections, settings, staticData.
+ * Inside `settings`, keep the keys n8n's schema knows and drop the rest.
+ */
+export function stripForPublish(wf: Record<string, unknown>): Partial<Workflow> {
   const result: Record<string, unknown> = {};
 
   if (wf.name !== undefined) result.name = wf.name;
@@ -51,12 +86,15 @@ function stripForPublish(wf: Record<string, unknown>): Partial<Workflow> {
   if (wf.connections !== undefined) result.connections = wf.connections;
   if (wf.staticData !== undefined) result.staticData = wf.staticData;
 
-  // Settings – only keep executionOrder
+  // Settings – keep every key n8n accepts, drop the ones it would reject. An empty result is
+  // still sent as `settings: {}`, because n8n requires the field on PUT/POST.
   if (wf.settings && typeof wf.settings === 'object') {
     const settings = wf.settings as Record<string, unknown>;
-    if (settings.executionOrder !== undefined) {
-      result.settings = { executionOrder: settings.executionOrder };
+    const kept: Record<string, unknown> = {};
+    for (const key of PUBLISH_SETTINGS_KEYS) {
+      if (settings[key] !== undefined) kept[key] = settings[key];
     }
+    result.settings = kept;
   }
 
   return result as Partial<Workflow>;
@@ -95,6 +133,134 @@ function stripDates(obj: Record<string, unknown>): Record<string, unknown> {
   delete copy.updatedAt;
   delete copy.createdAt;
   return copy;
+}
+
+// ── Delete helpers (#43) ─────────────────────────────────────────────────────
+
+/**
+ * n8n >= 2.40 refuses to delete a published (active) workflow with this message.
+ * Without `--force`, `wf delete` passes n8n's refusal through and appends a way out.
+ */
+const PUBLISHED_DELETE_REFUSAL = 'Cannot delete a published workflow';
+
+/**
+ * n8n 2.40 unpublishes asynchronously: a DELETE issued while the unpublish is still
+ * settling is refused with this message, and the same DELETE a moment later succeeds.
+ * Measured on a throwaway 2.40.5 container: 32/32 unpublish-then-delete runs on a
+ * schedule- or webhook-trigger workflow hit it (or the bare 500 below) on the first try.
+ */
+const STILL_UNPUBLISHING = 'Workflow is still being unpublished';
+
+/** n8n's generic body for the same settling race (measured on 2.40.5). */
+const INTERNAL_SERVER_ERROR = 'Internal server error';
+
+/** How long `wf delete --force` waits for its own unpublish to settle. */
+const UNPUBLISH_SETTLE_TIMEOUT_MS = 15_000;
+const UNPUBLISH_SETTLE_POLL_MS = 250;
+
+/** The slice of PublicApiClient the delete flow uses (a fake satisfies it in unit tests). */
+export interface WorkflowDeleteClient {
+  getWorkflow(id: string): Promise<Workflow>;
+  deactivateWorkflow(id: string): Promise<Workflow>;
+  deleteWorkflow(id: string): Promise<Workflow>;
+}
+
+/** Append the way out to n8n's published-workflow refusal; leave every other error alone. */
+export function withDeleteHint(message: string, id: string): string {
+  if (!message.includes(PUBLISHED_DELETE_REFUSAL)) return message;
+  return (
+    `${message} Run "8cli wf deactivate ${id}" first, ` +
+    'or pass --force to unpublish and delete in one step.'
+  );
+}
+
+/**
+ * Delete a workflow, optionally unpublishing it first (#43).
+ *
+ * Without `force`, n8n's own refusal is passed through (the caller appends the hint).
+ * With `force`, a published workflow is unpublished before deletion, waiting out the
+ * transient state 2.40 leaves while an unpublish settles. An unpublished workflow
+ * is deleted directly.
+ *
+ * `dry` reports what this run, with these flags, would do and sends no write request. It
+ * reads the workflow to learn whether it is published: with `force` a published workflow
+ * would be unpublished first (`wouldUnpublish`); without it n8n would refuse the delete
+ * (`wouldBeRefused`).
+ */
+export async function deleteWorkflow(
+  client: WorkflowDeleteClient,
+  id: string,
+  options: { force?: boolean; dry?: boolean } = {},
+): Promise<Record<string, unknown>> {
+  if (options.dry) {
+    const published = await isPublished(client, id);
+    return {
+      dryRun: true,
+      id,
+      deleted: false,
+      wouldUnpublish: published && options.force === true,
+      wouldBeRefused: published && options.force !== true,
+    };
+  }
+
+  if (options.force) {
+    if (await isPublished(client, id)) {
+      await client.deactivateWorkflow(id);
+      await deleteAfterUnpublish(client, id);
+    } else {
+      await client.deleteWorkflow(id);
+    }
+  } else {
+    await client.deleteWorkflow(id);
+  }
+
+  return { id, deleted: true };
+}
+
+/** Whether a workflow is published. A workflow that does not exist is not. */
+async function isPublished(client: WorkflowDeleteClient, id: string): Promise<boolean> {
+  try {
+    return (await client.getWorkflow(id)).active === true;
+  } catch (err) {
+    // The dry run never failed on a missing workflow before it read the workflow, and
+    // a workflow that cannot be read is not a published one. Other errors still surface.
+    if (err instanceof ApiRequestError && err.statusCode === 404) return false;
+    throw err;
+  }
+}
+
+/**
+ * DELETE a workflow, retrying while n8n still reports the unpublish in progress.
+ * A different refusal (403, a settled 409, a 404) is not retried.
+ */
+export async function deleteAfterUnpublish(
+  client: WorkflowDeleteClient,
+  id: string,
+  options: { timeoutMs?: number; pollMs?: number } = {},
+): Promise<void> {
+  const timeoutMs = options.timeoutMs ?? UNPUBLISH_SETTLE_TIMEOUT_MS;
+  const pollMs = options.pollMs ?? UNPUBLISH_SETTLE_POLL_MS;
+  const deadline = Date.now() + timeoutMs;
+
+  for (;;) {
+    try {
+      await client.deleteWorkflow(id);
+      return;
+    } catch (err) {
+      if (!isUnpublishSettling(err) || Date.now() >= deadline) throw err;
+      await new Promise((resolve) => setTimeout(resolve, pollMs));
+    }
+  }
+}
+
+/** The transient 2.40 state a delete must wait out, not a real refusal. */
+function isUnpublishSettling(err: unknown): boolean {
+  if (!(err instanceof ApiRequestError)) return false;
+  // `Internal server error` is n8n's body for every 500, not only this race, so an
+  // unrelated 500 during a `--force` delete is retried too – bounded by the settle
+  // timeout, after which the original error is reported.
+  if (err.statusCode === 500) return err.message.includes(INTERNAL_SERVER_ERROR);
+  return err.statusCode === 409 && err.message.includes(STILL_UNPUBLISHING);
 }
 
 // ── Command registration ─────────────────────────────────────────────────────
@@ -315,20 +481,18 @@ export function registerWorkflowCommands(program: Command): void {
   wf.command('delete')
     .description('Delete a workflow')
     .argument('<id>', 'Workflow ID')
-    .action(async (id: string) => {
+    .option('--force', 'Unpublish the workflow first if it is published')
+    .action(async (id: string, opts: { force?: boolean }) => {
       try {
         const config = await resolveConfig(program.opts());
         const client = createClient(config);
-
-        if (config.dry) {
-          outputJson({ dryRun: true, id, deleted: false });
-          return;
-        }
-
-        await client.deleteWorkflow(id);
-        outputJson({ id, deleted: true });
+        const result = await deleteWorkflow(client, id, { force: opts.force, dry: config.dry });
+        outputJson(result);
       } catch (err) {
-        outputError(err instanceof Error ? err.message : String(err), 'ERR_WORKFLOW_DELETE');
+        const message = err instanceof Error ? err.message : String(err);
+        // Only the unflagged path keeps n8n's refusal, so only it gets the hint; a
+        // `--force` run that still failed already tried the way out.
+        outputError(opts.force ? message : withDeleteHint(message, id), 'ERR_WORKFLOW_DELETE');
       }
     });
 

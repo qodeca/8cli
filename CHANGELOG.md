@@ -15,6 +15,62 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ### Security
 
 - Security: fix GHSA-h6g4-mq8c-5chp
+## [0.2.0] - 2026-09-24
+
+### Added
+
+- End-user documentation under `docs/` ([#34](https://github.com/qodeca/8cli/issues/34), PR [#46](https://github.com/qodeca/8cli/pull/46)).
+
+### Fixed
+
+- `wf activate` and `wf deactivate` no longer mistake a missing workflow for a missing route: they fall back from `/publish`/`/unpublish` to the deprecated `/activate`/`/deactivate` only on a `405`, or on a `404` whose body is not n8n's missing-workflow JSON (measured on 2.40.5: `{"message":"You do not have permission to activate this workflow. Ask the owner to share it with you."}`). A bad id now costs one request and keeps its `ERR_WORKFLOW_ACTIVATE` / `ERR_WORKFLOW_DEACTIVATE` error instead of reaching the deprecated route ([#72](https://github.com/qodeca/8cli/issues/72)).
+
+- `folder` commands no longer stall silently when n8n rate-limits the internal login: a `429` on `POST /rest/login` fails at once with `{ "error": "...", "code": "ERR_RATE_LIMITED" }` on stderr, exit 1, carrying the server's `Retry-After` seconds in the message and as a `retryAfter` field, instead of sleeping up to three minutes and blaming the next request. The public API client's `429` retry is unchanged ([#47](https://github.com/qodeca/8cli/issues/47)).
+
+- `user list` and `user get` now send `includeRole=true`, so n8n returns the `role` field and the commands print it (for example `global:owner`); the output change is additive (#40).
+
+- `wf activate` and `wf deactivate` now call n8n's `POST /workflows/{id}/publish` and `/unpublish` routes where they exist, falling back to the deprecated `/activate` and `/deactivate` on older n8n; command names, flags and JSON output are unchanged (#44).
+
+- Behaviour change: credentials from `N8N_API_KEY`, `N8N_EMAIL`, `N8N_PASSWORD` or `--api-key`
+  are refused with `ERR_CONFIG_SOURCE_MISMATCH` when the URL comes from a config file and no
+  `N8N_URL`/`--url` was given, instead of sending them to the host named by the file; set
+  `N8N_URL` too.
+
+- `folder move --to "(root)"` now sends n8n's root sentinel `"0"` instead of `null` ([#53](https://github.com/qodeca/8cli/issues/53)).
+
+- `folder move`, `folder create` and `folder delete` now honour `--dry`: they print a `{ "dryRun": true, ... }` preview and send no request, instead of performing the change; `folder sync` already guarded its local writes ([#67](https://github.com/qodeca/8cli/issues/67)).
+
+- `sc status` calls `GET /api/v1/source-control/status` with the required `direction` query param (`--direction <pull|push>`, default `pull`) instead of the nonexistent `/source-control/preferences`, so a Community instance reports the licence error and a licensed one returns the pending-changes list. An invalid `--direction` value now fails with the new `ERR_USAGE` code on stderr, exit 1, before any request is sent (#39).
+
+- `wf publish` no longer drops workflow settings other than `executionOrder`: it keeps every settings key n8n accepts and drops only the unknown keys n8n rejects (#42).
+
+- Plain HTTP to the IPv6 loopback address is accepted again without `--insecure`:
+  `http://[::1]:5678` is treated like `localhost` and `127.0.0.1`. The WHATWG URL parser
+  returns the bracketed hostname `[::1]`, which the loopback check did not match. The
+  exemption stays narrow – other IPv6 hosts are still refused (#52).
+
+- `wf delete` gains `--force`, which unpublishes a published (active) workflow and then deletes
+  it, waiting out n8n 2.40's asynchronous unpublish (a 409/500 the immediate retry clears);
+  without the flag the refusal keeps n8n's message and adds a hint to run `wf deactivate` first,
+  and the hint names the workflow's id. `--dry` now reports what that run would do –
+  `wouldUnpublish` with `--force`, `wouldBeRefused` without it – without sending a write
+  request; to answer, it reads the workflow, so a dry run can now fail with
+  `ERR_WORKFLOW_DELETE` on a read error other than 404 (#43).
+
+- `dt rows --limit N` no longer fails with `ERR_HTTP_400` when `N` is above 250: it requests
+  pages of `min(N, 250)`, follows the cursor and stops once `N` rows are collected, so
+  `--limit 500` returns up to 500 rows instead of n8n's `request/query/limit must be <= 250`.
+  The output shape is unchanged (#41).
+
+### Changed
+
+- Commander's own usage errors (a missing required option or argument, an option missing its
+  argument, an unknown option or command, excess arguments) now print
+  `{ "error": "...", "code": "ERR_USAGE" }` on stderr with exit code 1 instead of a plain-text
+  `error: ...` line, which an agent parsing stderr as JSON read as a parse failure. This is a
+  break to the stderr format, recorded in `BACKWARD_COMPATIBILITY.md` § 4. `8cli help <unknown>`
+  is now one of those usage errors; `--help`, `--version`, a bare `8cli` and a bare command group
+  still display help.
 
 ## [0.1.2] - 2026-06-19
 
@@ -84,7 +140,8 @@ First public release.
 - Windows/Linux keychain stubs fail with an actionable message instead of silently no-opping.
 - Vulnerability reporting via GitHub private reporting (`SECURITY.md`).
 
-[unreleased]: https://github.com/qodeca/8cli/compare/v0.1.2...HEAD
+[unreleased]: https://github.com/qodeca/8cli/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/qodeca/8cli/compare/v0.1.2...v0.2.0
 [0.1.2]: https://github.com/qodeca/8cli/compare/v0.1.1...v0.1.2
 [0.1.1]: https://github.com/qodeca/8cli/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/qodeca/8cli/releases/tag/v0.1.0

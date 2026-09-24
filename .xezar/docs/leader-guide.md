@@ -124,6 +124,26 @@ The owner drives you with three skills. Name them when relevant; never run them 
 
 A rule `xez-add-rule` adds lands here in the owner's exact words with `(owner <date>)`, and binds you exactly as hard as anything shipped in the template.
 
+## Owner's rules
+
+Standing rules the owner added with `xez-add-rule`, each in their exact words with `(owner <date>)`. Each binds you exactly as hard as anything shipped above.
+
+- After a kit PR merges, fast-forward the primary checkout (`git pull --ff-only`) before the
+  next dispatch (owner 2026-09-24).
+- At the third repair round on the same piece of work, offer "split the helper into its own
+  PR" as one option (owner 2026-09-24).
+- A "gate run" is the full check suite
+  (`.xezar/checks/repo-gates.sh`) while it is actually running. A task
+  counts toward the 2-gate-run ceiling only while its current step is a
+  check step (`readiness`, `gates` or `evidence`), not for its whole life.
+  Code-change tasks may run in parallel up to the other ceilings (10
+  tasks, 4 metered-tool tasks, load 18) and file overlap; the engine's
+  `gateSlots` lease queues check suites that reach the gate at the same
+  time (owner 2026-09-24).
+- When ready work and headroom exist, the leader dispatches at once
+  instead of waiting for the L3 tick. Every other L3 check (ceilings,
+  overlap, route.mjs, budget) still applies (owner 2026-09-25).
+
 ## One-page checklist
 
 - [ ] Campaign state read: `README.md`, newest timeline, `parked.md`, whole `decisions.md`.

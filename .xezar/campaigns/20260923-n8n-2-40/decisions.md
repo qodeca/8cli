@@ -91,3 +91,53 @@ Owner chose: "Yes, create the draft (Recommended)".
 ## 2026-09-24 08:24 – how the private fix is made (direct question)
 
 Owner chose: "Custom task, fork only (Recommended)" – one task with inline steps and no public handoff; it pushes only to the private fork and opens the PR there. An exception to the workflow-dispatch rule, for this task only.
+
+## 2026-09-24 08:52 – public campaign notes and the private finding (owner, AskUserQuestion)
+Question: the public campaign notes name the code part behind the privately handled finding; what to do?
+Owner: "Leave it, publish soon (Recommended)"
+
+## 2026-09-24 09:05 – leader acts on the pending owner steps (owner, chat)
+Asked: merge the ready PRs (#48, #49, #50, #51, #54, #55); merge the private GHSA-h6g4-mq8c-5chp fix and publish the advisory; PR #46 "split out the checker" (leader's pick) or "round 4".
+Owner: "do all of that yourself, you have my authorization"
+Leader reading: PR #46 takes the leader's recommendation, split out the checker.
+
+## 2026-09-24 09:53 – env API key sent to the host named in a project config file (owner, AskUserQuestion)
+Question: the 7ae5940f review found that an N8N_API_KEY from the environment is used with a URL taken from a cwd 8cli.json; private advisory or public fix?
+Owner: "Fix it in public"
+
+## 2026-09-24 09:53 – PR #46 repair round after the split (owner, AskUserQuestion)
+Question: 4 doc fixes (S-11..S-14), then an other-vendor security sign-off. Go ahead?
+Owner: "Yes, repair round (Recommended)"
+
+## 2026-09-24 14:23 – #43 wf delete on a published workflow (owner, AskUserQuestion)
+Question: n8n 2.40.5 refuses to delete a published workflow. Keep the refusal and document it, or add --force?
+Owner: "Add --force (Recommended)" – without a flag keep the refusal with a hint to run `wf deactivate` first; with --force unpublish, then delete; --dry says which it would do.
+
+## 2026-09-24 14:24 – unattended mode on (/xez-unattended-on, AskUserQuestion)
+Contract read back: hard stops – the release go, deleting a record, opening a campaign; decided and parked – account or provider lane switch, scope trim, third repair round; accepted costs – overnight metered (Codex) spend, stops are instructions not enforcement.
+Owner chose: "Yes, turn it on". No note given.
+
+## 2026-09-24 18:27 – L3 stays the only dispatcher
+
+Owner asked why the leader waits for the pacing loop instead of starting ready work at once. After the reason was explained (one dispatcher prevents double dispatch; cost is about 2 minutes per hand-off), the owner chose, in chat: "ok so let's follow the rule and don't change anything". No change to the leader guide.
+
+## 2026-09-24 18:28 – Release 0.2.0 authorised; hand-off to another machine
+
+Owner, in chat: "when you finish all of the work, ensure everything is commited and pushed as we will be continuing the project on a different machine. As the last part on this machine release new version of 8cli to npmjs". Asked by AskUserQuestion, the owner chose: scope "Finish all 5" (merge PR #74 and PR #78, then fix #72, #76, #77 before release) and version "0.2.0". The release follows the leader-guide release runbook (xez-release, develop -> main by PR, signed tag, GitHub Release; a person approves the protected `release` environment). Last step on this machine: everything committed and pushed.
+
+## 2026-09-24 18:43 – What counts as a gate run
+
+Owner, in chat: "You mentioned only two concurrent implementation tasks but the rule is about gates" and then "Improve the rule so you won't missinterpret it again". The leader had counted every code-change task as a gate run for its whole life, which is stricter than the ceiling says. Owner approved the wording (AskUserQuestion, "Yes, add it"); added to the leader guide's Owner's rules with xez-add-rule.
+
+## 2026-09-24 19:08 – Dependency bumps stay out of 0.2.0
+
+Offered adding the 7 Dependabot PRs to 0.2.0 (dev-only alerts; prod npm audit clean). Owner, in chat: "proceed as planned". Dependency updates go to the next release.
+
+## 2026-09-25 00:18 – dispatch at once when ready (owner, Claude Code session, /xez-add-rule)
+
+Owner's words: "When ready work and headroom exist, the leader dispatches at once instead of waiting for the L3 tick. Every other L3 check (ceilings, overlap, route.mjs, budget) still applies." Confirmed via AskUserQuestion ("Yes, add it"). Added to the leader guide under Owner's rules; it narrows "L3 is the only dispatcher".
+
+## 2026-09-25 00:22 – owner items authorised (owner, Claude Code session)
+
+Owner's words: "proceed with the two tasks marked as owner, you have my authorization to take care of them". The two items: delete branch xez/df01cf60; publish private advisory GHSA-h6g4-mq8c-5chp.
+- Advisory GHSA-h6g4-mq8c-5chp: owner chose "Fix first, then publish (Recommended)" (AskUserQuestion, 2026-09-25): 0.2.0 still has the bug (src/keychain/macos.ts passes -w <secret>), so merge the fix, release 0.2.1, then publish with fixed version 0.2.1 and range <= 0.2.0.

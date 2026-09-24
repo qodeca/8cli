@@ -80,6 +80,12 @@ src/
 
 CLI flags → env vars → config file → keychain → defaults
 
+Security exception: a config-file URL cannot be combined with `N8N_API_KEY`,
+`N8N_EMAIL`, `N8N_PASSWORD` or `--api-key`. `resolveConfig` exits with
+`ERR_CONFIG_SOURCE_MISMATCH` before keychain lookup or any request. Supply `N8N_URL`
+or `--url` with those credentials, or use credentials stored in the keychain for
+the config-file URL.
+
 | Source      | Example                                                       |
 | ----------- | ------------------------------------------------------------- |
 | CLI flags   | `--url https://n8n.example.com --api-key eyJ...`              |
@@ -112,9 +118,9 @@ Secrets are **never** stored in config files. They live in the OS keychain:
 
 These are already handled in the code but important to know:
 
-1. `PUT /workflows/{id}` rejects extra fields – only send: `name`, `nodes`, `connections`, `settings` (only `executionOrder`), `staticData`
+1. `PUT /workflows/{id}` rejects extra fields – only send: `name`, `nodes`, `connections`, `settings`, `staticData`
 2. `active` is read-only on PUT – always strip from publish payload
-3. Settings only accepts `executionOrder` – strip all other settings keys
+3. Settings accepts n8n's known keys (`executionOrder`, `timezone`, `saveDataSuccessExecution`, `errorWorkflow`, …) – the schema is strict, so only an unknown key is rejected (`Unrecognized key(s) in object: '<key>'`). `publish` keeps the known keys and drops the unknown ones
 4. Public API doesn't expose folder info – internal API (cookie auth) needed for folders
 5. Execution data needs `?includeData=true` query param on GET
 

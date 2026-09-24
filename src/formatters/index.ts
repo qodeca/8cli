@@ -19,9 +19,18 @@ export function output(data: unknown, options: OutputOptions): void {
 
 /**
  * Output a structured error to stderr and exit.
+ *
+ * `details` adds optional fields to the `{ error, code }` shape (for example the
+ * `retryAfter` seconds of a rate limit). It is additive: `error` and `code`
+ * always win, and a field is dropped when its value is `undefined`.
  */
-export function outputError(message: string, code: string, exitCode = 1): never {
-  process.stderr.write(JSON.stringify({ error: message, code }, null, 2) + '\n');
+export function outputError(
+  message: string,
+  code: string,
+  exitCode = 1,
+  details: Record<string, unknown> = {},
+): never {
+  process.stderr.write(JSON.stringify({ ...details, error: message, code }, null, 2) + '\n');
   process.exit(exitCode);
 }
 
