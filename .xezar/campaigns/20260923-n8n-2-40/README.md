@@ -6,7 +6,7 @@ Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it 
 
 ## State
 
-- Base `develop` at 66c52ef. Merges this campaign: 14 (#33, #50, #48, #49, #51, #55, #54, #59, #46, #56, #63, #58, #68, #65). Checkpoints met: 1 (#31 closed).
+- Base `develop` at 27e3398. Merges this campaign: 15 (#33, #50, #48, #49, #51, #55, #54, #59, #46, #56, #63, #58, #68, #65, #71). Checkpoints met: 1 (#31 closed).
 
 ## Work
 
@@ -33,11 +33,7 @@ Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it 
 
 | Task | Item | Owns |
 |---|---|---|
-| f534c0a8 | #67 folder --dry (pi) – PR #73, at handoff | src/commands/folder.ts, a unit test, test/e2e/folder.e2e.ts (dry-run cases), CHANGELOG.md line |
-| 705ea61d | #43 wf delete --force (pi) | src/commands/workflow.ts (wf delete), a unit test, test/e2e/workflow.e2e.ts (delete cases), docs/reference wf delete page, CHANGELOG.md line |
 | e080520d | #40 user role (pi) | src/client/public-api.ts (listUsers/getUser), a unit test, test/e2e/user.e2e.ts, test/e2e/__snapshots__/user-get.json, CHANGELOG.md line |
-| 6411a602 | PR #71 acceptance (codex/gpt-6-sol) | read-only; temp git repo |
-| dc288c48 | PR #73 review (claude/opus qodeca-priv) | read-only |
 
 Queued (2-gate-run ceiling): #41, #72 (src/client/public-api.ts – overlap with #40).
 
