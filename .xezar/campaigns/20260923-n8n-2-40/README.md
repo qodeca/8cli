@@ -19,7 +19,7 @@ Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it 
 | #36 | Scripted demo GIF | PR #48 approved + qa-approved at 634e0db, ready | merge (waits on owner rule) |
 | #37 | Logo and banner | PR #49 design-approved, CI green, ready | BLOCKED: merge denied by auto-mode classifier |
 | #38 | Local n8n creds per worktree vs shared instance (bug) | ready, not dispatched | after #32/#34/#36 stop using the instance (touches scripts/local-n8n) |
-| #39–#45 | 7 defects found by #32 validation (2 high: #39 sc status route, #42 wf publish drops settings) | #45 PR #51 CHANGES REQUESTED – repair 1 b632981f running; #39-#43 held (each edits test/e2e/**, owned by 94c2ff6c); #44 held (workflow.ts overlap) | dispatch after #32 merges |
+| #39–#45 | 7 defects found by #32 validation (2 high: #39 sc status route, #42 wf publish drops settings) | #45 PR #51 repair 1 done at 51a55ed – re-check + QA next; #39-#43 held (each edits test/e2e/**, owned by 94c2ff6c); #44 held (workflow.ts overlap) | dispatch after #32 merges |
 
 ## Open pull requests
 
@@ -27,7 +27,6 @@ Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it 
 
 ## Running tasks and file ownership
 
-- b632981f (pi/deepseek-flash, PR #51 repair 1) owns src/cli.ts, src/formatters/**, test/cli-usage-errors.test.ts, BACKWARD_COMPATIBILITY.md, CHANGELOG.md
 - f0bd0691 (claude/sonnet gmail-priv, re-review PR #46) – read-only
 
 - PR #50 (#32, not merged) holds docs/validation/**, test/e2e/** until it merges
