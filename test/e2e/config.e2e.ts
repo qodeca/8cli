@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: GPL-3.0-only
 // SPDX-FileCopyrightText: 2026 Qodeca sp. z o.o.
 
-import { describe, expect, it } from 'vitest';
-import { mkdtempSync, writeFileSync } from 'node:fs';
+import { afterEach, describe, expect, it } from 'vitest';
+import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { apiEnv, errorMessage, json, run8cli } from './setup/helpers.js';
@@ -52,10 +52,19 @@ describe('missing configuration', () => {
 });
 
 describe('config source mismatch (#60)', () => {
+  const tempDirs: string[] = [];
+
+  afterEach(() => {
+    for (const dir of tempDirs.splice(0)) rmSync(dir, { recursive: true, force: true });
+  });
+
   /** A cwd holding an 8cli.json that names `url`. */
-  function configFileCwd(url: string): string {
+  function configFileCwd(url: string, nested = false): string {
     const dir = mkdtempSync(join(tmpdir(), '8cli-config-'));
-    writeFileSync(join(dir, '8cli.json'), JSON.stringify({ url }));
+    tempDirs.push(dir);
+    const fileDir = nested ? join(dir, 'configs') : dir;
+    if (nested) mkdirSync(fileDir);
+    writeFileSync(join(fileDir, '8cli.json'), JSON.stringify({ url }));
     return dir;
   }
 
@@ -69,6 +78,36 @@ describe('config source mismatch (#60)', () => {
   it('refuses before sending a request, not after a network failure', async () => {
     const cwd = configFileCwd('https://127.0.0.1:9');
     const r = await run8cli(['wf', 'list'], { N8N_API_KEY: 'env-key' }, { cwd });
+    expect(r).toFailWithCode('ERR_CONFIG_SOURCE_MISMATCH');
+  });
+
+  it('refuses environment email and password before folder login', async () => {
+    const cwd = configFileCwd('https://127.0.0.1:9');
+    const r = await run8cli(
+      ['folder', 'tree'],
+      { N8N_EMAIL: 'mail@example.com', N8N_PASSWORD: 'password-secret' },
+      { cwd },
+    );
+    expect(r).toFailWithCode('ERR_CONFIG_SOURCE_MISMATCH');
+    expect(errorMessage(r)).toContain('N8N_EMAIL');
+    expect(errorMessage(r)).toContain('N8N_PASSWORD');
+    expect(r.stderr).not.toContain('password-secret');
+  });
+
+  it('refuses a flag API key with an explicit config path', async () => {
+    const cwd = configFileCwd('https://127.0.0.1:9');
+    const r = await run8cli(
+      ['--config', join(cwd, '8cli.json'), '--api-key', 'flag-secret', 'config', 'show'],
+      {},
+      { cwd },
+    );
+    expect(r).toFailWithCode('ERR_CONFIG_SOURCE_MISMATCH');
+    expect(r.stderr).not.toContain('flag-secret');
+  });
+
+  it('refuses a key when config is found under configs/', async () => {
+    const cwd = configFileCwd('https://127.0.0.1:9', true);
+    const r = await run8cli(['config', 'show'], { N8N_API_KEY: 'env-key' }, { cwd });
     expect(r).toFailWithCode('ERR_CONFIG_SOURCE_MISMATCH');
   });
 

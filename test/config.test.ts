@@ -84,6 +84,17 @@ describe('assertSecureUrl', () => {
     expect(() => assertSecureUrl('http://n8n.example.com')).toThrow(/insecure/i);
   });
 
+  it('does not echo URL userinfo in a plaintext-HTTP error', () => {
+    expect(() => assertSecureUrl('http://user:password@n8n.example.com/path')).toThrow(
+      /http:\/\/n8n\.example\.com/,
+    );
+    try {
+      assertSecureUrl('http://user:password@n8n.example.com/path');
+    } catch (error) {
+      expect(String(error)).not.toContain('user:password');
+    }
+  });
+
   it('rejects http on non-loopback IPv6 hosts', () => {
     expect(() => assertSecureUrl('http://[::2]:5678')).toThrow(/insecure/i);
     // The loopback exemption stays narrow: IPv4-mapped forms are not accepted.
@@ -115,6 +126,8 @@ describe('resolveConfig key/URL source matching (#60)', () => {
 
     expect(refusal.code).toBe('ERR_CONFIG_SOURCE_MISMATCH');
     expect(refusal.error).toContain('N8N_URL');
+    expect(refusal.error).not.toContain('env-key');
+    expect(getSecretMock).not.toHaveBeenCalled();
   });
 
   it('refuses a --api-key when the URL comes from the config file', async () => {
@@ -126,6 +139,65 @@ describe('resolveConfig key/URL source matching (#60)', () => {
 
     expect(refusal.code).toBe('ERR_CONFIG_SOURCE_MISMATCH');
     expect(refusal.error).toContain('N8N_URL');
+    expect(refusal.error).not.toContain('flag-key');
+    expect(getSecretMock).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    ['N8N_EMAIL', 'mail@example.com', 'N8N_PASSWORD', ''],
+    ['N8N_EMAIL', '', 'N8N_PASSWORD', 'password-secret'],
+    ['N8N_EMAIL', 'mail@example.com', 'N8N_PASSWORD', 'password-secret'],
+  ])(
+    'refuses environment login credentials with a config-file URL (%s=%s, %s=%s)',
+    async (emailName, email, passwordName, password) => {
+      const config = writeConfigFile('https://other-host.example.com');
+      vi.stubEnv('N8N_URL', '');
+      vi.stubEnv('N8N_API_KEY', '');
+      vi.stubEnv(emailName, email);
+      vi.stubEnv(passwordName, password);
+
+      const refusal = await captureRefusal(() => resolveConfig({ config }));
+
+      expect(refusal.code).toBe('ERR_CONFIG_SOURCE_MISMATCH');
+      if (email) expect(refusal.error).toContain('N8N_EMAIL');
+      if (password) expect(refusal.error).toContain('N8N_PASSWORD');
+      expect(refusal.error).not.toContain('mail@example.com');
+      expect(refusal.error).not.toContain('password-secret');
+      expect(getSecretMock).not.toHaveBeenCalled();
+    },
+  );
+
+  it('prints only the origin of a config-file URL with userinfo', async () => {
+    const config = writeConfigFile('https://user:password@other-host.example.com/path');
+    vi.stubEnv('N8N_API_KEY', 'env-key');
+    const refusal = await captureRefusal(() => resolveConfig({ config }));
+    expect(refusal.error).toContain('https://other-host.example.com');
+    expect(refusal.error).not.toContain('user:password');
+    expect(refusal.error).not.toContain('/path');
+  });
+
+  it.each(['flag', 'env'])('uses an API key with a %s URL over a config file', async (source) => {
+    const config = writeConfigFile('https://other-host.example.com');
+    vi.stubEnv('N8N_URL', source === 'env' ? 'https://n8n.example.com' : '');
+    vi.stubEnv('N8N_API_KEY', 'env-key');
+
+    const resolved = await resolveConfig({
+      config,
+      ...(source === 'flag' ? { url: 'https://n8n.example.com' } : {}),
+    });
+
+    expect(resolved.url).toBe('https://n8n.example.com');
+    expect(resolved.apiKey).toBe('env-key');
+  });
+
+  it('uses environment login credentials with an environment URL over a config file', async () => {
+    const config = writeConfigFile('https://other-host.example.com');
+    vi.stubEnv('N8N_URL', 'https://n8n.example.com');
+    vi.stubEnv('N8N_EMAIL', 'mail@example.com');
+    vi.stubEnv('N8N_PASSWORD', 'password-secret');
+    const resolved = await resolveConfig({ config });
+    expect(resolved.email).toBe('mail@example.com');
+    expect(resolved.password).toBe('password-secret');
   });
 
   it('uses an env API key with an env URL', async () => {

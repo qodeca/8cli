@@ -124,6 +124,11 @@ Configuration is resolved in priority order: **CLI flags → environment variabl
 config file → OS keychain → defaults**. Secrets are **never** written to config files –
 they live in the OS keychain (service name `8cli`).
 
+When the URL comes from a config file, 8cli refuses `N8N_API_KEY`, `N8N_EMAIL`,
+`N8N_PASSWORD` or `--api-key` with `ERR_CONFIG_SOURCE_MISMATCH` before using a credential.
+Set `N8N_URL` or pass `--url` with those credentials, or store credentials in the
+keychain for the file's URL.
+
 - **macOS** – fully supported via the `security` keychain CLI.
 - **Windows / Linux** – keychain backends are stubs and not yet implemented; use the
   `N8N_API_KEY` (and `N8N_EMAIL` / `N8N_PASSWORD`) environment variables in the meantime.
