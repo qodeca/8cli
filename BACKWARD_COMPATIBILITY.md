@@ -21,7 +21,9 @@ JSON on stdout: list commands print arrays, get commands print objects, write co
 `{ "files": [...] }`. A field may be added; an existing field is not removed, renamed or retyped.
 `user list` and `user get` now send `includeRole=true`, so their output carries the additive
 `role` field (for example `global:owner`) that n8n omits otherwise (#40); no existing field
-changed.
+changed. `dt rows --limit` above n8n's 250-row page cap now returns rows instead of
+`ERR_HTTP_400`: the CLI pages at `min(limit, 250)` and still prints the same JSON array, trimmed
+to `--limit` (#41); no field changed.
 
 Key order is not part of this contract: a get command passes n8n's response through, so the order
 of the keys follows the n8n version it talks to. Against n8n 2.40.5, `wf get` returns the 2.40.5
