@@ -59,3 +59,8 @@ Owner chose: "Leader only (Recommended)" – remove it from .claude/settings.jso
 Owner's words (chat), after PR #49 offered Prompt eight, JSON frame and Cut eight:
 
 > I like the Cut eight (option 3)
+
+## 2026-09-24 06:52 – merge permission for the leader (direct question)
+
+Asked: the leader's squash-merge of PR #49 (design-approved, CI green) was denied by the Claude Code auto-mode classifier. Owner merges it, or allow the leader in settings?
+Owner chose: "Allow the leader in settings". The owner adds the rule; the leader does not edit its own permissions.
