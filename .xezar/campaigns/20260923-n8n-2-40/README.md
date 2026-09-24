@@ -68,7 +68,7 @@ Read from read_quota at 19:33. claude × default is the reserved leader login, n
 
 ## Loops
 
-L1 938ef26a (*/10), L2 dec6abf1 (:07), L3 5cb982ac (*/30), re-created 14:01. Unattended ON since 14:24, restarts 0/3. Leader attached to xezar.
+L1 dc98e447 (*/10), L2 7f521448 (:07), L3 f6161025 (*/30), re-created 19:37 after a session restart. Unattended ON since 14:24, restarts 0/3. Leader attached to xezar.
 
 ## Restart
 
