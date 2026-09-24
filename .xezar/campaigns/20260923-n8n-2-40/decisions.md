@@ -69,3 +69,17 @@ Owner chose: "Allow the leader in settings". The owner adds the rule; the leader
 
 Asked: the security re-check of PR #46 at fce0311 found 4 more major points (S-4 docs wording; S-5 symlinked docs dir, S-6 existence probe, S-7 super-linear heading regex in scripts/check-docs.mjs). Third repair round: simpler script (drop link/heading checks), or fix everything?
 Owner chose: "Round 3, fix everything".
+
+## 2026-09-24 08:23 – keychain argv exposure: how to handle it (asked back after unattended mode, direct question)
+
+Owner chose: "Private advisory + fix (Recommended)" – open a private GitHub security advisory, fix src/keychain/macos.ts in the advisory's private fork, publish the advisory with the fix.
+
+Parked by the leader 2026-09-23 23:08 (no public issue filed); owner confirmed the private route.
+
+## 2026-09-24 08:23 – local-n8n script keychain store disabled (asked back after unattended mode, direct question)
+
+Leader asked: keep the env-file-only store and re-enable `--store keychain` after the fix, or keep it off for good. Owner's words:
+
+> is the keychain bug planned to be fixed in this campaing? if not, add it
+
+Leader answered: it was not planned. Added to this campaign: the keychain fix through the private advisory. Parked by the leader 2026-09-23 23:09; the trim stays until that fix lands, then the recorded undo applies (re-enable `--store keychain` in scripts/local-n8n/local-n8n.ts).

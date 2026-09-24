@@ -19,6 +19,7 @@ Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it 
 | #36 | Scripted demo GIF | PR #48 approved + qa-approved at 634e0db, ready | merge (waits on owner rule) |
 | #37 | Logo and banner | PR #49 design-approved, CI green, ready | BLOCKED: merge denied by auto-mode classifier |
 | #52, #53 | [::1] refused; folder move to root (found by #34 docs) | #52 on PR #54 (review next); #53 held (e2e overlap with PR #50, CHANGELOG with #52) | – |
+| (private) | Keychain argv exposure fix (owner added 2026-09-24) | not started | create a private GitHub security advisory draft, fix in its private fork – never on origin; then re-enable --store keychain in scripts/local-n8n |
 | #38 | Local n8n creds per worktree vs shared instance (bug) | ready, not dispatched | after #32/#34/#36 stop using the instance (touches scripts/local-n8n) |
 | #39–#45 | 7 defects found by #32 validation (2 high: #39 sc status route, #42 wf publish drops settings) | #45 PR #51 PR #51 APPROVED + qa-approved at 51a55ed, mergeable; #39-#43 held (each edits test/e2e/**, owned by 94c2ff6c); #44 held (workflow.ts overlap) | dispatch after #32 merges |
 
@@ -46,9 +47,8 @@ Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it 
 ## Owner items
 
 - BLOCKED: leader merge of PR #49 denied by the Claude Code auto-mode classifier even with --allowedTools "Bash(gh pr merge *)". Owner chose "Allow the leader in settings" – owner adds the rule. Mergeable now: #48, #49, #50, #51.
-- Keychain argv finding: PR #46 docs/security.md:50-52 publicly described it (public branch, since 013ae9e). Repair 2 removes it; the text stays in git history. Your call pending from parked.md (private advisory or fix in the open).
+- Keychain argv fix: owner chose a private advisory + fix. Next: confirm the leader may create the draft advisory.
 - Delete branch xez/df01cf60 (record deletion is yours; unattended hard stop).
-- Parked calls in parked.md.
 
 ## Rules that bit
 
