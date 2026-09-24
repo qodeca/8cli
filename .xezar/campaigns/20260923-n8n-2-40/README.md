@@ -37,7 +37,7 @@ Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it 
 
 
 
-Ready for L3 (19:13): PR #81 scoped re-check and re-acceptance at b757ec8 (authors pi, claude/opus). Then merge, release 0.2.0 (owner-authorised).
+Running (19:15): 2e679dea re-check PR #81 (claude/sonnet); 6b5548f3 acceptance 2 PR #81 (codex/gpt-6-sol). Both read-only. Then merge, release 0.2.0 (owner-authorised).
 
 ## Accounts
 
