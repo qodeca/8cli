@@ -1,6 +1,6 @@
 # Campaign 20260923-n8n-2-40
 
-Updated: 2026-09-24 14:37
+Updated: 2026-09-24 14:24
 
 Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it on; plus end-user docs and a polished README (added by owner, see decisions.md). Plan: `plan.md`.
 
@@ -29,7 +29,7 @@ Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it 
 
 - #46 (xez/b25718f0, #34 docs) opened by the agent BEFORE readiness/handoff; no labels, no review, no phase record. CI 3/3 green. Not mergeable until the task finishes its workflow and is reviewed.
 
-## Running tasks and file ownership (14:37)
+## Running tasks and file ownership (14:22)
 
 | Task | Item | Owns |
 |---|---|---|
