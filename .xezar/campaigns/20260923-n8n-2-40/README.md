@@ -33,7 +33,6 @@ Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it 
 
 | Task | Item | Owns |
 |---|---|---|
-| 284c0f45 | PR #65 browser QA (claude/sonnet qodeca-priv) | read-only |
 | 140e6482 | PR #58 conflict repair 2 (codex/gpt-5.6-terra) | CHANGELOG.md (PR #58 branch) |
 | c4fdabbc | #38 local n8n credentials (pi) | scripts/local-n8n/**, its test, docs/runbooks/local-n8n.md |
 | b8bb8392 | PR #63 re-check 2 (claude/sonnet gmail-priv) | read-only |
