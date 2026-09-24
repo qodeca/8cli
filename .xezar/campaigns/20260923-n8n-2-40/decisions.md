@@ -83,3 +83,7 @@ Leader asked: keep the env-file-only store and re-enable `--store keychain` afte
 > is the keychain bug planned to be fixed in this campaing? if not, add it
 
 Leader answered: it was not planned. Added to this campaign: the keychain fix through the private advisory. Parked by the leader 2026-09-23 23:09; the trim stays until that fix lands, then the recorded undo applies (re-enable `--store keychain` in scripts/local-n8n/local-n8n.ts).
+
+## 2026-09-24 08:23 – leader may create the draft advisory (direct question)
+
+Owner chose: "Yes, create the draft (Recommended)".
