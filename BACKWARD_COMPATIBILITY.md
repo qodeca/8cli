@@ -37,9 +37,11 @@ commander's with its `error: ` prefix removed. Until this change they printed a 
 `error: ...` line, which an agent parsing stderr as JSON read as a parse failure; routing them
 through `outputError` is the recorded decision for that break (0.x, so allowed – but not silent).
 
-Help display is not an error and keeps its old shape: `--help`, `--version` and `help [command]`
-write to stdout and exit 0, while the bare invocation and `help <unknown>` print help to stderr
-and exit 1.
+Help display is not an error and keeps its old shape: `--help`, `--version` and `help <command>`
+write to stdout and exit 0, while the bare invocation and a bare command group (`wf`, `dt`, …)
+print help to stderr and exit 1. An unknown command named to `help` is a usage error like any
+other: `8cli help nope` prints `{ "error": "unknown command 'nope'", "code": "ERR_USAGE" }` on
+stderr with exit code 1.
 
 ## 5. Configuration
 

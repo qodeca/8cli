@@ -42,6 +42,19 @@ function readVersion(): string {
 
 const pkg = { version: readVersion() };
 
+// The `help` command names a command to describe. When the name does not resolve,
+// commander answers with a help display instead of an error, so the exit-1 help
+// branch is one of two things: the bare invocation or a bare command group, which
+// is a help display, or `help <unknown>`, which is a usage error. The parsed
+// operands are where commander reports which: the `help` token sits right after
+// the command chain it was invoked on, and in this branch a `help` token that
+// still has a following operand can only be an unknown target (a resolvable one
+// exits 0 above).
+function unknownHelpTarget(args: string[]): string | undefined {
+  const helpIndex = args.indexOf('help');
+  return helpIndex === -1 ? undefined : args[helpIndex + 1];
+}
+
 export function run(): void {
   const program = new Command();
 
@@ -64,18 +77,36 @@ export function run(): void {
   // line without touching `writeErr`, which stays available for anything else.
   // `--help` and `--version` write to stdout and exit 0 before an error is ever
   // raised, so they are re-exited unchanged.
+  //
+  // Commander writes a help display to stderr before it calls the exit override,
+  // so the override cannot decide after the fact what belongs there. The unknown
+  // `help` target is the one stderr help display that is a usage error rather
+  // than a help display, so its text is dropped here and the exit override below
+  // emits the JSON error instead — stderr stays parseable as one thing, not help
+  // text followed by JSON. A bare invocation or bare command group still prints.
   program.configureOutput({
     outputError: () => {},
+    writeErr: (str: string) => {
+      if (unknownHelpTarget(program.args) === undefined) {
+        process.stderr.write(str);
+      }
+    },
   });
   program.exitOverride((err: CommanderError) => {
     if (err.exitCode === 0) {
-      // `--help`, `--version` and `help` already wrote to stdout; re-exit 0.
+      // `--help`, `--version` and `help <command>` already wrote to stdout; re-exit 0.
       process.exit(0);
     }
     if (err.code === 'commander.help') {
-      // The bare invocation and `help <unknown>` display help on stderr with exit 1.
-      // That is a help display, not one of the usage errors routed to JSON, so let
-      // commander exit 1 with the text it already wrote.
+      const unknown = unknownHelpTarget(program.args);
+      if (unknown !== undefined) {
+        // `help <unknown>`: commander could not resolve the named command and fell
+        // back to a help display. That is a usage error like any other, so it gets
+        // the same structured JSON as `8cli <unknown>` does.
+        outputError(`unknown command '${unknown}'`, 'ERR_USAGE', err.exitCode);
+      }
+      // A bare `8cli`, or a bare command group, is a help display and not an error:
+      // let commander exit 1 with the help text it already wrote.
       return;
     }
     outputError(err.message.replace(/^error:\s*/, ''), 'ERR_USAGE', err.exitCode);

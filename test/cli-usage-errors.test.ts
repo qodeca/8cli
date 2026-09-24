@@ -38,6 +38,20 @@ describe('usage errors are structured JSON', () => {
     ['a missing required argument', ['wf', 'get'], "missing required argument 'id'"],
     ['an unknown option', ['wf', 'list', '--nope'], "unknown option '--nope'"],
     ['an unknown command', ['nope'], "unknown command 'nope'"],
+    [
+      'an option missing its argument',
+      ['folder', 'move', 'some-workflow', '--to'],
+      "option '--to <folder>' argument missing",
+    ],
+    [
+      'excess arguments',
+      ['wf', 'get', 'a', 'b'],
+      "too many arguments for 'get'. Expected 1 argument but got 2.",
+    ],
+    // `help` with a name commander cannot resolve used to fall back to a plain
+    // help display on stderr with exit 1; it is the same usage error as an
+    // unknown command typed directly.
+    ['an unknown command named to help', ['help', 'nope'], "unknown command 'nope'"],
   ])('reports %s as ERR_USAGE on stderr and exits 1', (_label, args, message) => {
     const r = run(args);
     expect(r.status).toBe(1);
@@ -73,7 +87,7 @@ describe('help and version are unchanged', () => {
 // the usage errors routed to JSON. They lock the stderr text against a regression
 // where the JSON error is appended after the help text (stderr would stop being
 // parseable as either one thing or the other).
-describe('bare invocation and `help <unknown>` keep their help output', () => {
+describe('bare invocations keep their help output', () => {
   it('prints help to stderr and exits 1 when no command is given', () => {
     const r = run([]);
     expect(r.status).toBe(1);
@@ -82,11 +96,11 @@ describe('bare invocation and `help <unknown>` keep their help output', () => {
     expect(r.stderr).not.toContain('ERR_USAGE');
   });
 
-  it('prints help to stderr and exits 1 for `help <unknown>`', () => {
-    const r = run(['help', 'nope']);
+  it('prints the group help to stderr and exits 1 for a bare command group', () => {
+    const r = run(['wf']);
     expect(r.status).toBe(1);
     expect(r.stdout).toBe('');
-    expect(r.stderr).toContain('Usage: 8cli');
+    expect(r.stderr).toContain('Usage: 8cli workflow|wf');
     expect(r.stderr).not.toContain('ERR_USAGE');
   });
 });
