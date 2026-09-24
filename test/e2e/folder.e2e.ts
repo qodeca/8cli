@@ -7,8 +7,10 @@ import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import {
   apiEnv,
+  createWorkflowFixture,
   errorMessage,
   internalEnv,
+  json,
   LICENSE_GATED,
   run8cli,
   uniqueName,
@@ -22,8 +24,10 @@ import {
 //
 // Login budget: every folder command logs in afresh (sync even before it checks
 // --dir), and n8n allows 5 logins per minute; the 6th waits out a 60 s
-// Retry-After (#47). This file makes exactly 5 (tree, create, both syncs,
-// move) – keep it there. `folder delete` is deferred for that reason.
+// Retry-After (#47). This file makes 6 (tree, create, both syncs, two moves):
+// the 6th, the unknown-workflow move, runs last and carries a 90 s timeout to
+// wait out that Retry-After. Do not add more. `folder delete` is deferred for
+// that reason.
 
 describe('folder credential guard', () => {
   it('requires email/password (internal API)', async () => {
@@ -62,11 +66,30 @@ describe('folder sync / move', () => {
     expect(errorMessage(r)).toMatch(LICENSE_GATED);
   });
 
-  it('move returns a structured error for an unknown workflow', async () => {
+  // #53: the root is n8n's PROJECT_ROOT sentinel ("0"), not null. A root move
+  // skips the (gated) folder list and PATCHes the workflow, so on free
+  // Community it succeeds instead of failing n8n's request schema with
+  // "Expected string, received null". The fixture already sits at root, so
+  // this proves n8n accepts "0", not that a workflow leaves a folder; moving
+  // out of a real folder needs a licensed instance and is unverified.
+  it('move to (root) sends the root sentinel and succeeds', async () => {
+    const wf = await createWorkflowFixture();
+    const r = await run8cli(['folder', 'move', wf.name, '--to', '(root)'], internalEnv());
+    expect(r.exitCode).toBe(0);
+    expect(
+      json<{ moved: { workflowId: string; workflowName: string; toFolder: string } }>(r),
+    ).toEqual({
+      moved: { workflowId: wf.id, workflowName: wf.name, toFolder: '(root)' },
+    });
+  });
+
+  // The 6th login in this file: n8n's 5-per-minute limit makes it wait out a
+  // 60 s Retry-After (#47), hence the longer timeout.
+  it('move returns a structured error for an unknown workflow', { timeout: 90_000 }, async () => {
     const r = await run8cli(['folder', 'move', uniqueName('nowf'), '--to', 'x'], internalEnv());
     expect(r.exitCode).toBe(1);
     // ERR_WORKFLOW_NOT_FOUND if the internal workflow list is reachable, else
-    // ERR_FOLDER_MOVE if it is gated — both are the structured-error contract.
+    // ERR_FOLDER_MOVE if it is gated – both are the structured-error contract.
     expect(['ERR_WORKFLOW_NOT_FOUND', 'ERR_FOLDER_MOVE']).toContain(
       (JSON.parse(r.stderr) as { code: string }).code,
     );
