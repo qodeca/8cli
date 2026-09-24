@@ -12,6 +12,8 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.2.0] – 2026-09-24
+
 ### Fixed
 
 - `wf activate` and `wf deactivate` no longer mistake a missing workflow for a missing route: they fall back from `/publish`/`/unpublish` to the deprecated `/activate`/`/deactivate` only on a `405`, or on a `404` whose body is not n8n's missing-workflow JSON (measured on 2.40.5: `{"message":"You do not have permission to activate this workflow. Ask the owner to share it with you."}`). A bad id now costs one request and keeps its `ERR_WORKFLOW_ACTIVATE` / `ERR_WORKFLOW_DEACTIVATE` error instead of reaching the deprecated route ([#72](https://github.com/qodeca/8cli/issues/72)).
@@ -131,7 +133,8 @@ First public release.
 - Windows/Linux keychain stubs fail with an actionable message instead of silently no-opping.
 - Vulnerability reporting via GitHub private reporting (`SECURITY.md`).
 
-[unreleased]: https://github.com/qodeca/8cli/compare/v0.1.2...HEAD
+[unreleased]: https://github.com/qodeca/8cli/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/qodeca/8cli/compare/v0.1.2...v0.2.0
 [0.1.2]: https://github.com/qodeca/8cli/compare/v0.1.1...v0.1.2
 [0.1.1]: https://github.com/qodeca/8cli/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/qodeca/8cli/releases/tag/v0.1.0
