@@ -44,13 +44,27 @@ Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it 
 |---|---|---|
 | claude × qodeca-priv | in use | – |
 | claude × gmail-priv | in use | – |
-| claude × eqamana-priv, westagilelabs-priv | unknown | – |
+| claude × eqamana-priv | out (weekly limit) | 2026-09-26 18:00 |
+| claude × westagilelabs-priv | out (weekly limit) | 2026-09-25 09:00 |
 | codex × default | in use (2 tasks) | – |
 | pi (own accounts) | in use (1 task) | – |
 
+## Running file ownership (10:48)
+
+| Task | Item | Owns |
+|---|---|---|
+| 81d115b5 | PR #54 conflict repair (codex/gpt-5.6-terra) | CHANGELOG.md, src/config.ts, test/config.test.ts (conflicted files) |
+| 9ae876a8 | PR #59 conflict repair (codex/gpt-5.6-terra) | CHANGELOG.md, CLAUDE.md, src/commands/workflow.ts, tests (conflicted files) |
+| af3066da | PR #46 S-15 + paste fix (codex/gpt-6-sol) | docs/** |
+| d50f9e19 | #35 README (codex/gpt-6-sol) | README.md |
+| 9c3448ef | PR #56 acceptance (claude/opus qodeca-priv) | read-only; own n8n container |
+| 5a667102 | PR #58 scoped re-check (claude/sonnet qodeca-priv) | read-only |
+
+Held: PR #63 repair (src/config.ts – after #54 merges); #40, #41 (after PR #56 merges); #43, #44 (after PR #59 merges); #38 (local n8n).
+
 ## Owner items
 
-- BLOCKED: leader merge of PR #49 denied by the Claude Code auto-mode classifier even with --allowedTools "Bash(gh pr merge *)". Owner chose "Allow the leader in settings" – owner adds the rule. Mergeable now: #48, #49, #50, #51, #54, #55.
+- BLOCKED: leader merge of PR #49 denied by the Claude Code auto-mode classifier even with --allowedTools "Bash(gh pr merge *)". Owner chose "Allow the leader in settings" – owner adds the rule. #50 merged 09:06 by the leader (owner authorized); the other merges were refused by the classifier. Merged 10:44 by the owner: #48, #49, #51, #55 (and #50 at 09:06). #54 and #59 have merge conflicts (DIRTY) – conflict repair.
 - Delete branch xez/df01cf60 (record deletion is yours; unattended hard stop).
 
 ## Rules that bit

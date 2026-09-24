@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="800" viewBox="0 0 800 800" role="img" aria-labelledby="title">
+<!-- SPDX-License-Identifier: GPL-3.0-only -->
+<!-- SPDX-FileCopyrightText: 2026 Qodeca sp. z o.o. -->
+<title id="title">8cli – Cut eight – social, light theme</title>
+<rect width="800" height="800" fill="#F6F8FA"/><g transform="translate(240 104) scale(2.5)"><path fill="#9A5800" fill-rule="evenodd" d="M36 8H92L116 32V48L100 64L116 80V96L92 120H36L12 96V80L28 64L12 48V32ZM49 29L33 45H79L95 29ZM49 83L33 99H79L95 83Z"/></g><g transform="translate(227 476) scale(1.9)"><g fill="none" stroke="#17232F" stroke-width="9" stroke-linecap="square" stroke-linejoin="round">
+<rect x="5" y="5" width="40" height="35" rx="12"/><rect x="5" y="40" width="40" height="40" rx="12"/>
+<path d="M108 30H82Q69 30 69 43V67Q69 80 82 80H108M133 5V80H147M174 32V80"/>
+</g><rect x="169.5" y="6" width="9" height="9" fill="#17232F"/></g><text x="400" y="700" font-family="Menlo,Consolas,monospace" font-size="23" fill="#526171" text-anchor="middle">AI-first. JSON by default.</text>
+</svg>
