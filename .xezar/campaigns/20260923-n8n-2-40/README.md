@@ -1,6 +1,6 @@
 # Campaign 20260923-n8n-2-40
 
-Updated: 2026-09-24 14:45
+Updated: 2026-09-24 15:02
 
 Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it on; plus end-user docs and a polished README (added by owner, see decisions.md). Plan: `plan.md`.
 
@@ -29,12 +29,16 @@ Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it 
 
 - #46 (xez/b25718f0, #34 docs) opened by the agent BEFORE readiness/handoff; no labels, no review, no phase record. CI 3/3 green. Not mergeable until the task finishes its workflow and is reviewed.
 
-## Running tasks and file ownership (14:45)
+## Running tasks and file ownership (15:02)
 
 | Task | Item | Owns |
 |---|---|---|
+| 92d59c4f | PR #68 review (claude/opus qodeca-priv) | read-only |
+| 910c9382 | PR #65 browser evidence 2 (claude/sonnet gmail-priv) | read-only |
+| 354615d5 | PR #71 repair 1 (claude/opus gmail-priv) | scripts/local-n8n/**, test/local-n8n.test.ts, docs/runbooks/local-n8n.md, docs/validation/n8n-2.40.5.md (revert), scripts/demo/record.sh |
+| f534c0a8 | #67 folder --dry (pi) | src/commands/folder.ts, a unit test, test/e2e/folder.e2e.ts (dry-run cases), CHANGELOG.md line |
 
-Queued: #40, #41 (public-api.ts – overlap with PR #68); ready: #67. Held: #43 (--force, after PR #68 merges). PR #65: browser evidence (dark, 375px) after its conflict repair.
+Queued: #40, #41 (public-api.ts – overlap with PR #68). Held: #43 (--force, after PR #68 merges).
 
 ## Accounts
 
