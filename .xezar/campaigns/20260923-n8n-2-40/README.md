@@ -37,7 +37,7 @@ Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it 
 
 Held on file overlap: #72 (src/commands/workflow.ts – PR #74).
 
-Ready for L3 (18:03): PR #74 repair round 2 (acceptance criterion 3 PARTLY MET at f348c7b – --force must not unpublish an unpublished workflow); PR #78 (#47) full review at 0fa5fe8; #77 (user role docs – PR #79 merged, no overlap left). Gate runs 0/2. Filed: #76 (folder --dry docs – waits for PR #78).
+Running (18:05): f5a29c16 repair 2 PR #74 (codex/gpt-6-sol; src/commands/workflow.ts, test/workflow-delete.test.ts, docs/reference/workflow.md, BACKWARD_COMPATIBILITY.md); 8885ba16 review PR #78 (claude/opus, read-only). Gate runs 1/2, metered 1/4. Held: #77 (test/e2e/COVERAGE.md – PR #74, PR #78); #76 (folder docs – PR #78).
 
 ## Accounts
 
