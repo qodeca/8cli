@@ -69,7 +69,7 @@ With nothing configured:
 
 ```json
 {
-  "error": "Refusing to use an insecure (http://) URL \"http://[::1]:5678\" – the API key would be sent in plaintext. Use an https:// URL, or pass --insecure to override (not recommended).",
+  "error": "Refusing to use an insecure (http://) URL \"http://n8n.example.test:5678\" – the API key would be sent in plaintext. Use an https:// URL, or pass --insecure to override (not recommended).",
   "code": "ERR_CONFIG"
 }
 ```

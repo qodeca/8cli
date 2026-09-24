@@ -147,9 +147,8 @@ and `N8N_API_KEY` together for each project using a small wrapper or `direnv`.
 8cli refuses a plain `http://` URL, because the API key would travel unencrypted. Two
 exceptions:
 
-- **Local addresses are allowed:** `http://localhost` and `http://127.0.0.1`, on any port,
-  work without any flag. The IPv6 form `http://[::1]` is refused in 8cli 0.1.2 – use
-  `http://127.0.0.1` or add `--insecure`.
+- **Local addresses are allowed:** `http://localhost`, `http://127.0.0.1` and the IPv6 form
+  `http://[::1]`, on any port, work without any flag.
 - **`--insecure`** allows any `http://` URL. Use it only on a network you trust.
 
 See [security notes](security.md#plain-http-urls).
