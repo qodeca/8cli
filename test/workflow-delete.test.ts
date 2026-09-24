@@ -14,7 +14,8 @@ import {
 // Regression coverage for issue #43: n8n 2.40.5 refuses to delete a published (active)
 // workflow, and it unpublishes asynchronously, so a DELETE issued straight after an
 // unpublish is refused too – with a 409 "still being unpublished", or with a bare 500.
-// `wf delete --force` must unpublish and then wait that transient state out.
+// `wf delete --force` must unpublish published workflows and then wait that transient
+// state out; it must delete unpublished workflows directly.
 //
 // The failing run this locks (recorded in the task evidence): with the naive
 // `deactivateWorkflow()` + `deleteWorkflow()` sequence, the "waits out the 409" case below
@@ -64,9 +65,26 @@ describe('wf delete without --force (#43)', () => {
 });
 
 describe('wf delete --force (#43)', () => {
-  it('unpublishes before deleting', async () => {
+  it('deletes an unpublished workflow without unpublishing', async () => {
+    const { client, getWorkflow, deactivateWorkflow, deleteWorkflow: del } = makeClient();
+
+    await expect(deleteWorkflow(client, 'wf1', { force: true })).resolves.toEqual({
+      id: 'wf1',
+      deleted: true,
+    });
+    expect(getWorkflow).toHaveBeenCalledOnce();
+    expect(deactivateWorkflow).not.toHaveBeenCalled();
+    expect(del).toHaveBeenCalledOnce();
+    expect(del).toHaveBeenCalledWith('wf1');
+  });
+
+  it('unpublishes a published workflow before deleting', async () => {
     const order: string[] = [];
-    const { client, deactivateWorkflow, deleteWorkflow: del } = makeClient();
+    const { client, getWorkflow, deactivateWorkflow, deleteWorkflow: del } = makeClient();
+    getWorkflow.mockImplementation(async (id) => {
+      order.push('get');
+      return workflow(id, true);
+    });
     deactivateWorkflow.mockImplementation(async (id) => {
       order.push('unpublish');
       return workflow(id, false);
@@ -80,11 +98,12 @@ describe('wf delete --force (#43)', () => {
       id: 'wf1',
       deleted: true,
     });
-    expect(order).toEqual(['unpublish', 'delete']);
+    expect(order).toEqual(['get', 'unpublish', 'delete']);
   });
 
   it('does not delete when the unpublish fails', async () => {
-    const { client, deactivateWorkflow, deleteWorkflow: del } = makeClient();
+    const { client, getWorkflow, deactivateWorkflow, deleteWorkflow: del } = makeClient();
+    getWorkflow.mockResolvedValue(workflow('wf1', true));
     deactivateWorkflow.mockRejectedValue(apiError(403, 'Forbidden'));
 
     await expect(deleteWorkflow(client, 'wf1', { force: true })).rejects.toMatchObject({
@@ -98,7 +117,8 @@ describe('wf delete --force (#43)', () => {
   // The red-without-fix case: a naive unpublish-then-delete rethrows the first 409, so the
   // retry (and the delete) never happen.
   it('waits out the 409 n8n 2.40 leaves while the unpublish settles', async () => {
-    const { client, deleteWorkflow: del } = makeClient();
+    const { client, getWorkflow, deleteWorkflow: del } = makeClient();
+    getWorkflow.mockResolvedValue(workflow('wf1', true));
     del.mockRejectedValueOnce(apiError(409, STILL_UNPUBLISHING));
 
     await expect(deleteWorkflow(client, 'wf1', { force: true })).resolves.toEqual({
@@ -109,7 +129,8 @@ describe('wf delete --force (#43)', () => {
   });
 
   it('also waits out the bare 500 the same race produces', async () => {
-    const { client, deleteWorkflow: del } = makeClient();
+    const { client, getWorkflow, deleteWorkflow: del } = makeClient();
+    getWorkflow.mockResolvedValue(workflow('wf1', true));
     del.mockRejectedValueOnce(apiError(500, 'Internal server error'));
 
     await expect(deleteWorkflow(client, 'wf1', { force: true })).resolves.toEqual({
@@ -117,6 +138,19 @@ describe('wf delete --force (#43)', () => {
       deleted: true,
     });
     expect(del).toHaveBeenCalledTimes(2);
+  });
+
+  it('keeps the delete error for a missing workflow', async () => {
+    const { client, getWorkflow, deactivateWorkflow, deleteWorkflow: del } = makeClient();
+    getWorkflow.mockRejectedValue(apiError(404, 'Not Found'));
+    del.mockRejectedValue(apiError(404, 'Not Found'));
+
+    await expect(deleteWorkflow(client, 'missing', { force: true })).rejects.toMatchObject({
+      statusCode: 404,
+      message: 'Not Found',
+    });
+    expect(deactivateWorkflow).not.toHaveBeenCalled();
+    expect(del).toHaveBeenCalledOnce();
   });
 
   it('gives up when the settling state never clears and surfaces the refusal', async () => {

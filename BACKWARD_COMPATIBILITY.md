@@ -31,7 +31,9 @@ JSON on stdout: list commands print arrays, get commands print objects, write co
 (`true` when the workflow is published and `--force` was given, so the run would unpublish it
 first) and `wouldBeRefused` (`true` when the workflow is published and `--force` was not given,
 so n8n would refuse the delete). Both are `false` for an unpublished workflow. The dry run still
-exits 0 in every case. The normal delete output `{ "id", "deleted": true }` is unchanged.
+exits 0 in every case. With `--force`, the real run reads the workflow and unpublishes it only
+when published; an unpublished workflow gets a plain delete. The normal delete output
+`{ "id", "deleted": true }` is unchanged.
 
 Key order is not part of this contract: a get command passes n8n's response through, so the order
 of the keys follows the n8n version it talks to. Against n8n 2.40.5, `wf get` returns the 2.40.5

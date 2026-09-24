@@ -178,8 +178,9 @@ export function withDeleteHint(message: string, id: string): string {
  * Delete a workflow, optionally unpublishing it first (#43).
  *
  * Without `force`, n8n's own refusal is passed through (the caller appends the hint).
- * With `force`, the workflow is unpublished first and then deleted, waiting out the
- * transient state 2.40 leaves while an unpublish settles.
+ * With `force`, a published workflow is unpublished before deletion, waiting out the
+ * transient state 2.40 leaves while an unpublish settles. An unpublished workflow
+ * is deleted directly.
  *
  * `dry` reports what this run, with these flags, would do and sends no write request. It
  * reads the workflow to learn whether it is published: with `force` a published workflow
@@ -203,8 +204,12 @@ export async function deleteWorkflow(
   }
 
   if (options.force) {
-    await client.deactivateWorkflow(id);
-    await deleteAfterUnpublish(client, id);
+    if (await isPublished(client, id)) {
+      await client.deactivateWorkflow(id);
+      await deleteAfterUnpublish(client, id);
+    } else {
+      await client.deleteWorkflow(id);
+    }
   } else {
     await client.deleteWorkflow(id);
   }

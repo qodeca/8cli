@@ -336,9 +336,11 @@ through, with the way out appended:
 }
 ```
 
-With `--force`, 8cli unpublishes the workflow (`POST /workflows/{id}/unpublish`), waits for
-that to settle – 2.40 finishes it asynchronously – and then deletes it. Unpublishing stops the
-workflow's production triggers, which is why it takes the flag.
+With `--force`, 8cli reads the workflow first. If it is published, 8cli unpublishes it
+(`POST /workflows/{id}/unpublish`), waits for that to settle – 2.40 finishes it
+asynchronously – and then deletes it. An unpublished workflow gets a plain delete, without
+an unpublish request. Unpublishing stops the workflow's production triggers, which is why it
+takes the flag.
 
 Honours `--dry`: it reads the workflow and reports what this run, with the flags given, would
 do, without sending any write request. For a published workflow, `--dry --force` reports
