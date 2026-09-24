@@ -93,15 +93,15 @@ Tables are for people. Scripts and agents should read the JSON.
 
 Shows what a command would do and changes nothing. **Only these commands honour it:**
 
-| Command       | What `--dry` returns                                            |
-| ------------- | --------------------------------------------------------------- |
-| `wf save`     | `{ "dryRun": true, "files": [...] }` – the files it would write |
-| `wf publish`  | `{ "updated", "created", "errors", "dryRun": true }`            |
-| `wf delete`   | `{ "dryRun": true, "id": "…", "deleted": false }`               |
-| `dt create`   | `{ "dry": true, "action": "create", "name", "columns" }`        |
-| `dt delete`   | `{ "dry": true, "action": "delete", "id" }`                     |
-| `dt insert`   | `{ "dry": true, "action": "insert", "id", "rowCount" }`         |
-| `folder sync` | `{ "dry": true, "moved": [...], "created": [...] }`             |
+| Command       | What `--dry` returns                                                |
+| ------------- | ------------------------------------------------------------------- |
+| `wf save`     | `{ "dryRun": true, "files": [...] }` – the files it would write     |
+| `wf publish`  | `{ "updated", "created", "errors", "dryRun": true }`                |
+| `wf delete`   | `{ "dryRun": true, "id": "…", "deleted": false, "wouldUnpublish" }` |
+| `dt create`   | `{ "dry": true, "action": "create", "name", "columns" }`            |
+| `dt delete`   | `{ "dry": true, "action": "delete", "id" }`                         |
+| `dt insert`   | `{ "dry": true, "action": "insert", "id", "rowCount" }`             |
+| `folder sync` | `{ "dry": true, "moved": [...], "created": [...] }`                 |
 
 > **Warning:** every other command **ignores `--dry` and makes the change.** `8cli --dry tag
 delete <id>` deletes the tag. The same goes for `wf activate`, `wf deactivate`, `exec delete`,
@@ -118,7 +118,8 @@ Note the two spellings: the `wf` commands say `dryRun`, the `dt` and `folder` co
 {
   "dryRun": true,
   "id": "H1lrBYWCZUIi7zgE",
-  "deleted": false
+  "deleted": false,
+  "wouldUnpublish": false
 }
 ```
 

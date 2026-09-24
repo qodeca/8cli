@@ -15,10 +15,18 @@ The global options (`--url`, `--api-key`, `--config`, `--table`, `--dry`, `--ver
 `--insecure`) and every subcommand flag. A flag may gain a new value; it may not change the
 meaning of an existing one.
 
+`wf delete` gained `--force` (#43): it unpublishes a published workflow before deleting it. The
+flag is additive – without it `wf delete` still refuses a published workflow rather than
+unpublishing one, and `--dry` keeps its meaning of "send no write request".
+
 ## 3. Output shapes
 
 JSON on stdout: list commands print arrays, get commands print objects, write commands report
 `{ "files": [...] }`. A field may be added; an existing field is not removed, renamed or retyped.
+
+`wf delete --dry` gained the field `wouldUnpublish` (`true` when the workflow is published, so
+a delete would unpublish it first). The normal delete output `{ "id", "deleted": true }` is
+unchanged.
 
 Key order is not part of this contract: a get command passes n8n's response through, so the order
 of the keys follows the n8n version it talks to. Against n8n 2.40.5, `wf get` returns the 2.40.5
@@ -29,6 +37,9 @@ n8n-side changes – no 8cli code changed for them.
 
 Errors are `{ "error": "...", "code": "ERR_..." }` on stderr with exit code 1. Error codes are a
 contract: callers branch on them.
+
+`wf delete` on a published workflow keeps n8n's refusal and its `ERR_WORKFLOW_DELETE` code and
+exit status, and now appends a hint naming the way out (`wf deactivate`, or `--force`) (#43).
 
 Commander's own usage errors – a missing required option or argument, an option missing its
 argument, an unknown option or command, excess arguments – are errors like any other: they print

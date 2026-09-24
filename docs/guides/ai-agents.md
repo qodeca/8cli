@@ -102,7 +102,8 @@ with `{`, the agent should re-read `--help`. See
 {
   "dryRun": true,
   "id": "Jr53yjULv3JYJRgF",
-  "deleted": false
+  "deleted": false,
+  "wouldUnpublish": false
 }
 ```
 

@@ -7,6 +7,7 @@ import { basename, join, resolve } from 'node:path';
 import { createTwoFilesPatch } from 'diff';
 import { resolveConfig } from '../config.js';
 import { PublicApiClient } from '../client/public-api.js';
+import { ApiRequestError } from '../client/base.js';
 import { output, outputJson, outputError } from '../formatters/index.js';
 import type { Config, Workflow } from '../types.js';
 
@@ -132,6 +133,122 @@ function stripDates(obj: Record<string, unknown>): Record<string, unknown> {
   delete copy.updatedAt;
   delete copy.createdAt;
   return copy;
+}
+
+// ── Delete helpers (#43) ─────────────────────────────────────────────────────
+
+/**
+ * n8n >= 2.40 refuses to delete a published (active) workflow with this message.
+ * Without `--force`, `wf delete` passes n8n's refusal through and appends a way out.
+ */
+const PUBLISHED_DELETE_REFUSAL = 'Cannot delete a published workflow';
+
+/**
+ * n8n 2.40 unpublishes asynchronously: a DELETE issued while the unpublish is still
+ * settling is refused with this message, and the same DELETE a moment later succeeds.
+ * Measured on a throwaway 2.40.5 container: 32/32 unpublish-then-delete runs on a
+ * schedule- or webhook-trigger workflow hit it (or the bare 500 below) on the first try.
+ */
+const STILL_UNPUBLISHING = 'Workflow is still being unpublished';
+
+/** n8n's generic body for the same settling race (measured on 2.40.5). */
+const INTERNAL_SERVER_ERROR = 'Internal server error';
+
+/** How long `wf delete --force` waits for its own unpublish to settle. */
+const UNPUBLISH_SETTLE_TIMEOUT_MS = 15_000;
+const UNPUBLISH_SETTLE_POLL_MS = 250;
+
+/** The slice of PublicApiClient the delete flow uses (a fake satisfies it in unit tests). */
+export interface WorkflowDeleteClient {
+  getWorkflow(id: string): Promise<Workflow>;
+  deactivateWorkflow(id: string): Promise<Workflow>;
+  deleteWorkflow(id: string): Promise<Workflow>;
+}
+
+/** Append the way out to n8n's published-workflow refusal; leave every other error alone. */
+export function withDeleteHint(message: string): string {
+  if (!message.includes(PUBLISHED_DELETE_REFUSAL)) return message;
+  return (
+    `${message} Run "8cli wf deactivate <id>" first, ` +
+    'or pass --force to unpublish and delete in one step.'
+  );
+}
+
+/**
+ * Delete a workflow, optionally unpublishing it first (#43).
+ *
+ * Without `force`, n8n's own refusal is passed through (the caller appends the hint).
+ * With `force`, the workflow is unpublished first and then deleted, waiting out the
+ * transient state 2.40 leaves while an unpublish settles.
+ *
+ * `dry` reports which of the two a real run would do and sends no write request; it
+ * reads the workflow only to answer `wouldUnpublish` (published workflows need one).
+ */
+export async function deleteWorkflow(
+  client: WorkflowDeleteClient,
+  id: string,
+  options: { force?: boolean; dry?: boolean } = {},
+): Promise<Record<string, unknown>> {
+  if (options.dry) {
+    return {
+      dryRun: true,
+      id,
+      deleted: false,
+      wouldUnpublish: await isPublished(client, id),
+    };
+  }
+
+  if (options.force) {
+    await client.deactivateWorkflow(id);
+    await deleteAfterUnpublish(client, id);
+  } else {
+    await client.deleteWorkflow(id);
+  }
+
+  return { id, deleted: true };
+}
+
+/** Whether a workflow is published. A workflow that does not exist is not. */
+async function isPublished(client: WorkflowDeleteClient, id: string): Promise<boolean> {
+  try {
+    return (await client.getWorkflow(id)).active === true;
+  } catch (err) {
+    // The dry run never failed on a missing workflow before `wouldUnpublish` existed, and
+    // a workflow that cannot be read is not a published one. Other errors still surface.
+    if (err instanceof ApiRequestError && err.statusCode === 404) return false;
+    throw err;
+  }
+}
+
+/**
+ * DELETE a workflow, retrying while n8n still reports the unpublish in progress.
+ * A different refusal (403, a settled 409, a 404) is not retried.
+ */
+export async function deleteAfterUnpublish(
+  client: WorkflowDeleteClient,
+  id: string,
+  options: { timeoutMs?: number; pollMs?: number } = {},
+): Promise<void> {
+  const timeoutMs = options.timeoutMs ?? UNPUBLISH_SETTLE_TIMEOUT_MS;
+  const pollMs = options.pollMs ?? UNPUBLISH_SETTLE_POLL_MS;
+  const deadline = Date.now() + timeoutMs;
+
+  for (;;) {
+    try {
+      await client.deleteWorkflow(id);
+      return;
+    } catch (err) {
+      if (!isUnpublishSettling(err) || Date.now() >= deadline) throw err;
+      await new Promise((resolve) => setTimeout(resolve, pollMs));
+    }
+  }
+}
+
+/** The transient 2.40 state a delete must wait out, not a real refusal. */
+function isUnpublishSettling(err: unknown): boolean {
+  if (!(err instanceof ApiRequestError)) return false;
+  if (err.statusCode === 500) return err.message.includes(INTERNAL_SERVER_ERROR);
+  return err.statusCode === 409 && err.message.includes(STILL_UNPUBLISHING);
 }
 
 // ── Command registration ─────────────────────────────────────────────────────
@@ -352,20 +469,18 @@ export function registerWorkflowCommands(program: Command): void {
   wf.command('delete')
     .description('Delete a workflow')
     .argument('<id>', 'Workflow ID')
-    .action(async (id: string) => {
+    .option('--force', 'Unpublish the workflow first if it is published')
+    .action(async (id: string, opts: { force?: boolean }) => {
       try {
         const config = await resolveConfig(program.opts());
         const client = createClient(config);
-
-        if (config.dry) {
-          outputJson({ dryRun: true, id, deleted: false });
-          return;
-        }
-
-        await client.deleteWorkflow(id);
-        outputJson({ id, deleted: true });
+        const result = await deleteWorkflow(client, id, { force: opts.force, dry: config.dry });
+        outputJson(result);
       } catch (err) {
-        outputError(err instanceof Error ? err.message : String(err), 'ERR_WORKFLOW_DELETE');
+        const message = err instanceof Error ? err.message : String(err);
+        // Only the unflagged path keeps n8n's refusal, so only it gets the hint; a
+        // `--force` run that still failed already tried the way out.
+        outputError(opts.force ? message : withDeleteHint(message), 'ERR_WORKFLOW_DELETE');
       }
     });
 

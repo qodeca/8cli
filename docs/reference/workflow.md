@@ -319,10 +319,29 @@ No options. Ignores `--dry`.
 Deletes a workflow from n8n. Its executions go with it. Local files are not touched.
 
 ```text
-8cli wf delete <id>
+8cli wf delete <id> [--force]
 ```
 
-No options. Honours `--dry`.
+| Option    | Required | Meaning                                                  |
+| --------- | -------- | -------------------------------------------------------- |
+| `--force` | No       | Unpublish the workflow first if it is published (active) |
+
+n8n 2.40 refuses to delete a published workflow. Without `--force` that refusal is passed
+through, with the way out appended:
+
+```json
+{
+  "error": "Cannot delete a published workflow. Unpublish it before deleting. Run \"8cli wf deactivate <id>\" first, or pass --force to unpublish and delete in one step.",
+  "code": "ERR_WORKFLOW_DELETE"
+}
+```
+
+With `--force`, 8cli unpublishes the workflow (`POST /workflows/{id}/unpublish`), waits for
+that to settle – 2.40 finishes it asynchronously – and then deletes it. Unpublishing stops the
+workflow's production triggers, which is why it takes the flag.
+
+Honours `--dry`: it reads the workflow and reports whether an unpublish would come first,
+without sending any write request.
 
 ```bash
 8cli --dry wf delete H1lrBYWCZUIi7zgE
@@ -332,12 +351,17 @@ No options. Honours `--dry`.
 {
   "dryRun": true,
   "id": "H1lrBYWCZUIi7zgE",
-  "deleted": false
+  "deleted": false,
+  "wouldUnpublish": true
 }
 ```
 
+`wouldUnpublish` is `true` when the workflow is currently published (`active`), whether or not
+`--force` was given: it says the delete needs an unpublish step, not that this run will take
+it.
+
 ```bash
-8cli wf delete H1lrBYWCZUIi7zgE
+8cli wf delete H1lrBYWCZUIi7zgE --force
 ```
 
 ```json
@@ -347,8 +371,9 @@ No options. Honours `--dry`.
 }
 ```
 
-**Output:** `{ id, deleted: true }`; with `--dry`, `{ dryRun: true, id, deleted: false }`. The
-dry run does not check that the workflow exists.
+**Output:** `{ id, deleted: true }`; with `--dry`,
+`{ dryRun: true, id, deleted: false, wouldUnpublish }`. A dry run on a workflow that does not
+exist still reports `wouldUnpublish: false` rather than failing.
 
 **Errors:** `ERR_WORKFLOW_DELETE` (for example `Not Found`).
 

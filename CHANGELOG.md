@@ -32,6 +32,11 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   returns the bracketed hostname `[::1]`, which the loopback check did not match. The
   exemption stays narrow – other IPv6 hosts are still refused (#52).
 
+- `wf delete` gains `--force`, which unpublishes a published (active) workflow and then deletes
+  it, waiting out n8n 2.40's asynchronous unpublish (a 409/500 the immediate retry clears);
+  without the flag the refusal keeps n8n's message and adds a hint to run `wf deactivate` first,
+  and `--dry` now reports `wouldUnpublish` without sending a write request (#43).
+
 ### Changed
 
 - Commander's own usage errors (a missing required option or argument, an option missing its

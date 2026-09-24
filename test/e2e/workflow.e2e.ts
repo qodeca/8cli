@@ -107,7 +107,13 @@ describe('wf delete', () => {
     const wf = await createWorkflowFixture();
     const dry = await run8cli(['wf', 'delete', wf.id, '--dry'], apiEnv());
     expect(dry.exitCode).toBe(0);
-    expect(dry.json).toMatchObject({ dryRun: true, deleted: false });
+    // #43: --dry now also says whether an unpublish would come first.
+    expect(dry.json).toMatchObject({
+      dryRun: true,
+      id: wf.id,
+      deleted: false,
+      wouldUnpublish: false,
+    });
     // Still present
     const got = await run8cli(['wf', 'get', wf.id], apiEnv());
     expect(got.exitCode).toBe(0);
@@ -265,6 +271,8 @@ describe('wf delete of a published workflow (changed in n8n 2.40, #43)', () => {
     const refused = await run8cli(['wf', 'delete', wf.id], apiEnv());
     expect(refused).toFailWithCode('ERR_WORKFLOW_DELETE');
     expect(refused.stderr).toContain('Cannot delete a published workflow');
+    // #43: the unflagged refusal now names the way out.
+    expect(errorMessage(refused)).toContain('wf deactivate');
     expect((await run8cli(['wf', 'get', wf.id], apiEnv())).exitCode).toBe(0); // nothing half-deleted
 
     expect((await run8cli(['wf', 'deactivate', wf.id], apiEnv())).exitCode).toBe(0);
@@ -277,6 +285,43 @@ describe('wf delete of a published workflow (changed in n8n 2.40, #43)', () => {
       expect(errorMessage(r)).toContain(STILL_UNPUBLISHING);
       return undefined;
     });
+    expect(del.json).toEqual({ id: wf.id, deleted: true });
+    expect(await run8cli(['wf', 'get', wf.id], apiEnv())).toFailWithCode('ERR_WORKFLOW_GET');
+  });
+
+  it('--dry on a published workflow says it would unpublish and changes nothing', async () => {
+    const wf = await createWorkflowFixture({ withTrigger: true });
+    expect((await run8cli(['wf', 'activate', wf.id], apiEnv())).exitCode).toBe(0);
+
+    // With and without --force: --dry still previews the same unpublish step and
+    // sends no write request (the --force run must not unpublish behind the preview).
+    for (const args of [
+      ['wf', 'delete', wf.id, '--dry'],
+      ['wf', 'delete', wf.id, '--force', '--dry'],
+    ]) {
+      const dry = await run8cli(args, apiEnv());
+      expect(dry.exitCode).toBe(0);
+      expect(dry.json).toMatchObject({
+        dryRun: true,
+        id: wf.id,
+        deleted: false,
+        wouldUnpublish: true,
+      });
+    }
+
+    const got = await run8cli(['wf', 'get', wf.id], apiEnv());
+    expect(got.exitCode).toBe(0);
+    expect(json<{ active: boolean }>(got).active).toBe(true); // still published
+  });
+
+  it('deletes a published workflow in one step with --force', async () => {
+    const wf = await createWorkflowFixture({ withTrigger: true });
+    expect((await run8cli(['wf', 'activate', wf.id], apiEnv())).exitCode).toBe(0);
+
+    // 2.40 unpublishes asynchronously, so this one invocation must wait the settling
+    // state out itself – no waitFor around it, or the retry would not be exercised.
+    const del = await run8cli(['wf', 'delete', wf.id, '--force'], apiEnv());
+    expect(del.exitCode).toBe(0);
     expect(del.json).toEqual({ id: wf.id, deleted: true });
     expect(await run8cli(['wf', 'get', wf.id], apiEnv())).toFailWithCode('ERR_WORKFLOW_GET');
   });
