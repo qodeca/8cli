@@ -100,3 +100,11 @@ Owner: "Leave it, publish soon (Recommended)"
 Asked: merge the ready PRs (#48, #49, #50, #51, #54, #55); merge the private GHSA-h6g4-mq8c-5chp fix and publish the advisory; PR #46 "split out the checker" (leader's pick) or "round 4".
 Owner: "do all of that yourself, you have my authorization"
 Leader reading: PR #46 takes the leader's recommendation, split out the checker.
+
+## 2026-09-24 09:53 – env API key sent to the host named in a project config file (owner, AskUserQuestion)
+Question: the 7ae5940f review found that an N8N_API_KEY from the environment is used with a URL taken from a cwd 8cli.json; private advisory or public fix?
+Owner: "Fix it in public"
+
+## 2026-09-24 09:53 – PR #46 repair round after the split (owner, AskUserQuestion)
+Question: 4 doc fixes (S-11..S-14), then an other-vendor security sign-off. Go ahead?
+Owner: "Yes, repair round (Recommended)"
