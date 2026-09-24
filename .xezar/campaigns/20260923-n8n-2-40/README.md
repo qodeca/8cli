@@ -14,7 +14,7 @@ Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it 
 |---|---|---|---|
 | #31 | Local n8n 2.40.5 environment | DONE – #33 merged as fb4c612, issue closed | – |
 | #32 | Validate every command on 2.40.5 | PR #50 APPROVED at e8efaee, CI green | merge (waits on owner settings rule); unblocks #39-#43 |
-| #34 | End-user docs in docs/ | PR #46 repair 1 done at 013ae9e | code APPROVED (f0bd0691); security REQUEST CHANGES (3 major) | repair round 2 (security only; last before owner) |
+| #34 | End-user docs in docs/ | PR #46 repair 1 done at 013ae9e | code APPROVED (f0bd0691); security REQUEST CHANGES (3 major) | repair round 2 c3edf2b2 running (security only; last before owner) |
 | #35 | README (badges, demo, logo) | held | needs #36 merged and #37 direction picked |
 | #36 | Scripted demo GIF | PR #48 approved + qa-approved at 634e0db, ready | merge (waits on owner rule) |
 | #37 | Logo and banner | PR #49 design-approved, CI green, ready | BLOCKED: merge denied by auto-mode classifier |
@@ -26,6 +26,9 @@ Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it 
 - #46 (xez/b25718f0, #34 docs) opened by the agent BEFORE readiness/handoff; no labels, no review, no phase record. CI 3/3 green. Not mergeable until the task finishes its workflow and is reviewed.
 
 ## Running tasks and file ownership
+
+- c3edf2b2 (pi/deepseek-flash, PR #46 repair 2) owns docs/security.md, docs/reference/auth.md, scripts/check-docs.mjs, one new test
+- a1ec1e39 (claude/sonnet qodeca-priv, file 2 defects) – tracker only
 
 
 - PR #50 (#32, not merged) holds docs/validation/**, test/e2e/** until it merges
