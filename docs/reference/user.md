@@ -23,13 +23,14 @@ No options.
 [
   {
     "id": "a4e2380e-75bb-4d1d-a147-e0d420b5a5ad",
-    "email": "owner@example.com"
+    "email": "owner@example.com",
+    "role": "global:owner"
   }
 ]
 ```
 
-**Output:** an array of `{ id, email, role }`. **`role` is left out when n8n does not send it,
-and n8n 2.40.5 does not**, so on 2.40.5 you get `{ id, email }`.
+**Output:** an array of `{ id, email, role }`. 8cli sends `includeRole=true`, so n8n returns the
+role and the command prints it (for example `global:owner`).
 
 **Errors:** `ERR_USER_LIST`.
 
@@ -52,14 +53,15 @@ No options.
   "id": "a4e2380e-75bb-4d1d-a147-e0d420b5a5ad",
   "email": "owner@example.com",
   "firstName": "Local",
-  "lastName": "Owner"
+  "lastName": "Owner",
+  "role": "global:owner"
 }
 ```
 
 `8cli user get owner@example.com` returns the same user.
 
-**Output:** `{ id, email, firstName, lastName, role }`; as with `user list`, `role` is missing on
-n8n 2.40.5.
+**Output:** `{ id, email, firstName, lastName, role }`; as with `user list`, 8cli asks n8n to
+include the role, so it is printed (for example `global:owner`).
 
 **Errors:** `ERR_USER_GET`, for example:
 

@@ -93,22 +93,33 @@ Tables are for people. Scripts and agents should read the JSON.
 
 Shows what a command would do and changes nothing. **Only these commands honour it:**
 
-| Command       | What `--dry` returns                                                                  |
-| ------------- | ------------------------------------------------------------------------------------- |
-| `wf save`     | `{ "dryRun": true, "files": [...] }` – the files it would write                       |
-| `wf publish`  | `{ "updated", "created", "errors", "dryRun": true }`                                  |
-| `wf delete`   | `{ "dryRun": true, "id": "…", "deleted": false, "wouldUnpublish", "wouldBeRefused" }` |
-| `dt create`   | `{ "dry": true, "action": "create", "name", "columns" }`                              |
-| `dt delete`   | `{ "dry": true, "action": "delete", "id" }`                                           |
-| `dt insert`   | `{ "dry": true, "action": "insert", "id", "rowCount" }`                               |
-| `folder sync` | `{ "dry": true, "moved": [...], "created": [...] }`                                   |
+| Command         | What `--dry` returns                                                                  |
+| --------------- | ------------------------------------------------------------------------------------- |
+| `wf save`       | `{ "dryRun": true, "files": [...] }` – the files it would write                       |
+| `wf publish`    | `{ "updated", "created", "errors", "dryRun": true }`                                  |
+| `wf delete`     | `{ "dryRun": true, "id": "…", "deleted": false, "wouldUnpublish", "wouldBeRefused" }` |
+| `dt create`     | `{ "dry": true, "action": "create", "name", "columns" }`                              |
+| `dt delete`     | `{ "dry": true, "action": "delete", "id" }`                                           |
+| `dt insert`     | `{ "dry": true, "action": "insert", "id", "rowCount" }`                               |
+| `folder create` | `{ "dryRun": true, "id": null, "name", "parentFolder" }`                              |
+| `folder delete` | `{ "dryRun": true, "deleted": { "id": null, "name" } }`                               |
+| `folder move`   | `{ "dryRun": true, "moved": { "workflowId": null, "workflowName", "toFolder" } }`     |
+| `folder sync`   | `{ "dry": true, "moved": [...], "created": [...] }`                                   |
 
 > **Warning:** every other command **ignores `--dry` and makes the change.** `8cli --dry tag
 delete <id>` deletes the tag. The same goes for `wf activate`, `wf deactivate`, `exec delete`,
 > `cred delete`, `cred transfer`, `tag create|update|delete`, `var set|delete`,
-> `proj create|update|delete`, `folder create|delete|move` and `sc pull`.
+> `proj create|update|delete` and `sc pull`.
 
-Note the two spellings: the `wf` commands say `dryRun`, the `dt` and `folder` commands say `dry`.
+`folder create`, `folder delete` and `folder move` build their preview from the arguments and
+send **no request**, so they do not check that the workflow or folder exists: the ids in the
+preview are `null`, and `folder create` reports the parent by name (`parentFolder`), not as the
+`parentFolderId` the real run returns. They still need email and password configured
+(`ERR_NO_CREDENTIALS`), but no login is sent. `folder sync` is the exception: its preview reads
+n8n's folder and workflow lists to compute the target paths, so it does make requests.
+
+Note the spelling split: `wf` and `folder create|delete|move` say `dryRun`; `dt` and
+`folder sync` say `dry`.
 
 ```bash
 8cli --dry wf delete H1lrBYWCZUIi7zgE
