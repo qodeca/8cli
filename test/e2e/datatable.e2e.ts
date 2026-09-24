@@ -5,7 +5,15 @@ import { mkdtempSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { apiEnv, apiFetch, json, run8cli, track, uniqueName } from './setup/helpers.js';
+import {
+  apiEnv,
+  apiFetch,
+  errorMessage,
+  json,
+  run8cli,
+  track,
+  uniqueName,
+} from './setup/helpers.js';
 import { snapshotJson } from './setup/redact.js';
 
 const COLUMNS = '[{"name":"label","type":"string"}]';
@@ -140,5 +148,60 @@ describe('datatable rows --limit and --table', () => {
     expect(r.exitCode).toBe(0);
     // sizeBytes 4096 is SQLite's default page size for an empty table on the pinned n8n image – not machine-dependent.
     await expect(snapshotJson(r.json)).toMatchFileSnapshot('./__snapshots__/dt-get.json');
+  });
+});
+
+// n8n-side refusals across the boundary (n8n 2.40.5 validation, #32).
+describe('datatable refusals from n8n', () => {
+  it('relays a duplicate name as 409 and creates nothing', async () => {
+    const dt = await makeTable();
+    const dup = await run8cli(['dt', 'create', '--name', dt.name, '--columns', COLUMNS], apiEnv());
+    expect(dup).toFailWithCode('ERR_HTTP_409');
+    expect(errorMessage(dup)).toContain('already exists');
+    const list = json<Array<{ name: string }>>(await run8cli(['dt', 'list'], apiEnv()));
+    expect(list.filter((t) => t.name === dt.name)).toHaveLength(1);
+  });
+
+  it('relays an unsupported column type as 400', async () => {
+    const r = await run8cli(
+      ['dt', 'create', '--name', uniqueName('dt'), '--columns', '[{"name":"a","type":"weird"}]'],
+      apiEnv(),
+    );
+    expect(r).toFailWithCode('ERR_HTTP_400');
+    expect(errorMessage(r)).toContain('columns/0/type');
+  });
+
+  it('refuses a row with an unknown column and inserts nothing', async () => {
+    const dt = await makeTable();
+    const r = await run8cli(
+      ['dt', 'insert', dt.id, '--data', '[{"label":"ok"},{"nope":1}]'],
+      apiEnv(),
+    );
+    expect(r).toFailWithCode('ERR_HTTP_400');
+    expect(errorMessage(r)).toContain("unknown column name 'nope'");
+    const rows = await run8cli(['dt', 'rows', dt.id], apiEnv());
+    expect(rows.json).toEqual([]); // the valid first row was not half-inserted
+  });
+
+  it('reports a deleted table as 404', async () => {
+    const dt = await makeTable();
+    expect((await run8cli(['dt', 'delete', dt.id], apiEnv())).exitCode).toBe(0);
+    expect(await run8cli(['dt', 'delete', dt.id], apiEnv())).toFailWithCode('ERR_HTTP_404');
+  });
+
+  it('accepts --limit at the n8n page maximum (250)', async () => {
+    const dt = await makeTable();
+    await run8cli(['dt', 'insert', dt.id, '--data', '[{"label":"a"},{"label":"b"}]'], apiEnv());
+    const r = await run8cli(['dt', 'rows', dt.id, '--limit', '250'], apiEnv());
+    expect(r.exitCode).toBe(0);
+    expect(json<unknown[]>(r)).toHaveLength(2);
+  });
+
+  it.fails('honours --limit above the n8n page maximum (#41)', async () => {
+    const dt = await makeTable();
+    await run8cli(['dt', 'insert', dt.id, '--data', '[{"label":"a"},{"label":"b"}]'], apiEnv());
+    const r = await run8cli(['dt', 'rows', dt.id, '--limit', '300'], apiEnv());
+    expect(r.exitCode).toBe(0);
+    expect(json<unknown[]>(r)).toHaveLength(2);
   });
 });

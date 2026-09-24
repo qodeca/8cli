@@ -64,3 +64,47 @@ Owner's words (chat), after PR #49 offered Prompt eight, JSON frame and Cut eigh
 
 Asked: the leader's squash-merge of PR #49 (design-approved, CI green) was denied by the Claude Code auto-mode classifier. Owner merges it, or allow the leader in settings?
 Owner chose: "Allow the leader in settings". The owner adds the rule; the leader does not edit its own permissions.
+
+## 2026-09-24 08:18 – PR #46 third repair round (direct question)
+
+Asked: the security re-check of PR #46 at fce0311 found 4 more major points (S-4 docs wording; S-5 symlinked docs dir, S-6 existence probe, S-7 super-linear heading regex in scripts/check-docs.mjs). Third repair round: simpler script (drop link/heading checks), or fix everything?
+Owner chose: "Round 3, fix everything".
+
+## 2026-09-24 08:23 – keychain argv exposure: how to handle it (asked back after unattended mode, direct question)
+
+Owner chose: "Private advisory + fix (Recommended)" – open a private GitHub security advisory, fix src/keychain/macos.ts in the advisory's private fork, publish the advisory with the fix.
+
+Parked by the leader 2026-09-23 23:08 (no public issue filed); owner confirmed the private route.
+
+## 2026-09-24 08:23 – local-n8n script keychain store disabled (asked back after unattended mode, direct question)
+
+Leader asked: keep the env-file-only store and re-enable `--store keychain` after the fix, or keep it off for good. Owner's words:
+
+> is the keychain bug planned to be fixed in this campaing? if not, add it
+
+Leader answered: it was not planned. Added to this campaign: the keychain fix through the private advisory. Parked by the leader 2026-09-23 23:09; the trim stays until that fix lands, then the recorded undo applies (re-enable `--store keychain` in scripts/local-n8n/local-n8n.ts).
+
+## 2026-09-24 08:23 – leader may create the draft advisory (direct question)
+
+Owner chose: "Yes, create the draft (Recommended)".
+
+## 2026-09-24 08:24 – how the private fix is made (direct question)
+
+Owner chose: "Custom task, fork only (Recommended)" – one task with inline steps and no public handoff; it pushes only to the private fork and opens the PR there. An exception to the workflow-dispatch rule, for this task only.
+
+## 2026-09-24 08:52 – public campaign notes and the private finding (owner, AskUserQuestion)
+Question: the public campaign notes name the code part behind the privately handled finding; what to do?
+Owner: "Leave it, publish soon (Recommended)"
+
+## 2026-09-24 09:05 – leader acts on the pending owner steps (owner, chat)
+Asked: merge the ready PRs (#48, #49, #50, #51, #54, #55); merge the private GHSA-h6g4-mq8c-5chp fix and publish the advisory; PR #46 "split out the checker" (leader's pick) or "round 4".
+Owner: "do all of that yourself, you have my authorization"
+Leader reading: PR #46 takes the leader's recommendation, split out the checker.
+
+## 2026-09-24 09:53 – env API key sent to the host named in a project config file (owner, AskUserQuestion)
+Question: the 7ae5940f review found that an N8N_API_KEY from the environment is used with a URL taken from a cwd 8cli.json; private advisory or public fix?
+Owner: "Fix it in public"
+
+## 2026-09-24 09:53 – PR #46 repair round after the split (owner, AskUserQuestion)
+Question: 4 doc fixes (S-11..S-14), then an other-vendor security sign-off. Go ahead?
+Owner: "Yes, repair round (Recommended)"

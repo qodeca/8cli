@@ -2,7 +2,15 @@
 // SPDX-FileCopyrightText: 2026 Qodeca sp. z o.o.
 
 import { describe, expect, it } from 'vitest';
-import { apiEnv, apiFetch, json, run8cli, track, uniqueName } from './setup/helpers.js';
+import {
+  apiEnv,
+  apiFetch,
+  errorMessage,
+  json,
+  run8cli,
+  track,
+  uniqueName,
+} from './setup/helpers.js';
 
 async function makeTag(): Promise<{ id: string; name: string }> {
   const name = uniqueName('tag');
@@ -42,5 +50,17 @@ describe('tag lifecycle', () => {
   it('reports a structured error deleting a missing tag', async () => {
     const r = await run8cli(['tag', 'delete', '999999'], apiEnv());
     expect(r).toFailWithCode('ERR_TAG_DELETE');
+  });
+
+  it('relays n8n refusing a duplicate name, and a rename of a missing tag', async () => {
+    const tag = await makeTag();
+    const dup = await run8cli(['tag', 'create', tag.name], apiEnv());
+    expect(dup).toFailWithCode('ERR_TAG_CREATE');
+    expect(errorMessage(dup)).toBe('Tag already exists');
+    const list = json<Array<{ name: string }>>(await run8cli(['tag', 'list'], apiEnv()));
+    expect(list.filter((t) => t.name === tag.name)).toHaveLength(1); // no second tag
+
+    const missing = await run8cli(['tag', 'update', '999999', '--name', uniqueName('t')], apiEnv());
+    expect(missing).toFailWithCode('ERR_TAG_UPDATE');
   });
 });

@@ -2,7 +2,7 @@
 // SPDX-FileCopyrightText: 2026 Qodeca sp. z o.o.
 
 import { describe, expect, it } from 'vitest';
-import { apiEnv, run8cli } from './setup/helpers.js';
+import { apiEnv, errorMessage, LICENSE_GATED, run8cli } from './setup/helpers.js';
 
 describe('source-control', () => {
   it('push reports the unsupported-operation contract (no network needed)', async () => {
@@ -18,10 +18,20 @@ describe('source-control', () => {
   it('pull returns a structured error on a free container', async () => {
     const r = await run8cli(['sc', 'pull'], apiEnv());
     expect(r).toFailWithCode('ERR_SOURCE_CONTROL');
+    expect(errorMessage(r)).toMatch(LICENSE_GATED);
   });
 
   it('pull --force returns a structured error on a free container', async () => {
     const r = await run8cli(['sc', 'pull', '--force'], apiEnv());
     expect(r).toFailWithCode('ERR_SOURCE_CONTROL');
+    expect(errorMessage(r)).toMatch(LICENSE_GATED);
+  });
+
+  // sc status calls GET /api/v1/source-control/preferences, which n8n does not
+  // have, so it fails with "not found" instead of the license gate (#39).
+  it.fails('status reaches the license gate, not a missing route (#39)', async () => {
+    const r = await run8cli(['sc', 'status'], apiEnv());
+    expect(r).toFailWithCode('ERR_SOURCE_CONTROL');
+    expect(errorMessage(r)).toMatch(LICENSE_GATED);
   });
 });

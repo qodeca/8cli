@@ -9,10 +9,13 @@ import {
   apiEnv,
   apiFetch,
   createWorkflowFixture,
+  errorMessage,
   json,
   run8cli,
+  STILL_UNPUBLISHING,
   track,
   uniqueName,
+  waitFor,
 } from './setup/helpers.js';
 import { snapshotJson } from './setup/redact.js';
 
@@ -221,5 +224,152 @@ describe('wf save (all workflows)', () => {
     const save = await run8cli(['wf', 'save', '--dir', dir], apiEnv());
     expect(save.exitCode).toBe(0);
     expect(json<{ files: string[] }>(save).files).toHaveLength(count);
+  });
+});
+
+// ── n8n 2.40.5 validation (#32) ──────────────────────────────────────────────
+
+const SCHEDULE_NODE = {
+  id: 'sched1',
+  name: 'Schedule',
+  type: 'n8n-nodes-base.scheduleTrigger',
+  typeVersion: 1.2,
+  position: [0, 0],
+  parameters: { rule: { interval: [{ field: 'hours', hoursInterval: 1 }] } },
+};
+
+describe('wf delete of a published workflow (changed in n8n 2.40, #43)', () => {
+  it('is refused while active and succeeds after deactivate', async () => {
+    const wf = await createWorkflowFixture({ withTrigger: true });
+    expect((await run8cli(['wf', 'activate', wf.id], apiEnv())).exitCode).toBe(0);
+
+    const refused = await run8cli(['wf', 'delete', wf.id], apiEnv());
+    expect(refused).toFailWithCode('ERR_WORKFLOW_DELETE');
+    expect(refused.stderr).toContain('Cannot delete a published workflow');
+    expect((await run8cli(['wf', 'get', wf.id], apiEnv())).exitCode).toBe(0); // nothing half-deleted
+
+    expect((await run8cli(['wf', 'deactivate', wf.id], apiEnv())).exitCode).toBe(0);
+    // Unpublishing settles asynchronously in 2.40: a delete straight after
+    // deactivate may get a transient 409, which is the only refusal retried.
+    const del = await waitFor('wf delete after deactivate', async () => {
+      const r = await run8cli(['wf', 'delete', wf.id], apiEnv());
+      if (r.exitCode === 0) return r;
+      expect(r).toFailWithCode('ERR_WORKFLOW_DELETE');
+      expect(errorMessage(r)).toContain(STILL_UNPUBLISHING);
+      return undefined;
+    });
+    expect(del.json).toEqual({ id: wf.id, deleted: true });
+    expect(await run8cli(['wf', 'get', wf.id], apiEnv())).toFailWithCode('ERR_WORKFLOW_GET');
+  });
+});
+
+describe('wf publish to an active workflow', () => {
+  it('updates the published version, not only the draft', async () => {
+    const wf = await createWorkflowFixture({ withTrigger: true });
+    expect((await run8cli(['wf', 'activate', wf.id], apiEnv())).exitCode).toBe(0);
+    const dir = mkdtempSync(join(tmpdir(), '8cli-live-'));
+    expect((await run8cli(['wf', 'save', '--id', wf.id, '--dir', dir], apiEnv())).exitCode).toBe(0);
+    const path = join(dir, readdirSync(dir)[0]);
+    const local = JSON.parse(readFileSync(path, 'utf-8')) as {
+      nodes: Array<typeof SCHEDULE_NODE>;
+    };
+    local.nodes[0].parameters.rule.interval[0].hoursInterval = 2;
+    writeFileSync(path, JSON.stringify(local));
+
+    const pub = await run8cli(['wf', 'publish', '--file', path], apiEnv());
+    expect(pub.exitCode).toBe(0);
+    expect(json<{ errors: unknown[] }>(pub).errors).toEqual([]);
+
+    const remote = (await (await apiFetch(`/api/v1/workflows/${wf.id}`)).json()) as {
+      active: boolean;
+      versionId: string;
+      activeVersionId: string | null;
+      activeVersion: { nodes: Array<typeof SCHEDULE_NODE> } | null;
+    };
+    expect(remote.active).toBe(true);
+    expect(remote.activeVersionId).toBe(remote.versionId);
+    expect(remote.activeVersion?.nodes[0].parameters.rule.interval[0].hoursInterval).toBe(2);
+  });
+});
+
+describe('n8n PUT /workflows/{id} gotchas (CLAUDE.md)', () => {
+  // Raw requests: these lock n8n's side of the boundary that stripForPublish()
+  // relies on, so a future n8n bump shows exactly which rule moved.
+  async function put(id: string, body: Record<string, unknown>): Promise<[number, string]> {
+    const res = await apiFetch(`/api/v1/workflows/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(body),
+    });
+    return [res.status, await res.text()];
+  }
+
+  it('accepts the stripped shape and refuses each field the gotchas name', async () => {
+    const wf = await createWorkflowFixture({ withTrigger: true });
+    const base = {
+      name: wf.name,
+      nodes: [SCHEDULE_NODE],
+      connections: {},
+      settings: { executionOrder: 'v1' },
+    };
+
+    // Positive control: exactly what stripForPublish() sends.
+    expect((await put(wf.id, { ...base, staticData: null }))[0]).toBe(200);
+
+    // Gotcha 1: extra top-level fields are rejected.
+    const [junkStatus, junkBody] = await put(wf.id, { ...base, junkField: 1 });
+    expect(junkStatus).toBe(400);
+    expect(junkBody).toContain('junkField');
+    expect(await put(wf.id, { ...base, id: wf.id })).toEqual([
+      400,
+      expect.stringContaining('request/body/id is read-only'),
+    ]);
+
+    // Gotcha 2: active is read-only.
+    expect(await put(wf.id, { ...base, active: true })).toEqual([
+      400,
+      expect.stringContaining('request/body/active is read-only'),
+    ]);
+
+    // Gotcha 3 (partly stale, #42): unknown settings keys are rejected…
+    const [bogusStatus, bogusBody] = await put(wf.id, {
+      ...base,
+      settings: { executionOrder: 'v1', bogusKey: 1 },
+    });
+    expect(bogusStatus).toBe(400);
+    expect(bogusBody).toContain('bogusKey');
+    // …but n8n's own settings keys are accepted, so executionOrder-only is not required.
+    expect(
+      (
+        await put(wf.id, { ...base, settings: { executionOrder: 'v1', timezone: 'Europe/Warsaw' } })
+      )[0],
+    ).toBe(200);
+
+    // settings itself is required.
+    const noSettings = { name: base.name, nodes: base.nodes, connections: base.connections };
+    expect(await put(wf.id, noSettings)).toEqual([
+      400,
+      expect.stringContaining("must have required property 'settings'"),
+    ]);
+  });
+
+  it.fails('wf publish keeps a settings key n8n accepts (#42)', async () => {
+    const wf = await createWorkflowFixture();
+    const dir = mkdtempSync(join(tmpdir(), '8cli-settings-'));
+    const file = join(dir, `${wf.id}_settings.json`);
+    writeFileSync(
+      file,
+      JSON.stringify({
+        id: wf.id,
+        name: wf.name,
+        nodes: [],
+        connections: {},
+        settings: { executionOrder: 'v1', timezone: 'Europe/Warsaw' },
+      }),
+    );
+    expect((await run8cli(['wf', 'publish', '--file', file], apiEnv())).exitCode).toBe(0);
+    const got = await run8cli(['wf', 'get', wf.id], apiEnv());
+    expect(json<{ settings: Record<string, unknown> }>(got).settings.timezone).toBe(
+      'Europe/Warsaw',
+    );
   });
 });
