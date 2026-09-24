@@ -6,7 +6,7 @@ Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it 
 
 ## State
 
-- Base `develop` at 28af672. Merges this campaign: 16 (#33, #50, #48, #49, #51, #55, #54, #59, #46, #56, #63, #58, #68, #65, #71, #73). Checkpoints met: 1 (#31 closed).
+- Base `develop` at 78009d1. Merges this campaign: 17 (#33, #50, #48, #49, #51, #55, #54, #59, #46, #56, #63, #58, #68, #65, #71, #73, #75). Checkpoints met: 1 (#31 closed).
 
 ## Work
 
@@ -35,9 +35,9 @@ Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it 
 |---|---|---|
 | e080520d | #40 user role (pi) | src/client/public-api.ts (listUsers/getUser), a unit test, test/e2e/user.e2e.ts, test/e2e/__snapshots__/user-get.json, CHANGELOG.md line |
 
-Held on file overlap (not a ceiling): #41, #72 (src/client/public-api.ts – PR #75).
+Queued (2-gate-run ceiling): #41, #72 (src/client/public-api.ts, free since #75 merged).
 
-Running (16:47): 6097dacc repair 1 PR #74 (claude/opus; src/commands/workflow.ts, test/workflow-delete.test.ts, docs/reference/workflow.md, docs/global-options.md, docs/guides/ai-agents.md, BACKWARD_COMPATIBILITY.md); 1846bd98 acceptance PR #75 (claude/opus, read-only); 3781f67f bug-fix #47 (pi; src/client/internal-api.ts, src/commands/folder.ts). Gate runs 2/2. Filed: #76 (folder --dry docs – waits for #47, folder docs).
+Running (16:47): 6097dacc repair 1 PR #74 (claude/opus; src/commands/workflow.ts, test/workflow-delete.test.ts, docs/reference/workflow.md, docs/global-options.md, docs/guides/ai-agents.md, BACKWARD_COMPATIBILITY.md); 3781f67f bug-fix #47 (pi; src/client/internal-api.ts, src/commands/folder.ts). Gate runs 2/2. Filed: #76 (folder --dry docs – waits for #47, folder docs); #77 (user role docs).
 
 ## Accounts
 
