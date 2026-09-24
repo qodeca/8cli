@@ -37,7 +37,7 @@ Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it 
 
 
 
-Next (23:48): release PR #82 merged as 790a081. Now develop -> main PR (check, e2e, e2e-macos green on main), signed tag v0.2.0, GitHub Release, owner approves the release environment, verify npm.
+Next (23:48): release PR #82 merged as 790a081. develop -> main PR #83 open, CI running (check, e2e, e2e-macos green on main), signed tag v0.2.0, GitHub Release, owner approves the release environment, verify npm.
 
 ## Accounts
 
