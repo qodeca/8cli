@@ -173,6 +173,7 @@ describe('resolveConfig key/URL source matching (#60)', () => {
     url.username = 'user';
     url.password = 'password';
     const config = writeConfigFile(url.href);
+    vi.stubEnv('N8N_URL', '');
     vi.stubEnv('N8N_API_KEY', 'env-key');
     const refusal = await captureRefusal(() => resolveConfig({ config }));
     expect(refusal.error).toContain('https://other-host.example.com');
