@@ -6,7 +6,7 @@ Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it 
 
 ## State
 
-- Base `develop` at ac312ab. Merges this campaign: 18 (#33, #50, #48, #49, #51, #55, #54, #59, #46, #56, #63, #58, #68, #65, #71, #73, #75, #79). Checkpoints met: 1 (#31 closed).
+- Base `develop` at c4bbce6. Merges this campaign: 20 (#33, #50, #48, #49, #51, #55, #54, #59, #46, #56, #63, #58, #68, #65, #71, #73, #75, #79, #74, #78). Checkpoints met: 1 (#31 closed).
 
 ## Work
 
@@ -35,9 +35,9 @@ Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it 
 |---|---|---|
 | e080520d | #40 user role (pi) | src/client/public-api.ts (listUsers/getUser), a unit test, test/e2e/user.e2e.ts, test/e2e/__snapshots__/user-get.json, CHANGELOG.md line |
 
-Held on file overlap: #72 (src/commands/workflow.ts – PR #74).
 
-Running (18:27): 791a0b39 re-check PR #74, dfe9d67d acceptance 2 PR #74, 12e975f1 re-check PR #78, 1a1c22f9 acceptance PR #78 (all read-only). Gate runs 0/2, metered 0/4. Held: #77 (test/e2e/COVERAGE.md – PR #74, PR #78); #76 (folder docs – PR #78); #72 (workflow.ts – PR #74).
+
+Ready for L3 (18:33): #72 bug-fix (src/commands/workflow.ts, src/client/public-api.ts); #76 docs (folder --dry); #77 docs (user role). Then release 0.2.0 (owner-authorised). Gate runs 0/2.
 
 ## Accounts
 
