@@ -34,9 +34,7 @@ Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it 
 | Task | Item | Owns |
 |---|---|---|
 | f534c0a8 | #67 folder --dry (pi) | src/commands/folder.ts, a unit test, test/e2e/folder.e2e.ts (dry-run cases), CHANGELOG.md line |
-| 354615d5 | PR #71 repair 1 (claude/opus gmail-priv) – at handoff | scripts/local-n8n/**, test/local-n8n.test.ts, docs/runbooks/local-n8n.md, scripts/demo/record.sh |
 | 705ea61d | #43 wf delete --force (pi) | src/commands/workflow.ts (wf delete), a unit test, test/e2e/workflow.e2e.ts (delete cases), docs/reference wf delete page, CHANGELOG.md line |
-| 9bf62125 | PR #71 re-check (claude/sonnet qodeca-priv) | read-only |
 
 Queued (2-gate-run ceiling): #40, #41, #72 (all touch src/client/public-api.ts).
 
