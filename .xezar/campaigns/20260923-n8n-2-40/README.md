@@ -14,21 +14,28 @@ Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it 
 |---|---|---|---|
 | #31 | Local n8n 2.40.5 environment | DONE – #33 merged as fb4c612, issue closed | – |
 | #32 | Validate every command on 2.40.5 | PR #50 APPROVED at e8efaee, CI green | merge (waits on owner settings rule); unblocks #39-#43 |
-| #34 | End-user docs in docs/ | PR #46 repair 1 done at 013ae9e | code APPROVED (f0bd0691); security REQUEST CHANGES (3 major) | repair round 2 c3edf2b2 running (security only; last before owner) |
+| #34 | End-user docs in docs/ | PR #46 repair 1 done at 013ae9e | code APPROVED (f0bd0691); security REQUEST CHANGES (3 major) | fce0311: code APPROVED, security REQUEST CHANGES (S-4..S-7) | repair round 3 e22b046a running (owner: fix everything) |
 | #35 | README (badges, demo, logo) | held | needs #36 merged and #37 direction picked |
 | #36 | Scripted demo GIF | PR #48 approved + qa-approved at 634e0db, ready | merge (waits on owner rule) |
 | #37 | Logo and banner | PR #49 design-approved, CI green, ready | BLOCKED: merge denied by auto-mode classifier |
+| #52, #53 | [::1] refused; folder move to root (found by #34 docs) | #52 on PR #54 (review 5d3ab2ef running); #53 held (e2e overlap with PR #50, CHANGELOG with #52) | – |
+| GHSA-h6g4-mq8c-5chp | Private advisory fix (owner added 2026-09-24) | fix fd18e29c running in the private fork | owner publishes the advisory |
 | #38 | Local n8n creds per worktree vs shared instance (bug) | ready, not dispatched | after #32/#34/#36 stop using the instance (touches scripts/local-n8n) |
 | #39–#45 | 7 defects found by #32 validation (2 high: #39 sc status route, #42 wf publish drops settings) | #45 PR #51 PR #51 APPROVED + qa-approved at 51a55ed, mergeable; #39-#43 held (each edits test/e2e/**, owned by 94c2ff6c); #44 held (workflow.ts overlap) | dispatch after #32 merges |
 
 ## Open pull requests
 
+- #55 (owner, Codex login default -> codex-cli, routing.json): security review a8e9b04c running; engine knows codex-cli.
+
 - #46 (xez/b25718f0, #34 docs) opened by the agent BEFORE readiness/handoff; no labels, no review, no phase record. CI 3/3 green. Not mergeable until the task finishes its workflow and is reviewed.
 
 ## Running tasks and file ownership
 
-- c3edf2b2 (pi/deepseek-flash, PR #46 repair 2) owns docs/security.md, docs/reference/auth.md, scripts/check-docs.mjs, one new test
-- a1ec1e39 (claude/sonnet qodeca-priv, file 2 defects) – tracker only
+- e22b046a (pi, PR #46 round 3) owns docs/security.md, scripts/check-docs.mjs, test/check-docs.test.ts
+- fd18e29c (pi, GHSA fix, private fork only) owns src/keychain/macos.ts, one unit test, CHANGELOG.md line
+- 5d3ab2ef (claude/opus qodeca-priv, review PR #54), a8e9b04c (claude/opus qodeca-priv, security PR #55) – read-only
+
+
 
 
 - PR #50 (#32, not merged) holds docs/validation/**, test/e2e/** until it merges
@@ -46,9 +53,7 @@ Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it 
 ## Owner items
 
 - BLOCKED: leader merge of PR #49 denied by the Claude Code auto-mode classifier even with --allowedTools "Bash(gh pr merge *)". Owner chose "Allow the leader in settings" – owner adds the rule. Mergeable now: #48, #49, #50, #51.
-- Keychain argv finding: PR #46 docs/security.md:50-52 publicly described it (public branch, since 013ae9e). Repair 2 removes it; the text stays in git history. Your call pending from parked.md (private advisory or fix in the open).
 - Delete branch xez/df01cf60 (record deletion is yours; unattended hard stop).
-- Parked calls in parked.md.
 
 ## Rules that bit
 
