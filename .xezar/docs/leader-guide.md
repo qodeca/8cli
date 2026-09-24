@@ -132,6 +132,14 @@ Standing rules the owner added with `xez-add-rule`, each in their exact words wi
   next dispatch (owner 2026-09-24).
 - At the third repair round on the same piece of work, offer "split the helper into its own
   PR" as one option (owner 2026-09-24).
+- A "gate run" is the full check suite
+  (`.xezar/checks/repo-gates.sh`) while it is actually running. A task
+  counts toward the 2-gate-run ceiling only while its current step is a
+  check step (`readiness`, `gates` or `evidence`), not for its whole life.
+  Code-change tasks may run in parallel up to the other ceilings (10
+  tasks, 4 metered-tool tasks, load 18) and file overlap; the engine's
+  `gateSlots` lease queues check suites that reach the gate at the same
+  time (owner 2026-09-24).
 
 ## One-page checklist
 
