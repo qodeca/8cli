@@ -19,9 +19,10 @@ representative success shapes. A **gated** test also checks the message is n8n's
 license refusal – a code-only check once passed on a 404 from a route that does
 not exist (#39).
 
-**fails: #N** marks an `it.fails` case for a known defect: it passes while the
-defect exists and fails once it is fixed, so the fix removes `.fails`. The
-defects and the 2.40.5 validation are in `docs/validation/n8n-2.40.5.md`.
+**(#N)** marks a regression case for a defect found by the 2.40.5 validation.
+Each one started as an `it.fails` case that passed while the defect existed; the
+fix removed `.fails`, and no `it.fails` case remains. The defects and the
+validation are in `docs/validation/n8n-2.40.5.md`.
 
 | Command     | Subcommand                     | Covered branches                                                                                                            | Spec                                       |
 | ----------- | ------------------------------ | --------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------ |
@@ -35,7 +36,7 @@ defects and the 2.40.5 validation are in `docs/validation/n8n-2.40.5.md`.
 | wf          | list                           | happy, table, snap (item)                                                                                                   | `e2e/workflow.e2e.ts`                      |
 | wf          | get                            | happy, 404, no-key, snap                                                                                                    | `e2e/workflow.e2e.ts`                      |
 | wf          | save                           | happy (`--id`), happy (all)                                                                                                 | `e2e/workflow.e2e.ts`                      |
-| wf          | publish                        | update (+gotcha strip), create, dry, ERR_NO_FILES, active → live version, settings (fails: #42)                             | `e2e/workflow.e2e.ts`                      |
+| wf          | publish                        | update (+gotcha strip), create, dry, ERR_NO_FILES, active → live version, settings (#42)                                    | `e2e/workflow.e2e.ts`                      |
 | wf          | activate / deactivate          | happy (trigger)                                                                                                             | `e2e/workflow.e2e.ts`                      |
 | wf          | delete                         | happy, dry (wouldUnpublish/wouldBeRefused × --force), published → refused (409) + hint, after deactivate, `--force` delete  | `e2e/workflow.e2e.ts`                      |
 | wf          | diff                           | both branches (no-diff JSON, raw diff)                                                                                      | `e2e/workflow.e2e.ts`                      |
@@ -48,7 +49,7 @@ defects and the 2.40.5 validation are in `docs/validation/n8n-2.40.5.md`.
 | tag         | create/list/update/delete      | happy, table, 404, duplicate name                                                                                           | `e2e/tag.e2e.ts`                           |
 | var         | list/set/delete                | gated                                                                                                                       | `e2e/variable.e2e.ts`                      |
 | proj        | list/create/update/delete      | gated                                                                                                                       | `e2e/project.e2e.ts`                       |
-| user        | list/get                       | happy, 404, snap, role (fails: #40)                                                                                         | `e2e/user.e2e.ts`                          |
+| user        | list/get                       | happy, 404, snap, role (#40)                                                                                                | `e2e/user.e2e.ts`                          |
 | folder      | tree                           | gated, no-credentials                                                                                                       | `e2e/folder.e2e.ts`                        |
 | folder      | create                         | gated                                                                                                                       | `e2e/folder.e2e.ts`                        |
 | folder      | sync                           | ERR_DIR_NOT_FOUND, gated                                                                                                    | `e2e/folder.e2e.ts`                        |

@@ -91,7 +91,12 @@ On Community:
 | ----------------- | -------- | ----------------------------------------------------------- |
 | `--parent <name>` | No       | Create inside the folder with this name; default: top level |
 
-Ignores `--dry`.
+Honours `--dry`: prints
+`{ "dryRun": true, "id": null, "name": "<name>", "parentFolder": "<--parent, or null>" }`
+and sends no request. The preview is built from the arguments, so it does not check that the
+parent folder exists: `id` is `null`, and the parent appears by its **name** (`parentFolder`),
+not the `parentFolderId` the real run returns. Email, password and URL must still be
+configured (`ERR_NO_CREDENTIALS`, `ERR_NO_URL`), but no login is sent.
 
 **Output:** `{ id, name, parentFolderId }` – `parentFolderId` is `null` for a top-level folder.
 
@@ -114,7 +119,10 @@ Deletes a folder. The command is meant for empty folders: move the workflows out
 8cli folder delete <name>
 ```
 
-No options. Ignores `--dry`.
+No options. Honours `--dry`: prints
+`{ "dryRun": true, "deleted": { "id": null, "name": "<name>" } }` and sends no request, so it
+does not check that the folder exists. Email, password and URL must still be
+configured (`ERR_NO_CREDENTIALS`, `ERR_NO_URL`), but no login is sent.
 
 **Output:** `{ deleted: { id, name } }`.
 
@@ -141,7 +149,11 @@ Moves a workflow, found by its name, into a folder.
 | --------------- | -------- | ------------------------------------------------------------------- |
 | `--to <folder>` | Yes      | Name of the target folder, or `(root)` to take it out of any folder |
 
-Ignores `--dry`. Quote names with spaces.
+Honours `--dry`: prints
+`{ "dryRun": true, "moved": { "workflowId": null, "workflowName": "<name>", "toFolder": "<--to value>" } }`
+and sends no request. The preview does not check that the workflow or the target folder exists,
+so `workflowId` is `null`. Email, password and URL must still be configured (`ERR_NO_CREDENTIALS`,
+`ERR_NO_URL`), but no login is sent. Quote names with spaces.
 
 **Output:** `{ moved: { workflowId, workflowName, toFolder } }` – `toFolder` is the `--to` value
 as you typed it.
@@ -193,7 +205,9 @@ without a local file are skipped. Empty directories left behind are removed.
 | -------------- | -------- | --------------------------------------------- |
 | `--dir <path>` | No       | Workflow files folder; default: `workflowDir` |
 
-Honours `--dry`: reports the moves and changes nothing.
+Honours `--dry`: reports the moves and changes nothing. Unlike `folder create`, `folder delete` and `folder move`, its
+preview reads n8n's folder and workflow lists to compute the target paths, so it does make
+requests.
 
 For example, after `wf save`:
 

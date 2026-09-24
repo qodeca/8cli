@@ -156,7 +156,4 @@ way it is built to start, for example by calling its webhook URL.
 **Can 8cli push to source control?** No. `sc push` always returns `ERR_NOT_SUPPORTED`, because
 n8n's public API has no push. Use the n8n UI.
 
-**Why does `user list` not show a role?** n8n 2.40.5 does not include the role in the public
-API's user list or user details, so 8cli has nothing to show and the `role` field is left out.
-
 **How do I see exactly what 8cli sends?** Add `--verbose`. Each request is logged to stderr.
