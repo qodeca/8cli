@@ -9,10 +9,12 @@ import {
   chmodSync,
   closeSync,
   constants,
+  fstatSync,
   fsyncSync,
   lstatSync,
   mkdirSync,
   openSync,
+  readFileSync,
   renameSync,
   unlinkSync,
   writeSync,
@@ -173,6 +175,65 @@ export function childEnv(
     if (!key.startsWith('N8N_')) out[key] = value;
   }
   return { ...out, ...extra };
+}
+
+/**
+ * The credentials file for the one local n8n instance, inside the repository's git common
+ * directory. `git rev-parse --git-common-dir` names the MAIN repository's git directory even
+ * from a linked worktree, so the path is the same in the main checkout and in every worktree of
+ * it. The container is shared by every worktree (compose project `8cli-local-n8n`), so a
+ * worktree-relative path gave each worktree its own credentials for the same instance – only
+ * the first one could seed it, and every other got `ERR_ALREADY_OWNED` (issue #38). Git never
+ * tracks a file inside its own directory, and a bare repository or `--separate-git-dir` cannot
+ * move the file into some other work tree.
+ */
+export function sharedCredentialsFile(gitCommonDir: string): string {
+  return join(gitCommonDir, '8cli', 'local-n8n', 'credentials.env');
+}
+
+const LEGACY_RELATIVE = join('.local', 'xezar', 'n8n', 'credentials.env');
+
+/**
+ * Where credentials were kept before the shared file, most specific first: the running
+ * checkout's own per-checkout file, then the main checkout's (the parent of the common dir,
+ * where a normal clone keeps `.git`). Both are fixed paths, never taken from input; they are
+ * only read, to adopt a working set into `sharedCredentialsFile`.
+ */
+export function legacyCredentialsFiles(root: string, gitCommonDir: string): string[] {
+  const own = join(root, LEGACY_RELATIVE);
+  const main = join(dirname(gitCommonDir), LEGACY_RELATIVE);
+  return own === main ? [own] : [own, main];
+}
+
+/**
+ * The content of a regular file, or `undefined` when nothing is at `path`. A symlink at `path`
+ * is refused (`ERR_ENV_FILE_SYMLINK`, the open itself does not follow it), and so is anything
+ * that is not a regular file (`ERR_ENV_FILE_TYPE`, checked on the opened descriptor so the
+ * check and the read see the same file).
+ */
+export function readRegularFile(path: string): string | undefined {
+  let fd: number;
+  try {
+    fd = openSync(path, constants.O_RDONLY | constants.O_NOFOLLOW | constants.O_NONBLOCK);
+  } catch (err) {
+    const code = (err as NodeJS.ErrnoException).code;
+    if (code === 'ENOENT') return undefined;
+    if (code === 'ELOOP' || code === 'EMLINK') {
+      throw new ScriptError(
+        `Refusing to read through a symlink at ${path}`,
+        'ERR_ENV_FILE_SYMLINK',
+      );
+    }
+    throw err;
+  }
+  try {
+    if (!fstatSync(fd).isFile()) {
+      throw new ScriptError(`${path} exists and is not a regular file`, 'ERR_ENV_FILE_TYPE');
+    }
+    return readFileSync(fd, 'utf-8');
+  } finally {
+    closeSync(fd);
+  }
 }
 
 /**
