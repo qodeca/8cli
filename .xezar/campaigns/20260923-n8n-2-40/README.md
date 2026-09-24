@@ -64,7 +64,7 @@ Held: #40, #41 (public-api.ts, wait on PR #56 merge); #43, #44 (workflow.ts, wai
 
 ## Owner items
 
-- BLOCKED: leader merge of PR #49 denied by the Claude Code auto-mode classifier even with --allowedTools "Bash(gh pr merge *)". Owner chose "Allow the leader in settings" – owner adds the rule. #50 merged 09:06 by the leader (owner authorized); the other merges were refused by the classifier. Mergeable now: #48, #49, #51, #54, #55, #59.
+- BLOCKED: leader merge of PR #49 denied by the Claude Code auto-mode classifier even with --allowedTools "Bash(gh pr merge *)". Owner chose "Allow the leader in settings" – owner adds the rule. #50 merged 09:06 by the leader (owner authorized); the other merges were refused by the classifier. Merged 10:44 by the owner: #48, #49, #51, #55 (and #50 at 09:06). #54 and #59 have merge conflicts (DIRTY) – conflict repair.
 - Delete branch xez/df01cf60 (record deletion is yours; unattended hard stop).
 
 ## Rules that bit
