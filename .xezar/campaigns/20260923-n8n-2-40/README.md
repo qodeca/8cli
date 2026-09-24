@@ -43,14 +43,14 @@ Ready for L3 (18:33): #72 bug-fix (src/commands/workflow.ts, src/client/public-a
 
 | Runner × login | State | Resets |
 |---|---|---|
-| claude × qodeca-priv | ok – 5h 6%, weekly 41% | 5h 17:19, weekly 2026-09-28 18:59 |
-| claude × gmail-priv | unknown (check failed at 16:14) | – |
-| claude × eqamana-priv | out (weekly 100%) | 2026-09-26 18:00 |
+| claude × qodeca-priv | ok – 5h 3%, weekly 42% | 5h 22:49, weekly 2026-09-28 18:59 |
+| claude × gmail-priv | ok – 5h 3%, weekly 31% | 5h 22:59, weekly 2026-09-25 20:59 |
+| claude × eqamana-priv | out (weekly 100%) | 2026-09-26 17:59 |
 | claude × westagilelabs-priv | out (weekly 100%) | 2026-09-25 08:59 |
-| codex × codex-cli | unknown (check failed at 16:13) | weekly was 18% at 14:33 |
+| codex × codex-cli | ok – weekly 19% | weekly 2026-09-29 14:45 |
 | pi (own accounts) | not reported by read_quota | – |
 
-Read from read_quota at 16:19. claude × default is the reserved leader login, not in any rotation.
+Read from read_quota at 18:34. claude × default is the reserved leader login, not in any rotation.
 
 ## Owner items
 
