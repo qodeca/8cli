@@ -116,3 +116,7 @@ Owner: "Add --force (Recommended)" – without a flag keep the refusal with a hi
 ## 2026-09-24 14:24 – unattended mode on (/xez-unattended-on, AskUserQuestion)
 Contract read back: hard stops – the release go, deleting a record, opening a campaign; decided and parked – account or provider lane switch, scope trim, third repair round; accepted costs – overnight metered (Codex) spend, stops are instructions not enforcement.
 Owner chose: "Yes, turn it on". No note given.
+
+## 2026-09-24 18:27 – L3 stays the only dispatcher
+
+Owner asked why the leader waits for the pacing loop instead of starting ready work at once. After the reason was explained (one dispatcher prevents double dispatch; cost is about 2 minutes per hand-off), the owner chose, in chat: "ok so let's follow the rule and don't change anything". No change to the leader guide.

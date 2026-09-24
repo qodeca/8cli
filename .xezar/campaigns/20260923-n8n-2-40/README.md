@@ -37,7 +37,7 @@ Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it 
 
 Held on file overlap: #72 (src/commands/workflow.ts – PR #74).
 
-Running (18:15): 3f09caa7 conflict repair 2 PR #78 (codex/gpt-6-sol; test/e2e/COVERAGE.md). Gate runs 1/2, metered 1/4. Ready: PR #74 scoped re-check at d8b4a6b, then re-acceptance. Held: #77 (test/e2e/COVERAGE.md – PR #74, PR #78); #76 (folder docs – PR #78); #72 (workflow.ts – PR #74).
+Running (18:27): 791a0b39 re-check PR #74, dfe9d67d acceptance 2 PR #74, 12e975f1 re-check PR #78, 1a1c22f9 acceptance PR #78 (all read-only). Gate runs 0/2, metered 0/4. Held: #77 (test/e2e/COVERAGE.md – PR #74, PR #78); #76 (folder docs – PR #78); #72 (workflow.ts – PR #74).
 
 ## Accounts
 
