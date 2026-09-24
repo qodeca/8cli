@@ -6,7 +6,7 @@ Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it 
 
 ## State
 
-- Base `develop` at 289cb21. Merges this campaign: 8 (#33, #50, #48, #49, #51, #55, #54, #59). Checkpoints met: 1 (#31 closed).
+- Base `develop` at f8b07eb. Merges this campaign: 9 (#33, #50, #48, #49, #51, #55, #54, #59, #46). Checkpoints met: 1 (#31 closed).
 
 ## Work
 
@@ -33,9 +33,8 @@ Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it 
 
 | Task | Item | Owns |
 |---|---|---|
-| 5bd790cf | PR #46 acceptance (codex/gpt-5.6-terra) | read-only; own n8n container |
 
-Held: PR #65 (blocked until PR #46 merges, then repair); #43, #44 (workflow.ts); #40, #41 (public-api.ts, after PR #56 merges); #38 (local n8n); PR #56 QA (Codex slot); PR #58 QA (after conflict repair).
+Ready: PR #65 repair round. Held: #43, #44 (workflow.ts); #40, #41 (public-api.ts, after PR #56 merges); #38 (local n8n); PR #56 QA (Codex slot); PR #58 QA (after conflict repair).
 
 ## Accounts
 
