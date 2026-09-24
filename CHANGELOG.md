@@ -12,6 +12,13 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Fixed
+
+- Plain HTTP to the IPv6 loopback address is accepted again without `--insecure`:
+  `http://[::1]:5678` is treated like `localhost` and `127.0.0.1`. The WHATWG URL parser
+  returns the bracketed hostname `[::1]`, which the loopback check did not match. The
+  exemption stays narrow – other IPv6 hosts are still refused (#52).
+
 ## [0.1.2] - 2026-06-19
 
 ### Added
