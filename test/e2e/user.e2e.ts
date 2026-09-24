@@ -40,10 +40,10 @@ describe('user list / get', () => {
   });
 });
 
-// The public API returns `role` only with includeRole=true, which 8cli does not
-// send, so the role the commands map is always missing (#40).
+// n8n returns `role` only with includeRole=true, which 8cli now sends, so the
+// role the commands map is present (#40).
 describe('user role', () => {
-  it.fails('list and get include the owner role (#40)', async () => {
+  it('list and get include the owner role (#40)', async () => {
     const list = await run8cli(['user', 'list'], apiEnv());
     const owner = json<Array<{ id: string; email: string; role?: string }>>(list).find(
       (u) => u.email === 'e2e@example.com',
