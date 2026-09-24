@@ -33,7 +33,6 @@ Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it 
 
 | Task | Item | Owns |
 |---|---|---|
-| 92d59c4f | PR #68 review (claude/opus qodeca-priv) | read-only |
 | 910c9382 | PR #65 browser evidence 2 (claude/sonnet gmail-priv) | read-only |
 | 354615d5 | PR #71 repair 1 (claude/opus gmail-priv) | scripts/local-n8n/**, test/local-n8n.test.ts, docs/runbooks/local-n8n.md, docs/validation/n8n-2.40.5.md (revert), scripts/demo/record.sh |
 | f534c0a8 | #67 folder --dry (pi) | src/commands/folder.ts, a unit test, test/e2e/folder.e2e.ts (dry-run cases), CHANGELOG.md line |
