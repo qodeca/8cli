@@ -12,6 +12,10 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Fixed
+
+- `wf publish` no longer drops workflow settings other than `executionOrder`: it keeps every settings key n8n accepts and drops only the unknown keys n8n rejects (#42).
+
 ### Changed
 
 - Commander's own usage errors (a missing required option or argument, an option missing its
