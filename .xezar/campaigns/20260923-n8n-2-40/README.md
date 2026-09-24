@@ -37,7 +37,7 @@ Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it 
 
 
 
-Running (19:35): 7ee88bc1 independent code review of release PR #82 at 359dc3f (claude/opus, qodeca-priv; author claude/sonnet). Then merge, develop -> main PR, signed tag, GitHub Release, owner approves the release environment.
+Ready (19:37): repair round 1 of release PR #82 – review 7ee88bc1 (claude/opus) REQUEST CHANGES at 359dc3f: f1 major stale "[::1] refused in 0.1.2" in docs/security.md:59, docs/configuration.md:151, docs/troubleshooting.md:48; f2 minor docs/guides/ci.md:159 pin 0.1.2; f3 nit CHANGELOG heading dash; f4 nit docs set not in CHANGELOG. Then re-check, merge, develop -> main PR, signed tag, GitHub Release, owner approves the release environment.
 
 ## Accounts
 
