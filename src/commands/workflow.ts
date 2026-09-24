@@ -40,10 +40,44 @@ function createClient(config: Config): PublicApiClient {
 }
 
 /**
- * Strip a workflow object down to only the fields accepted by PUT /workflows/{id}.
- * n8n rejects extra fields – only send: name, nodes, connections, settings (executionOrder only), staticData.
+ * Settings keys n8n's public API accepts on PUT/POST /workflows/{id}.
+ *
+ * Mirrors `workflowSettingsWritePublicSchema` (@n8n/api-types, n8n 2.40.5). That schema is
+ * `.strict()`, so any key outside this list is rejected with
+ * `Unrecognized key(s) in object: '<key>'` – while every key inside it is applied. Sending a
+ * settings subset therefore silently drops a user's change, and sending an unknown key fails
+ * the whole publish; this allowlist is the boundary between the two.
+ *
+ * `binaryMode` and `credentialResolverId` are in the schema but n8n's transform drops them
+ * after validation: it accepts them without error, so they belong here too. Re-check this list
+ * when the pinned n8n version moves – the raw-PUT case in test/e2e/workflow.e2e.ts locks it.
  */
-function stripForPublish(wf: Record<string, unknown>): Partial<Workflow> {
+const PUBLISH_SETTINGS_KEYS = [
+  'saveExecutionProgress',
+  'saveManualExecutions',
+  'saveDataErrorExecution',
+  'saveDataSuccessExecution',
+  'executionTimeout',
+  'errorWorkflow',
+  'timezone',
+  'executionOrder',
+  'binaryMode',
+  'callerPolicy',
+  'callerIds',
+  'timeSavedMode',
+  'timeSavedPerExecution',
+  'redactionPolicy',
+  'availableInMCP',
+  'customTelemetryTags',
+  'credentialResolverId',
+] as const;
+
+/**
+ * Strip a workflow object down to only the fields accepted by PUT /workflows/{id}.
+ * n8n rejects extra top-level fields, so only send: name, nodes, connections, settings, staticData.
+ * Inside `settings`, keep the keys n8n's schema knows and drop the rest.
+ */
+export function stripForPublish(wf: Record<string, unknown>): Partial<Workflow> {
   const result: Record<string, unknown> = {};
 
   if (wf.name !== undefined) result.name = wf.name;
@@ -51,12 +85,15 @@ function stripForPublish(wf: Record<string, unknown>): Partial<Workflow> {
   if (wf.connections !== undefined) result.connections = wf.connections;
   if (wf.staticData !== undefined) result.staticData = wf.staticData;
 
-  // Settings – only keep executionOrder
+  // Settings – keep every key n8n accepts, drop the ones it would reject. An empty result is
+  // still sent as `settings: {}`, because n8n requires the field on PUT/POST.
   if (wf.settings && typeof wf.settings === 'object') {
     const settings = wf.settings as Record<string, unknown>;
-    if (settings.executionOrder !== undefined) {
-      result.settings = { executionOrder: settings.executionOrder };
+    const kept: Record<string, unknown> = {};
+    for (const key of PUBLISH_SETTINGS_KEYS) {
+      if (settings[key] !== undefined) kept[key] = settings[key];
     }
+    result.settings = kept;
   }
 
   return result as Partial<Workflow>;

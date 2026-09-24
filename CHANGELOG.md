@@ -12,6 +12,10 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Fixed
+
+- `wf publish` no longer drops workflow settings other than `executionOrder`: it keeps every settings key n8n accepts and drops only the unknown keys n8n rejects (#42).
+
 ### Changed
 
 - Commander's own usage errors (a missing required option or argument, an option missing its
@@ -21,6 +25,13 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   break to the stderr format, recorded in `BACKWARD_COMPATIBILITY.md` § 4. `8cli help <unknown>`
   is now one of those usage errors; `--help`, `--version`, a bare `8cli` and a bare command group
   still display help.
+
+### Fixed
+
+- Plain HTTP to the IPv6 loopback address is accepted again without `--insecure`:
+  `http://[::1]:5678` is treated like `localhost` and `127.0.0.1`. The WHATWG URL parser
+  returns the bracketed hostname `[::1]`, which the loopback check did not match. The
+  exemption stays narrow – other IPv6 hosts are still refused (#52).
 
 ## [0.1.2] - 2026-06-19
 

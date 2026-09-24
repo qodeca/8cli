@@ -1,12 +1,12 @@
 # Campaign 20260923-n8n-2-40
 
-Updated: 2026-09-24 06:54
+Updated: 2026-09-24 14:37
 
 Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it on; plus end-user docs and a polished README (added by owner, see decisions.md). Plan: `plan.md`.
 
 ## State
 
-- Base `develop` at fb4c612. Merges this campaign: 1 (#33). Checkpoints met: 1 (#31 closed).
+- Base `develop` at f8b07eb. Merges this campaign: 9 (#33, #50, #48, #49, #51, #55, #54, #59, #46). Checkpoints met: 1 (#31 closed).
 
 ## Work
 
@@ -29,38 +29,29 @@ Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it 
 
 - #46 (xez/b25718f0, #34 docs) opened by the agent BEFORE readiness/handoff; no labels, no review, no phase record. CI 3/3 green. Not mergeable until the task finishes its workflow and is reviewed.
 
-## Running tasks and file ownership
+## Running tasks and file ownership (14:37)
 
-- e22b046a (pi, PR #46 round 3) owns docs/security.md, scripts/check-docs.mjs, test/check-docs.test.ts
+| Task | Item | Owns |
+|---|---|---|
+| ad559e6a | PR #56 QA (codex/gpt-6-sol) | read-only; own n8n container |
+| f91da97e | PR #58 QA (codex/gpt-6-sol) | read-only; own n8n container |
+| fcf840a7 | PR #63 security re-check (claude/opus qodeca-priv) | read-only |
+| 1efc8731 | PR #63 code re-check (claude/sonnet qodeca-priv) | read-only |
+| 88fb5b12 | PR #65 repair 1 (claude/opus gmail-priv) | README.md (PR #65 branch), PR screenshots |
+| d6ae6cc5 | #44 activate/deactivate (pi) | src/commands/workflow.ts, src/client/public-api.ts (activate/deactivate), a unit test, test/e2e/workflow.e2e.ts, CHANGELOG.md line |
 
-
-
-
-- PR #50 (#32, not merged) holds docs/validation/**, test/e2e/** until it merges
+Held: #43 (owner decision asked); #40, #41 (public-api.ts, after PR #56 merges); #38 (local n8n).
 
 ## Accounts
 
 | Runner × login | State | Resets |
 |---|---|---|
-| claude × qodeca-priv | in use | – |
-| claude × gmail-priv | in use | – |
+| claude × qodeca-priv | unknown (in use) | – |
+| claude × gmail-priv | unknown (in use) | – |
 | claude × eqamana-priv | out (weekly limit) | 2026-09-26 18:00 |
 | claude × westagilelabs-priv | out (weekly limit) | 2026-09-25 09:00 |
-| codex × default | in use (2 tasks) | – |
-| pi (own accounts) | in use (1 task) | – |
-
-## Running file ownership (10:20)
-
-| Task | Item | Owns |
-|---|---|---|
-| 2a62c04f | PR #46 security sign-off (codex/gpt-6-astra) | read-only |
-| a643a7db | PR #46 scoped code check (claude/sonnet gmail-priv) | read-only |
-| 6c7c84ed | PR #63 security review (claude/opus qodeca-priv) | read-only |
-| 6c3649cc | PR #63 code review (claude/sonnet qodeca-priv) | read-only |
-| d88ba358 | PR #58 repair 1 (claude/opus gmail-priv) | test/e2e/folder.e2e.ts, test/e2e/COVERAGE.md folder move row |
-| 2cdc672f | PR #56 scoped re-check (claude/sonnet gmail-priv) | read-only |
-
-Held: #40, #41 (public-api.ts, wait on PR #56 merge); #43, #44 (workflow.ts, wait on PR #59 merge); #38 (local n8n).
+| codex × codex-cli | ok, 17% weekly, 4 tasks | 2026-09-29 14:45 |
+| pi (own accounts) | idle | – |
 
 ## Owner items
 
@@ -78,7 +69,7 @@ Held: #40, #41 (public-api.ts, wait on PR #56 merge); #43, #44 (workflow.ts, wai
 
 ## Loops
 
-L1 4d775dcc (*/10), L2 703ef914 (hourly :49, cron stand-in for the 3600s wakeup), L3 db3e0245 (*/30). Unattended restarts: 1/3. Leader attached to xezar.
+L1 938ef26a (*/10), L2 dec6abf1 (:07), L3 5cb982ac (*/30), re-created 14:01. Unattended off. Leader attached to xezar.
 
 ## Restart
 
