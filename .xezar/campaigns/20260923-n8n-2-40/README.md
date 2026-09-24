@@ -6,7 +6,7 @@ Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it 
 
 ## State
 
-- Base `develop` at f8b07eb. Merges this campaign: 9 (#33, #50, #48, #49, #51, #55, #54, #59, #46). Checkpoints met: 1 (#31 closed).
+- Base `develop` at c5b41c0. Merges this campaign: 10 (#33, #50, #48, #49, #51, #55, #54, #59, #46, #56). Checkpoints met: 1 (#31 closed).
 
 ## Work
 
@@ -33,14 +33,12 @@ Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it 
 
 | Task | Item | Owns |
 |---|---|---|
-| ad559e6a | PR #56 QA (codex/gpt-6-sol) | read-only; own n8n container |
-| f91da97e | PR #58 QA (codex/gpt-6-sol) | read-only; own n8n container |
 | fcf840a7 | PR #63 security re-check (claude/opus qodeca-priv) | read-only |
 | 1efc8731 | PR #63 code re-check (claude/sonnet qodeca-priv) | read-only |
 | 88fb5b12 | PR #65 repair 1 (claude/opus gmail-priv) | README.md (PR #65 branch), PR screenshots |
 | d6ae6cc5 | #44 activate/deactivate (pi) | src/commands/workflow.ts, src/client/public-api.ts (activate/deactivate), a unit test, test/e2e/workflow.e2e.ts, CHANGELOG.md line |
 
-Held: #43 (owner chose --force; after #44 merges, workflow.ts); #40, #41 (public-api.ts, after PR #56 merges); #38 (local n8n).
+Held: #43 (owner chose --force; after #44 merges, workflow.ts); Ready: PR #58 conflict repair, PR #63 repair 2, #40, #41, #67. #38 (local n8n).
 
 ## Accounts
 
