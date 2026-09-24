@@ -37,7 +37,7 @@ Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it 
 
 
 
-Running (18:35): 52279d11 bug-fix #72 (pi; src/client/public-api.ts); 4db53ae2 docs #76+#77 (pi; docs/reference/folder.md, docs/global-options.md, docs/reference/user.md, docs/troubleshooting.md, docs/validation/n8n-2.40.5.md, test/e2e/COVERAGE.md). Gate runs 2/2. Then release 0.2.0 (owner-authorised).
+Ready for L3 (18:53): PR #80 (#72) full review at 2b25fef; PR #81 (#76, #77) full review at ac87e12. Both CI 3/3, CLEAN, no file overlap. Then release 0.2.0 (owner-authorised).
 
 ## Accounts
 
