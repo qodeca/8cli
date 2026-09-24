@@ -124,3 +124,7 @@ Owner asked why the leader waits for the pacing loop instead of starting ready w
 ## 2026-09-24 18:28 – Release 0.2.0 authorised; hand-off to another machine
 
 Owner, in chat: "when you finish all of the work, ensure everything is commited and pushed as we will be continuing the project on a different machine. As the last part on this machine release new version of 8cli to npmjs". Asked by AskUserQuestion, the owner chose: scope "Finish all 5" (merge PR #74 and PR #78, then fix #72, #76, #77 before release) and version "0.2.0". The release follows the leader-guide release runbook (xez-release, develop -> main by PR, signed tag, GitHub Release; a person approves the protected `release` environment). Last step on this machine: everything committed and pushed.
+
+## 2026-09-24 18:43 – What counts as a gate run
+
+Owner, in chat: "You mentioned only two concurrent implementation tasks but the rule is about gates" and then "Improve the rule so you won't missinterpret it again". The leader had counted every code-change task as a gate run for its whole life, which is stricter than the ceiling says. Owner approved the wording (AskUserQuestion, "Yes, add it"); added to the leader guide's Owner's rules with xez-add-rule.
