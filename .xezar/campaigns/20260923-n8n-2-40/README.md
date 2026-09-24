@@ -1,6 +1,6 @@
 # Campaign 20260923-n8n-2-40
 
-Updated: 2026-09-24 14:08
+Updated: 2026-09-24 14:17
 
 Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it on; plus end-user docs and a polished README (added by owner, see decisions.md). Plan: `plan.md`.
 
@@ -33,10 +33,7 @@ Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it 
 
 | Task | Item | Owns |
 |---|---|---|
-| c3f800b4 | PR #46 security sign-off (codex/gpt-6-astra) | read-only |
-| c7c2c81c | PR #46 scoped code re-check (claude/sonnet gmail-priv) | read-only |
-| d41e6ce5 | PR #65 review (claude/opus qodeca-priv) | read-only |
-| 96020d26 | PR #65 design review (claude/opus gmail-priv) | read-only |
+| 5bd790cf | PR #46 acceptance (codex/gpt-5.6-terra) | read-only; own n8n container |
 | 6b0bd036 | PR #63 conflict + repair 1 (codex/gpt-6-sol) | src/config.ts, test/config.test.ts, test/e2e/config.e2e.ts, CHANGELOG.md |
 | ba15a2c4 | PR #58 conflict repair (codex/gpt-5.6-terra) | CHANGELOG.md (PR #58 branch) |
 | 0b314c89 | PR #56 conflict repair (codex/gpt-5.6-terra) | CHANGELOG.md (PR #56 branch) |
