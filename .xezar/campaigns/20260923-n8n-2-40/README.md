@@ -35,9 +35,9 @@ Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it 
 |---|---|---|
 | e080520d | #40 user role (pi) | src/client/public-api.ts (listUsers/getUser), a unit test, test/e2e/user.e2e.ts, test/e2e/__snapshots__/user-get.json, CHANGELOG.md line |
 
-Queued: #72 (src/commands/workflow.ts – open PR #74; src/client/public-api.ts – #41; and the 2-gate-run ceiling).
+Held on file overlap: #72 (src/commands/workflow.ts – PR #74; src/client/public-api.ts – PR #79).
 
-Running (17:05): 3781f67f bug-fix #47 (pi; src/client/internal-api.ts, src/commands/folder.ts; PR #78); 7f635aae bug-fix #41 (pi; src/client/public-api.ts, src/commands/datatable.ts); 4464df21 re-check PR #74 at f348c7b (claude/sonnet, read-only). Gate runs 2/2. Filed: #76 (folder --dry docs – waits for #47); #77 (user role docs).
+Ready for L3 (17:13): PR #74 acceptance (re-check APPROVE at f348c7b); PR #78 (#47) conflict repair (CHANGELOG only, head feac465); PR #79 (#41) review after CI (head f4a8225). Gate runs 0/2. Filed: #76 (folder --dry docs – waits for PR #78); #77 (user role docs).
 
 ## Accounts
 
