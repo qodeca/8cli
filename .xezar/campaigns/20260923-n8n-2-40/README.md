@@ -37,7 +37,7 @@ Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it 
 
 
 
-Running (23:36): 0fc639f8 repair round 1 of release PR #82 (claude/opus, qodeca-priv) for review 7ee88bc1 findings f1-f4. Owns docs/security.md, docs/configuration.md, docs/troubleshooting.md, docs/guides/ci.md, CHANGELOG.md. Then scoped re-check, merge, develop -> main PR, signed tag, GitHub Release, owner approves the release environment.
+Ready (23:41): scoped re-check of release PR #82 repair at f42b2a0 (repair author claude/opus 0fc639f8; commits 85e89b1, 7c1bb1f, f42b2a0; CI 3/3 green). Then merge, develop -> main PR, signed tag, GitHub Release, owner approves the release environment.
 
 ## Accounts
 
