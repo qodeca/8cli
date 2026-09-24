@@ -60,9 +60,7 @@ function readBounded(file) {
     return undefined;
   }
   if (size > MAX_FILE_BYTES) {
-    report(
-      `size: ${rel(file)} is ${size} bytes, over the ${MAX_FILE_BYTES}-byte per-file limit`,
-    );
+    report(`size: ${rel(file)} is ${size} bytes, over the ${MAX_FILE_BYTES}-byte per-file limit`);
     return undefined;
   }
   return readFileSync(file, 'utf8');
@@ -249,7 +247,10 @@ for (const [file, text] of pageText) {
   const prose = withoutCode(text).replace(/`[^`\n]*`/g, '');
   const targets = [
     ...inlineLinkTargets(prose),
-    ...prose.split('\n').map(referenceTarget).filter((target) => target !== undefined),
+    ...prose
+      .split('\n')
+      .map(referenceTarget)
+      .filter((target) => target !== undefined),
   ];
   for (const target of targets) {
     linksChecked++;
