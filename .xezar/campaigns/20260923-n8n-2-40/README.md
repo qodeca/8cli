@@ -1,6 +1,6 @@
 # Campaign 20260923-n8n-2-40
 
-Updated: 2026-09-24 16:25
+Updated: 2026-09-24 19:35
 
 Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it on; plus end-user docs and a polished README (added by owner, see decisions.md). Plan: `plan.md`.
 
@@ -37,7 +37,7 @@ Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it 
 
 
 
-Ready (19:32): independent review of release PR #82 at 359dc3f (author claude/sonnet), then merge, develop -> main PR, signed tag, GitHub Release, owner approves the release environment.
+Running (19:35): 7ee88bc1 independent code review of release PR #82 at 359dc3f (claude/opus, qodeca-priv; author claude/sonnet). Then merge, develop -> main PR, signed tag, GitHub Release, owner approves the release environment.
 
 ## Accounts
 
