@@ -25,7 +25,9 @@ interface CliFlags {
 /**
  * Reject plaintext-HTTP n8n URLs so the API key is never sent in clear text.
  * Loopback hosts (localhost / 127.0.0.1 / ::1) are allowed for local dev, and
- * the `--insecure` flag is an explicit opt-out. Exported for testing.
+ * the `--insecure` flag is an explicit opt-out. The WHATWG URL parser reports an
+ * IPv6 host in bracketed form (`[::1]`), so both spellings are matched. Exported
+ * for testing.
  */
 export function assertSecureUrl(url: string, insecure = false): void {
   if (!url || insecure) return;
@@ -37,7 +39,8 @@ export function assertSecureUrl(url: string, insecure = false): void {
   }
   if (parsed.protocol === 'https:') return;
   const host = parsed.hostname;
-  const isLoopback = host === 'localhost' || host === '127.0.0.1' || host === '::1';
+  const isLoopback =
+    host === 'localhost' || host === '127.0.0.1' || host === '::1' || host === '[::1]';
   if (parsed.protocol === 'http:' && isLoopback) return;
   throw new Error(
     `Refusing to use an insecure (${parsed.protocol}//) URL "${url}" – the API key would be sent in plaintext. ` +

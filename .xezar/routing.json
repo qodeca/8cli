@@ -4,7 +4,7 @@
   "schemaVersion": 1,
   "defaults": {
     "source": "xezar-skills",
-    "version": 2
+    "version": 3
   },
   "leader": {
     "tool": "claude",
@@ -19,15 +19,13 @@
         "gmail-priv",
         "eqamana-priv",
         "westagilelabs-priv"
-      ],
-      "unlimitedLogins": []
+      ]
     },
     "codex": {
       "usesLogins": true,
       "rotation": [
-        "default"
-      ],
-      "unlimitedLogins": []
+        "codex-cli"
+      ]
     },
     "pi": {
       "usesLogins": false
@@ -230,8 +228,8 @@
         "conflict-repair",
         "merge-chain"
       ],
-      "rule": "A merge chain that hits a conflict is conflict-repair for as long as the conflict is open.",
-      "test": "A merge chain stopped on a conflict in two files is conflict-repair until the conflict is resolved."
+      "rule": "A PR that conflicts with its base is conflict-repair until the resolution is pushed to its branch; landing it afterwards is merge-chain.",
+      "test": "A merge chain stopped on a conflict in two files hands that PR to conflict-repair, which pushes the resolution to the PR branch; merge-chain then lands it."
     },
     {
       "rows": [
@@ -331,7 +329,7 @@
   "rows": [
     {
       "id": "tracker-only",
-      "title": "Tracker only: labels, comments from a file, issue filing",
+      "title": "Tracker only: labels and comments from a file",
       "workflows": [
         "issue-triage.yaml"
       ],
@@ -354,6 +352,29 @@
       "notes": [
         "pi lanes return to this row when the engine honours a bash allowlist on pi (qodeca/xezar#856).",
         "Codex and pi lanes leave this row until their runner blocks writes in a reading step; the engine confines Codex and drops the pi shell."
+      ]
+    },
+    {
+      "id": "issue-filing",
+      "title": "Filing one new issue",
+      "workflows": [
+        "issue-filing.yaml"
+      ],
+      "class": "mechanical",
+      "writes": false,
+      "trigger": "A problem or a proposal has no issue yet, and a brief names what to file; nothing in the repository changes.",
+      "lanes": [
+        "claude/sonnet"
+      ],
+      "never": [
+        {
+          "tier": "strong",
+          "why": "This work cannot justify the strongest lanes."
+        },
+        {
+          "tier": "very-strong",
+          "why": "This work cannot justify the strongest lanes."
+        }
       ]
     },
     {
@@ -872,11 +893,11 @@
       "id": "conflict-repair",
       "title": "Conflict repair",
       "workflows": [
-        "integration.yaml"
+        "address-review-findings.yaml"
       ],
       "class": "implementation",
       "writes": true,
-      "trigger": "A merge stopped on a conflict and the resolution needs judgement.",
+      "trigger": "A PR conflicts with its base and the resolution needs judgement. The fix is pushed to the PR branch; merging stays with merge-chain.",
       "lanes": [
         "codex/gpt-5.6-terra",
         "codex/gpt-6-sol",
@@ -1296,8 +1317,8 @@
       "runsCode": true,
       "trigger": "The check needs a live multi-step run in a browser.",
       "lanes": [
-        "codex/gpt-5.6-terra",
-        "claude/sonnet"
+        "claude/sonnet",
+        "codex/gpt-5.6-terra"
       ],
       "never": [
         {
@@ -1365,7 +1386,7 @@
       ],
       "class": "security-and-release",
       "writes": false,
-      "trigger": "The diff touches auth, secrets, permissions, anything reachable from outside, or what the pipeline trusts: a deploy target, the base branch, CI, .xezar/workflows, checks, docs or skills, .xezar/routing.json, routing.schema.json or loops.json, or .claude/settings*.json or .codex/.",
+      "trigger": "The diff touches auth, secrets, permissions, anything reachable from outside, or what the pipeline trusts: a deploy target, the base branch, CI, .xezar/workflows, checks, docs or skills, .xezar/routing*.json or loops.json, .claude/settings*.json, .codex/, .mcp.json or .xezar/pipeline/config.json.",
       "lanes": [
         "claude/opus",
         "codex/gpt-6-astra"
