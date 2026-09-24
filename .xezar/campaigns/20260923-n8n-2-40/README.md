@@ -37,7 +37,7 @@ Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it 
 
 
 
-Ready for L3 (19:04): PR #81 (#76, #77) repair round 1 (review REQUEST CHANGES at ac87e12: 1 major, 2 minor in docs/validation/n8n-2.40.5.md and test/e2e/COVERAGE.md). Then release 0.2.0 (owner-authorised).
+Running (19:05): 08931691 repair 1 PR #81 (claude/opus; docs/validation/n8n-2.40.5.md, test/e2e/COVERAGE.md). Then re-check, re-acceptance, merge, release 0.2.0 (owner-authorised).
 
 ## Accounts
 
