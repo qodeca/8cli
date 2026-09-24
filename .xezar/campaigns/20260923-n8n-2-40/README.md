@@ -41,7 +41,7 @@ Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it 
 | ba15a2c4 | PR #58 conflict repair (codex/gpt-5.6-terra) | CHANGELOG.md (PR #58 branch) |
 | 0b314c89 | PR #56 conflict repair (codex/gpt-5.6-terra) | CHANGELOG.md (PR #56 branch) |
 
-Held: #43, #44 (workflow.ts); #40, #41 (public-api.ts, after PR #56 merges); #38 (local n8n); PR #56 QA (Codex slot); PR #58 QA (after conflict repair).
+Held: PR #65 (blocked until PR #46 merges, then repair); #43, #44 (workflow.ts); #40, #41 (public-api.ts, after PR #56 merges); #38 (local n8n); PR #56 QA (Codex slot); PR #58 QA (after conflict repair).
 
 ## Accounts
 
