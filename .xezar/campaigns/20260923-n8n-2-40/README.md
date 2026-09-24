@@ -37,7 +37,7 @@ Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it 
 
 
 
-Ready (19:37): repair round 1 of release PR #82 – review 7ee88bc1 (claude/opus) REQUEST CHANGES at 359dc3f: f1 major stale "[::1] refused in 0.1.2" in docs/security.md:59, docs/configuration.md:151, docs/troubleshooting.md:48; f2 minor docs/guides/ci.md:159 pin 0.1.2; f3 nit CHANGELOG heading dash; f4 nit docs set not in CHANGELOG. Then re-check, merge, develop -> main PR, signed tag, GitHub Release, owner approves the release environment.
+Running (23:36): 0fc639f8 repair round 1 of release PR #82 (claude/opus, qodeca-priv) for review 7ee88bc1 findings f1-f4. Owns docs/security.md, docs/configuration.md, docs/troubleshooting.md, docs/guides/ci.md, CHANGELOG.md. Then scoped re-check, merge, develop -> main PR, signed tag, GitHub Release, owner approves the release environment.
 
 ## Accounts
 
@@ -68,7 +68,7 @@ Read from read_quota at 19:33. claude × default is the reserved leader login, n
 
 ## Loops
 
-L1 dc98e447 (*/10), L2 7f521448 (:07), L3 f6161025 (*/30), re-created 19:37 after a session restart. Unattended ON since 14:24, restarts 0/3. Leader attached to xezar.
+L1 dc98e447 (*/10), L2 7f521448 (:07), L3 f6161025 (*/30), re-created 19:37 after a session restart. Unattended ON since 14:24, restarts 0/3. Leader attached to xezar (re-attached 23:35 after owner /mcp reconnect).
 
 ## Restart
 
