@@ -25,7 +25,7 @@
     "codex": {
       "usesLogins": true,
       "rotation": [
-        "default"
+        "codex-cli"
       ],
       "unlimitedLogins": []
     },
