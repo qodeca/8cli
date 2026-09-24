@@ -16,7 +16,7 @@ Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it 
 | #32 | Validate every command on 2.40.5 | PR #50 APPROVED at e8efaee, CI green | merge (waits on owner settings rule); unblocks #39-#43 |
 | #34 | End-user docs in docs/ | PR #46 repair 1 done at 013ae9e | security REQUEST CHANGES (3 major); re-review f0bd0691 running | repair round 2 folds both verdicts |
 | #35 | README (badges, demo, logo) | held | needs #36 merged and #37 direction picked |
-| #36 | Scripted demo GIF | PR #48 APPROVED at 634e0db | full frame check 8f2955a2 running |
+| #36 | Scripted demo GIF | PR #48 approved + qa-approved at 634e0db, ready | merge (waits on owner rule) |
 | #37 | Logo and banner | PR #49 design-approved, CI green, ready | BLOCKED: merge denied by auto-mode classifier |
 | #38 | Local n8n creds per worktree vs shared instance (bug) | ready, not dispatched | after #32/#34/#36 stop using the instance (touches scripts/local-n8n) |
 | #39–#45 | 7 defects found by #32 validation (2 high: #39 sc status route, #42 wf publish drops settings) | #45 PR #51 CHANGES REQUESTED – repair 1 b632981f running; #39-#43 held (each edits test/e2e/**, owned by 94c2ff6c); #44 held (workflow.ts overlap) | dispatch after #32 merges |
@@ -28,7 +28,7 @@ Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it 
 ## Running tasks and file ownership
 
 - b632981f (pi/deepseek-flash, PR #51 repair 1) owns src/cli.ts, src/formatters/**, test/cli-usage-errors.test.ts, BACKWARD_COMPATIBILITY.md, CHANGELOG.md
-- f0bd0691 (claude/sonnet gmail-priv, re-review PR #46), 8f2955a2 (codex/gpt-6-sol, acceptance PR #48) – read-only
+- f0bd0691 (claude/sonnet gmail-priv, re-review PR #46) – read-only
 
 - PR #50 (#32, not merged) holds docs/validation/**, test/e2e/** until it merges
 
@@ -44,7 +44,7 @@ Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it 
 
 ## Owner items
 
-- BLOCKED: leader merge of PR #49 denied by the Claude Code auto-mode classifier even with --allowedTools "Bash(gh pr merge *)". Owner chose "Allow the leader in settings" – owner adds the rule. Mergeable now: #49, #50.
+- BLOCKED: leader merge of PR #49 denied by the Claude Code auto-mode classifier even with --allowedTools "Bash(gh pr merge *)". Owner chose "Allow the leader in settings" – owner adds the rule. Mergeable now: #48, #49, #50.
 - Keychain argv finding: PR #46 docs/security.md:50-52 publicly described it (public branch, since 013ae9e). Repair 2 removes it; the text stays in git history. Your call pending from parked.md (private advisory or fix in the open).
 - Delete branch xez/df01cf60 (record deletion is yours; unattended hard stop).
 - Parked calls in parked.md.
