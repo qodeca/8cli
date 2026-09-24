@@ -37,7 +37,7 @@ Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it 
 
 
 
-Next (23:52): release PR #82 merged as 790a081; develop -> main PR #83 merged as c5e7ba4, main CI running (check, e2e, e2e-macos green on main), signed tag v0.2.0, GitHub Release, owner approves the release environment, verify npm.
+BLOCKED (23:55): owner approves the protected release environment for publish run https://github.com/qodeca/8cli/actions/runs/36064388870 (v0.2.0). Done: #82 -> 790a081, #83 -> main c5e7ba4 (CI 3/3 green), signed tag v0.2.0 (verified, ED25519), GitHub Release https://github.com/qodeca/8cli/releases/tag/v0.2.0. After approval: verify @qodeca/8cli@0.2.0 on npm, final hand-off commit.
 
 ## Accounts
 
