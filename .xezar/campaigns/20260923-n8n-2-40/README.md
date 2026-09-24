@@ -37,7 +37,7 @@ Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it 
 
 Queued (2-gate-run ceiling): #41, #72 (src/client/public-api.ts, free since #75 merged).
 
-Running (16:47): 6097dacc repair 1 PR #74 (claude/opus; src/commands/workflow.ts, test/workflow-delete.test.ts, docs/reference/workflow.md, docs/global-options.md, docs/guides/ai-agents.md, BACKWARD_COMPATIBILITY.md); 3781f67f bug-fix #47 (pi; src/client/internal-api.ts, src/commands/folder.ts). Gate runs 2/2. Filed: #76 (folder --dry docs – waits for #47, folder docs); #77 (user role docs).
+Running (16:47): 3781f67f bug-fix #47 (pi; src/client/internal-api.ts, src/commands/folder.ts). Gate runs 1/2. Ready: PR #74 scoped re-check at f348c7b. Filed: #76 (folder --dry docs – waits for #47, folder docs); #77 (user role docs).
 
 ## Accounts
 
