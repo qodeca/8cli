@@ -39,7 +39,7 @@ Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it 
 
 DONE (00:00): 8cli 0.2.0 published – @qodeca/8cli@0.2.0 on npm, dist-tag latest (publish run 36064388870 success after owner approval). Tag v0.2.0 on main c5e7ba4, Release https://github.com/qodeca/8cli/releases/tag/v0.2.0. Hand-off: everything committed and pushed; continue on the other machine from develop.
 
-Running (01:03): 9f1d4935 independent review of release PR #85 at 9cf87ff (claude/opus, qodeca-priv; author claude/sonnet; f72fd069 retry passed readiness/gates/evidence, CI 3/3 green). Owns package.json, package-lock.json, CHANGELOG.md, CITATION.cff, docs/getting-started.md, docs/global-options.md, docs/guides/ci.md. Then independent review, merge, develop -> main PR, signed tag v0.2.1, GitHub Release, owner approves npm, publish advisory (fixed 0.2.1, range <= 0.2.0).
+Running (01:17): bdac9421 repair round 1 of release PR #85 (pi/deepseek-flash; author claude/sonnet, reviewer claude/opus) – review 9f1d4935 REQUEST CHANGES: CHANGELOG/release notes omit auth login from the affected commands. Owns CHANGELOG.md. Advisory text must also name auth login before publishing. Owns package.json, package-lock.json, CHANGELOG.md, CITATION.cff, docs/getting-started.md, docs/global-options.md, docs/guides/ci.md. Then independent review, merge, develop -> main PR, signed tag v0.2.1, GitHub Release, owner approves npm, publish advisory (fixed 0.2.1, range <= 0.2.0).
 
 ## Accounts
 
