@@ -330,7 +330,7 @@ describe('n8n PUT /workflows/{id} gotchas (CLAUDE.md)', () => {
       expect.stringContaining('request/body/active is read-only'),
     ]);
 
-    // Gotcha 3 (partly stale, #42): unknown settings keys are rejected…
+    // Gotcha 3 (corrected for #42): unknown settings keys are rejected…
     const [bogusStatus, bogusBody] = await put(wf.id, {
       ...base,
       settings: { executionOrder: 'v1', bogusKey: 1 },
@@ -343,6 +343,31 @@ describe('n8n PUT /workflows/{id} gotchas (CLAUDE.md)', () => {
         await put(wf.id, { ...base, settings: { executionOrder: 'v1', timezone: 'Europe/Warsaw' } })
       )[0],
     ).toBe(200);
+    // Every key in stripForPublish()'s allowlist is one n8n accepts – this is the list that
+    // must move together with the pinned n8n version.
+    const knownSettings = {
+      saveExecutionProgress: true,
+      saveManualExecutions: false,
+      saveDataErrorExecution: 'all',
+      saveDataSuccessExecution: 'none',
+      executionTimeout: 3600,
+      errorWorkflow: 'err-wf-id',
+      timezone: 'Europe/Warsaw',
+      executionOrder: 'v1',
+      binaryMode: 'separate',
+      callerPolicy: 'workflowsFromSameOwner',
+      callerIds: 'id-1,id-2',
+      timeSavedMode: 'fixed',
+      timeSavedPerExecution: 30,
+      redactionPolicy: 'non-manual',
+      availableInMCP: true,
+      customTelemetryTags: [{ key: 'team', value: 'ops' }],
+      credentialResolverId: 'resolver-1',
+    };
+    expect(await put(wf.id, { ...base, settings: knownSettings })).toEqual([
+      200,
+      expect.anything(),
+    ]);
 
     // settings itself is required.
     const noSettings = { name: base.name, nodes: base.nodes, connections: base.connections };
@@ -352,7 +377,7 @@ describe('n8n PUT /workflows/{id} gotchas (CLAUDE.md)', () => {
     ]);
   });
 
-  it.fails('wf publish keeps a settings key n8n accepts (#42)', async () => {
+  it('wf publish keeps a settings key n8n accepts (#42)', async () => {
     const wf = await createWorkflowFixture();
     const dir = mkdtempSync(join(tmpdir(), '8cli-settings-'));
     const file = join(dir, `${wf.id}_settings.json`);
