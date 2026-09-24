@@ -1,6 +1,6 @@
 # Campaign 20260923-n8n-2-40
 
-Updated: 2026-09-24 19:35
+Updated: 2026-09-25 00:00
 
 Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it on; plus end-user docs and a polished README (added by owner, see decisions.md). Plan: `plan.md`.
 
@@ -37,7 +37,7 @@ Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it 
 
 
 
-BLOCKED (23:55): owner approves the protected release environment for publish run https://github.com/qodeca/8cli/actions/runs/36064388870 (v0.2.0). Done: #82 -> 790a081, #83 -> main c5e7ba4 (CI 3/3 green), signed tag v0.2.0 (verified, ED25519), GitHub Release https://github.com/qodeca/8cli/releases/tag/v0.2.0. After approval: verify @qodeca/8cli@0.2.0 on npm, final hand-off commit.
+DONE (00:00): 8cli 0.2.0 published – @qodeca/8cli@0.2.0 on npm, dist-tag latest (publish run 36064388870 success after owner approval). Tag v0.2.0 on main c5e7ba4, Release https://github.com/qodeca/8cli/releases/tag/v0.2.0. Hand-off: everything committed and pushed; continue on the other machine from develop.
 
 ## Accounts
 
