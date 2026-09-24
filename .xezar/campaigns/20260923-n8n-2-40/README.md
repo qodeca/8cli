@@ -44,7 +44,8 @@ Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it 
 |---|---|---|
 | claude × qodeca-priv | in use | – |
 | claude × gmail-priv | in use | – |
-| claude × eqamana-priv, westagilelabs-priv | unknown | – |
+| claude × eqamana-priv | out (weekly limit) | 2026-09-26 18:00 |
+| claude × westagilelabs-priv | out (weekly limit) | 2026-09-25 09:00 |
 | codex × default | in use (2 tasks) | – |
 | pi (own accounts) | in use (1 task) | – |
 
