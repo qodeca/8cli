@@ -197,7 +197,7 @@ describe('datatable refusals from n8n', () => {
     expect(json<unknown[]>(r)).toHaveLength(2);
   });
 
-  it.fails('honours --limit above the n8n page maximum (#41)', async () => {
+  it('honours --limit above the n8n page maximum (#41)', async () => {
     const dt = await makeTable();
     await run8cli(['dt', 'insert', dt.id, '--data', '[{"label":"a"},{"label":"b"}]'], apiEnv());
     const r = await run8cli(['dt', 'rows', dt.id, '--limit', '300'], apiEnv());

@@ -36,6 +36,11 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   returns the bracketed hostname `[::1]`, which the loopback check did not match. The
   exemption stays narrow – other IPv6 hosts are still refused (#52).
 
+- `dt rows --limit N` no longer fails with `ERR_HTTP_400` when `N` is above 250: it requests
+  pages of `min(N, 250)`, follows the cursor and stops once `N` rows are collected, so
+  `--limit 500` returns up to 500 rows instead of n8n's `request/query/limit must be <= 250`.
+  The output shape is unchanged (#41).
+
 ### Changed
 
 - Commander's own usage errors (a missing required option or argument, an option missing its
