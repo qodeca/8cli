@@ -12,9 +12,11 @@ the same. Set both:
 
 ```bash
 export N8N_URL=https://n8n.example.com
-export N8N_API_KEY=<your n8n API key>
+read -rs N8N_API_KEY && export N8N_API_KEY
 8cli auth verify
 ```
+
+The silent `read` keeps the key out of terminal output and shell history.
 
 Then run `8cli config show` to see what 8cli resolved. If you rely on a `8cli.json`, check you
 are running 8cli from the folder that contains it (or `configs/8cli.json`), or pass `--config`.

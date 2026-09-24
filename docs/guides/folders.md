@@ -41,9 +41,11 @@ folder requests.
 ```bash
 export N8N_URL=https://n8n.example.com
 export N8N_EMAIL=ops@example.com
-export N8N_PASSWORD=<the user's password>
+read -rs N8N_PASSWORD && export N8N_PASSWORD
 8cli folder tree
 ```
+
+The silent `read` keeps the password out of terminal output and shell history.
 
 Without an email or password:
 

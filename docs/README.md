@@ -6,9 +6,11 @@ never stops to ask a question.
 
 ```bash
 export N8N_URL=https://n8n.example.com
-export N8N_API_KEY=<your n8n API key>
+read -rs N8N_API_KEY && export N8N_API_KEY
 8cli wf list | jq -r '.[].name'
 ```
+
+The silent `read` keeps the key out of terminal output and shell history.
 
 New here? Start with [getting started](getting-started.md).
 

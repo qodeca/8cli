@@ -66,8 +66,8 @@ jobs:
           git push
 ```
 
-The backup job only reads workflows. If your n8n supports API key scopes, give it a key that
-can only read.
+Back up to a private repository, and check the files before anything is made public. The backup
+job only reads workflows. If your n8n supports API key scopes, give it a key that can only read.
 
 ## Publish on merge
 

@@ -133,9 +133,8 @@ Keep one URL per instance and switch with `--url`:
 ```
 
 (Illustration only: these two commands need two real instances and were not run for these docs.)
-With the keychain, store a key for each URL once. With environment variables, use a small
-wrapper or `direnv` per project, or a `8cli.json` per project folder for the URL and
-`N8N_API_KEY` for the key.
+With the keychain, store a key for each URL once. With environment variables, set `N8N_URL`
+and `N8N_API_KEY` together for each project using a small wrapper or `direnv`.
 
 ## Plain HTTP URLs
 

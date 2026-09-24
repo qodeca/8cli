@@ -36,11 +36,12 @@ Options:
 ## `--url` and `--api-key`
 
 ```bash
-8cli --url https://n8n.example.com --api-key "$N8N_API_KEY" wf list
+read -rs N8N_API_KEY && export N8N_API_KEY
+8cli --url https://n8n.example.com wf list
 ```
 
-A key given on the command line is visible to other users of the same machine (for example in
-`ps`) and lands in your shell history. Prefer `N8N_API_KEY` or the keychain.
+The silent `read` keeps the key out of terminal output and shell history. A key passed with
+`--api-key` is visible in process listings such as `ps`; prefer `N8N_API_KEY` or the keychain.
 
 `--api-key -` reads the key from standard input **only for `auth login`**. On any other command
 `-` is sent to n8n as the key itself and fails with `Unauthorized`. See

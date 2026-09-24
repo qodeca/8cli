@@ -20,8 +20,8 @@ To report a vulnerability in 8cli, follow the [security policy](../SECURITY.md).
 - `config show` masks the API key (first four and last four characters, for example
   `n8n_...7890`) and prints the password as `****`. It does print the **email** in full.
 - `auth set-credentials` prints the email it stored, never the password.
-- Error messages and `--verbose` logs never contain the API key or password. `--verbose` does
-  show request URLs, and error messages can include your n8n URL.
+- 8cli does not add the API key or password to its own messages or to `--verbose` logs. Error
+  text from n8n and from lower layers is passed through as it is. `--verbose` shows request URLs.
 - `cred list` shows credential names, types and owners – **never the secret values** inside
   them. The n8n public API does not return them.
 - `wf get`, `wf save` and `exec get --data` return what n8n returns. Workflow JSON and
