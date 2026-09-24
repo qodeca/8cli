@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 // SPDX-FileCopyrightText: 2026 Qodeca sp. z o.o.
 
-import { BaseClient } from './base.js';
+import { ApiRequestError, BaseClient } from './base.js';
 import type {
   Workflow,
   Execution,
@@ -52,12 +52,41 @@ export class PublicApiClient extends BaseClient {
     return this.delete<Workflow>(`/api/v1/workflows/${id}`);
   }
 
+  /**
+   * Publish (activate) a workflow.
+   *
+   * n8n 2.40 added `POST /workflows/{id}/publish` and deprecated `/activate`. Older n8n
+   * (2.25.7, measured on a throwaway container) has no `/publish` route at all and answers
+   * 405 "POST method not allowed"; a proxy in front of it can answer 404 instead. So the
+   * current route is tried first, and the deprecated one is a fallback only when the route
+   * itself is absent. A real refusal (400/403/409) is not retried.
+   */
   async activateWorkflow(id: string): Promise<Workflow> {
-    return this.post<Workflow>(`/api/v1/workflows/${id}/activate`);
+    try {
+      return await this.post<Workflow>(`/api/v1/workflows/${id}/publish`);
+    } catch (err) {
+      if (!(err instanceof ApiRequestError) || (err.statusCode !== 404 && err.statusCode !== 405)) {
+        throw err;
+      }
+      return this.post<Workflow>(`/api/v1/workflows/${id}/activate`);
+    }
   }
 
+  /**
+   * Unpublish (deactivate) a workflow.
+   *
+   * Mirrors `activateWorkflow`: n8n 2.40 added `/unpublish` and deprecated `/deactivate`,
+   * and pre-2.40 answers 405 (or 404 behind a proxy) for the route that does not exist yet.
+   */
   async deactivateWorkflow(id: string): Promise<Workflow> {
-    return this.post<Workflow>(`/api/v1/workflows/${id}/deactivate`);
+    try {
+      return await this.post<Workflow>(`/api/v1/workflows/${id}/unpublish`);
+    } catch (err) {
+      if (!(err instanceof ApiRequestError) || (err.statusCode !== 404 && err.statusCode !== 405)) {
+        throw err;
+      }
+      return this.post<Workflow>(`/api/v1/workflows/${id}/deactivate`);
+    }
   }
 
   async transferWorkflow(id: string, destinationProjectId: string): Promise<void> {

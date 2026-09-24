@@ -14,6 +14,8 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed
 
+- `wf activate` and `wf deactivate` now call n8n's `POST /workflows/{id}/publish` and `/unpublish` routes where they exist, falling back to the deprecated `/activate` and `/deactivate` on older n8n; command names, flags and JSON output are unchanged (#44).
+
 - Behaviour change: credentials from `N8N_API_KEY`, `N8N_EMAIL`, `N8N_PASSWORD` or `--api-key`
   are refused with `ERR_CONFIG_SOURCE_MISMATCH` when the URL comes from a config file and no
   `N8N_URL`/`--url` was given, instead of sending them to the host named by the file; set

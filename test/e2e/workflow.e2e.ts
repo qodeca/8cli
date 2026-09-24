@@ -81,6 +81,25 @@ describe('wf activate / deactivate', () => {
     expect(off.exitCode).toBe(0);
     expect(json<{ active: boolean }>(off).active).toBe(false);
   });
+
+  // #44: n8n 2.40 marks /activate and /deactivate deprecated and serves /publish and
+  // /unpublish instead. `--verbose` makes the CLI log the request path, so the endpoint
+  // it actually called is observable black-box; without the fix the first line is
+  // /activate and this test fails. The fallback for n8n without those routes (2.25.7
+  // answers 405) is covered by the unit test in test/workflow-activate-endpoints.test.ts.
+  it('uses the non-deprecated /publish and /unpublish endpoints on n8n 2.40', async () => {
+    const wf = await createWorkflowFixture({ withTrigger: true });
+
+    const on = await run8cli(['--verbose', 'wf', 'activate', wf.id], apiEnv());
+    expect(on.exitCode).toBe(0);
+    expect(on.stderr).toContain(`/api/v1/workflows/${wf.id}/publish`);
+    expect(on.stderr).not.toContain(`/api/v1/workflows/${wf.id}/activate`);
+
+    const off = await run8cli(['--verbose', 'wf', 'deactivate', wf.id], apiEnv());
+    expect(off.exitCode).toBe(0);
+    expect(off.stderr).toContain(`/api/v1/workflows/${wf.id}/unpublish`);
+    expect(off.stderr).not.toContain(`/api/v1/workflows/${wf.id}/deactivate`);
+  });
 });
 
 describe('wf delete', () => {
