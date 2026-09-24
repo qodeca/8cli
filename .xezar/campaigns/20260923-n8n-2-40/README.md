@@ -34,7 +34,6 @@ Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it 
 | Task | Item | Owns |
 |---|---|---|
 | 5bd790cf | PR #46 acceptance (codex/gpt-5.6-terra) | read-only; own n8n container |
-| 6b0bd036 | PR #63 conflict + repair 1 (codex/gpt-6-sol) | src/config.ts, test/config.test.ts, test/e2e/config.e2e.ts, CHANGELOG.md |
 | ba15a2c4 | PR #58 conflict repair (codex/gpt-5.6-terra) | CHANGELOG.md (PR #58 branch) |
 | 0b314c89 | PR #56 conflict repair (codex/gpt-5.6-terra) | CHANGELOG.md (PR #56 branch) |
 
