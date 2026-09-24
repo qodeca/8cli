@@ -26,6 +26,11 @@ key, an unreachable host, a 403. A missing workflow (404) still previews a plain
 
 JSON on stdout: list commands print arrays, get commands print objects, write commands report
 `{ "files": [...] }`. A field may be added; an existing field is not removed, renamed or retyped.
+`user list` and `user get` now send `includeRole=true`, so their output carries the additive
+`role` field (for example `global:owner`) that n8n omits otherwise (#40); no existing field
+changed. `dt rows --limit` above n8n's 250-row page cap now returns rows instead of
+`ERR_HTTP_400`: the CLI pages at `min(limit, 250)` and still prints the same JSON array, trimmed
+to `--limit` (#41); no field changed.
 
 `wf delete --dry` gained two boolean fields that follow the flags given: `wouldUnpublish`
 (`true` when the workflow is published and `--force` was given, so the run would unpublish it

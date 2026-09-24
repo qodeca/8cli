@@ -17,6 +17,12 @@ import type {
 } from '../types.js';
 
 /**
+ * n8n caps the `limit` query parameter on the data-table rows route at 250;
+ * above it the route answers `400 request/query/limit must be <= 250`.
+ */
+const DATA_TABLE_ROWS_PAGE_MAX = 250;
+
+/**
  * n8n Public API client.
  * Uses X-N8N-API-KEY header for authentication.
  *
@@ -198,11 +204,13 @@ export class PublicApiClient extends BaseClient {
   // ── Users ───────────────────────────────────────────────────────────────
 
   async listUsers(params?: Record<string, string | number | boolean | undefined>): Promise<User[]> {
-    return this.paginateAll<User>('/api/v1/users', params);
+    // n8n returns `role` only when includeRole=true is sent (#40).
+    return this.paginateAll<User>('/api/v1/users', { ...params, includeRole: true });
   }
 
   async getUser(id: string): Promise<User> {
-    return this.get<User>(`/api/v1/users/${id}`);
+    // n8n returns `role` only when includeRole=true is sent (#40).
+    return this.get<User>(`/api/v1/users/${id}`, { params: { includeRole: true } });
   }
 
   // ── Audit ───────────────────────────────────────────────────────────────
@@ -244,11 +252,33 @@ export class PublicApiClient extends BaseClient {
     return this.delete<void>(`/api/v1/data-tables/${id}`);
   }
 
+  /**
+   * List rows of a data table.
+   *
+   * `limit` means "maximum rows to return", but n8n caps the query parameter at
+   * 250, so it cannot be sent through as the page size: above the cap the route
+   * answers `400 request/query/limit must be <= 250` (#41). Request pages of
+   * `min(limit, 250)` instead and stop once `limit` rows are collected, trimming
+   * the last page. Without a numeric `limit` the old full-pagination behaviour is
+   * kept.
+   */
   async listDataTableRows(
     id: string,
     params?: Record<string, string | number | boolean | undefined>,
   ): Promise<DataTableRow[]> {
-    return this.paginateAll<DataTableRow>(`/api/v1/data-tables/${id}/rows`, params);
+    const path = `/api/v1/data-tables/${id}/rows`;
+    const limit = params?.limit;
+    if (typeof limit !== 'number' || !Number.isFinite(limit)) {
+      return this.paginateAll<DataTableRow>(path, params);
+    }
+
+    const pageSize = Math.min(limit, DATA_TABLE_ROWS_PAGE_MAX);
+    const rows: DataTableRow[] = [];
+    for await (const page of this.paginate<DataTableRow>(path, { ...params, limit: pageSize })) {
+      rows.push(...page);
+      if (rows.length >= limit) break;
+    }
+    return rows.slice(0, limit);
   }
 
   async insertDataTableRows(

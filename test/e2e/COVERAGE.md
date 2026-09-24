@@ -55,7 +55,7 @@ defects and the 2.40.5 validation are in `docs/validation/n8n-2.40.5.md`.
 | folder      | move                           | happy `(root)` (#53), err (unknown workflow / gated)                                                                        | `e2e/folder.e2e.ts`                        |
 | dt          | list                           | happy, table (formatter)                                                                                                    | `e2e/datatable.e2e.ts`                     |
 | dt          | get                            | happy, snap                                                                                                                 | `e2e/datatable.e2e.ts`                     |
-| dt          | rows                           | happy, `--limit` cap, `--limit 250`, `--limit` > 250 (fails: #41)                                                           | `e2e/datatable.e2e.ts`                     |
+| dt          | rows                           | happy, `--limit` cap, `--limit 250`, `--limit` > 250 (#41)                                                                  | `e2e/datatable.e2e.ts`                     |
 | dt          | create                         | happy, dry, ERR_INVALID_JSON, 409 duplicate, 400 column type                                                                | `e2e/datatable.e2e.ts`                     |
 | dt          | delete                         | happy, 404                                                                                                                  | `e2e/datatable.e2e.ts`                     |
 | dt          | insert                         | `--data`, `--stdin`, `@file`, dry, ERR_MISSING_DATA, ERR_INVALID_DATA, ERR_FILE_READ, 400 unknown column (nothing inserted) | `e2e/datatable.e2e.ts`                     |
@@ -67,11 +67,12 @@ defects and the 2.40.5 validation are in `docs/validation/n8n-2.40.5.md`.
 
 ## Unit (right-altitude, not e2e)
 
-| Target                                 | Covered                                           | Spec                                        |
-| -------------------------------------- | ------------------------------------------------- | ------------------------------------------- |
-| `BaseClient` 429 retry/backoff         | retry-then-succeed, budget-exhausted, Retry-After | `test/base-retry.test.ts`                   |
-| `BaseClient.paginateAll` cursor loop   | multi-page concat + cursor forwarding             | `test/pagination.test.ts`                   |
-| config / formatters / keychain helpers | pure-function units                               | `test/{config,formatters,keychain}.test.ts` |
+| Target                                  | Covered                                                                       | Spec                                        |
+| --------------------------------------- | ----------------------------------------------------------------------------- | ------------------------------------------- |
+| `BaseClient` 429 retry/backoff          | retry-then-succeed, budget-exhausted, Retry-After                             | `test/base-retry.test.ts`                   |
+| `BaseClient.paginateAll` cursor loop    | multi-page concat + cursor forwarding                                         | `test/pagination.test.ts`                   |
+| `dt rows --limit` paging at the 250 cap | `min(limit, 250)` pages, cursor follow, stop + trim, `--limit 10` one request | `test/datatable-rows-limit.test.ts`         |
+| config / formatters / keychain helpers  | pure-function units                                                           | `test/{config,formatters,keychain}.test.ts` |
 
 ## Deferred (with rationale)
 

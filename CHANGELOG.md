@@ -14,6 +14,8 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed
 
+- `user list` and `user get` now send `includeRole=true`, so n8n returns the `role` field and the commands print it (for example `global:owner`); the output change is additive (#40).
+
 - `wf activate` and `wf deactivate` now call n8n's `POST /workflows/{id}/publish` and `/unpublish` routes where they exist, falling back to the deprecated `/activate` and `/deactivate` on older n8n; command names, flags and JSON output are unchanged (#44).
 
 - Behaviour change: credentials from `N8N_API_KEY`, `N8N_EMAIL`, `N8N_PASSWORD` or `--api-key`
@@ -22,6 +24,8 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   `N8N_URL` too.
 
 - `folder move --to "(root)"` now sends n8n's root sentinel `"0"` instead of `null` ([#53](https://github.com/qodeca/8cli/issues/53)).
+
+- `folder move`, `folder create` and `folder delete` now honour `--dry`: they print a `{ "dryRun": true, ... }` preview and send no request, instead of performing the change; `folder sync` already guarded its local writes ([#67](https://github.com/qodeca/8cli/issues/67)).
 
 - `sc status` calls `GET /api/v1/source-control/status` with the required `direction` query param (`--direction <pull|push>`, default `pull`) instead of the nonexistent `/source-control/preferences`, so a Community instance reports the licence error and a licensed one returns the pending-changes list. An invalid `--direction` value now fails with the new `ERR_USAGE` code on stderr, exit 1, before any request is sent (#39).
 
@@ -39,6 +43,11 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   `wouldUnpublish` with `--force`, `wouldBeRefused` without it – without sending a write
   request; to answer, it reads the workflow, so a dry run can now fail with
   `ERR_WORKFLOW_DELETE` on a read error other than 404 (#43).
+
+- `dt rows --limit N` no longer fails with `ERR_HTTP_400` when `N` is above 250: it requests
+  pages of `min(N, 250)`, follows the cursor and stops once `N` rows are collected, so
+  `--limit 500` returns up to 500 rows instead of n8n's `request/query/limit must be <= 250`.
+  The output shape is unchanged (#41).
 
 ### Changed
 
