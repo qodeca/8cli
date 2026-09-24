@@ -6,7 +6,7 @@ Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it 
 
 ## State
 
-- Base `develop` at 28af672. Merges this campaign: 16 (#33, #50, #48, #49, #51, #55, #54, #59, #46, #56, #63, #58, #68, #65, #71, #73). Checkpoints met: 1 (#31 closed).
+- Base `develop` at 78009d1. Merges this campaign: 17 (#33, #50, #48, #49, #51, #55, #54, #59, #46, #56, #63, #58, #68, #65, #71, #73, #75). Checkpoints met: 1 (#31 closed).
 
 ## Work
 
@@ -35,9 +35,9 @@ Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it 
 |---|---|---|
 | e080520d | #40 user role (pi) | src/client/public-api.ts (listUsers/getUser), a unit test, test/e2e/user.e2e.ts, test/e2e/__snapshots__/user-get.json, CHANGELOG.md line |
 
-Held on file overlap (not a ceiling): #41, #72 (src/client/public-api.ts – PR #75).
+Held on file overlap: #72 (src/commands/workflow.ts – PR #74; src/client/public-api.ts – PR #79).
 
-Ready for L3 (16:45): PR #74 repair round 1 (REQUEST CHANGES at ed72579); PR #75 acceptance (APPROVE at 6b9b1e2); #47 bug-fix (folder.ts free after #73). Filed: #76 (folder --dry docs).
+Running (17:15): 5d309494 acceptance PR #74 (codex/gpt-6-sol, read-only); a06d8f4b conflict repair PR #78 (codex/gpt-5.6-terra; CHANGELOG.md); 769f3f97 review PR #79 (claude/opus, read-only). Gate runs 1/2, metered 2/4. Filed: #76 (folder --dry docs – waits for PR #78); #77 (user role docs).
 
 ## Accounts
 

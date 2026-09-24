@@ -2,5 +2,6 @@
   "id": "<id>",
   "email": "e2e@example.com",
   "firstName": "E2E",
-  "lastName": "Tester"
+  "lastName": "Tester",
+  "role": "global:owner"
 }
