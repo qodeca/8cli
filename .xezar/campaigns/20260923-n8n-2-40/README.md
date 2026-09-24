@@ -1,6 +1,6 @@
 # Campaign 20260923-n8n-2-40
 
-Updated: 2026-09-24 14:17
+Updated: 2026-09-24 14:37
 
 Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it on; plus end-user docs and a polished README (added by owner, see decisions.md). Plan: `plan.md`.
 
@@ -29,12 +29,18 @@ Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it 
 
 - #46 (xez/b25718f0, #34 docs) opened by the agent BEFORE readiness/handoff; no labels, no review, no phase record. CI 3/3 green. Not mergeable until the task finishes its workflow and is reviewed.
 
-## Running tasks and file ownership (14:07)
+## Running tasks and file ownership (14:37)
 
 | Task | Item | Owns |
 |---|---|---|
+| ad559e6a | PR #56 QA (codex/gpt-6-sol) | read-only; own n8n container |
+| f91da97e | PR #58 QA (codex/gpt-6-sol) | read-only; own n8n container |
+| fcf840a7 | PR #63 security re-check (claude/opus qodeca-priv) | read-only |
+| 1efc8731 | PR #63 code re-check (claude/sonnet qodeca-priv) | read-only |
+| 88fb5b12 | PR #65 repair 1 (claude/opus gmail-priv) | README.md (PR #65 branch), PR screenshots |
+| d6ae6cc5 | #44 activate/deactivate (pi) | src/commands/workflow.ts, src/client/public-api.ts (activate/deactivate), a unit test, test/e2e/workflow.e2e.ts, CHANGELOG.md line |
 
-Ready: PR #65 repair round. Held: #43, #44 (workflow.ts); #40, #41 (public-api.ts, after PR #56 merges); #38 (local n8n); PR #56 QA (Codex slot); PR #58 QA (after conflict repair).
+Held: #43 (owner decision asked); #40, #41 (public-api.ts, after PR #56 merges); #38 (local n8n).
 
 ## Accounts
 
