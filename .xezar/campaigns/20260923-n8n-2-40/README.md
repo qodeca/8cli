@@ -37,7 +37,7 @@ Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it 
 
 
 
-Running (19:05): 08931691 repair 1 PR #81 (claude/opus; docs/validation/n8n-2.40.5.md, test/e2e/COVERAGE.md). Then re-check, re-acceptance, merge, release 0.2.0 (owner-authorised).
+Ready for L3 (19:13): PR #81 scoped re-check and re-acceptance at b757ec8 (authors pi, claude/opus). Then merge, release 0.2.0 (owner-authorised).
 
 ## Accounts
 
