@@ -37,7 +37,7 @@ Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it 
 
 
 
-Ready (23:41): scoped re-check of release PR #82 repair at f42b2a0 (repair author claude/opus 0fc639f8; commits 85e89b1, 7c1bb1f, f42b2a0; CI 3/3 green). Then merge, develop -> main PR, signed tag, GitHub Release, owner approves the release environment.
+Running (23:43): 16708821 scoped re-check of release PR #82 at f42b2a0 (claude/sonnet, gmail-priv; repair author claude/opus). Then merge, develop -> main PR, signed tag, GitHub Release, owner approves the release environment.
 
 ## Accounts
 
