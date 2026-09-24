@@ -5,13 +5,25 @@ import { mkdtempSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { apiEnv, internalEnv, run8cli, uniqueName } from './setup/helpers.js';
+import {
+  apiEnv,
+  errorMessage,
+  internalEnv,
+  LICENSE_GATED,
+  run8cli,
+  uniqueName,
+} from './setup/helpers.js';
 
 // Folders use the internal (cookie-auth) API and are license-gated on a free
 // Community container. These specs lock both the missing-credentials guard and
 // the gated-error contract. `toFailWithCode` also asserts no raw stack trace
 // leaks (regression-testing the fix that routes internal-API errors through
 // {error,code} instead of an uncaught ApiRequestError).
+//
+// Login budget: every folder command logs in afresh (sync even before it checks
+// --dir), and n8n allows 5 logins per minute; the 6th waits out a 60 s
+// Retry-After (#47). This file makes exactly 5 (tree, create, both syncs,
+// move) – keep it there. `folder delete` is deferred for that reason.
 
 describe('folder credential guard', () => {
   it('requires email/password (internal API)', async () => {
@@ -24,11 +36,13 @@ describe('folder (license-gated on free n8n)', () => {
   it('tree returns a structured error, not a raw stack trace', async () => {
     const r = await run8cli(['folder', 'tree'], internalEnv());
     expect(r).toFailWithCode('ERR_FOLDER_TREE');
+    expect(errorMessage(r)).toMatch(LICENSE_GATED);
   });
 
   it('create returns a structured error', async () => {
     const r = await run8cli(['folder', 'create', uniqueName('folder')], internalEnv());
     expect(r).toFailWithCode('ERR_FOLDER_CREATE');
+    expect(errorMessage(r)).toMatch(LICENSE_GATED);
   });
 });
 
@@ -45,6 +59,7 @@ describe('folder sync / move', () => {
     const dir = mkdtempSync(join(tmpdir(), '8cli-sync-'));
     const r = await run8cli(['folder', 'sync', '--dir', dir], internalEnv());
     expect(r).toFailWithCode('ERR_FOLDER_SYNC');
+    expect(errorMessage(r)).toMatch(LICENSE_GATED);
   });
 
   it('move returns a structured error for an unknown workflow', async () => {

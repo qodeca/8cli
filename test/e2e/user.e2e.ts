@@ -39,3 +39,17 @@ describe('user list / get', () => {
     await expect(snapshotJson(r.json)).toMatchFileSnapshot('./__snapshots__/user-get.json');
   });
 });
+
+// The public API returns `role` only with includeRole=true, which 8cli does not
+// send, so the role the commands map is always missing (#40).
+describe('user role', () => {
+  it.fails('list and get include the owner role (#40)', async () => {
+    const list = await run8cli(['user', 'list'], apiEnv());
+    const owner = json<Array<{ id: string; email: string; role?: string }>>(list).find(
+      (u) => u.email === 'e2e@example.com',
+    )!;
+    expect(owner.role).toBe('global:owner');
+    const r = await run8cli(['user', 'get', owner.id], apiEnv());
+    expect(json<{ role?: string }>(r).role).toBe('global:owner');
+  });
+});
