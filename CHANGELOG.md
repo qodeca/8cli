@@ -14,6 +14,8 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed
 
+- `user list` and `user get` now send `includeRole=true`, so n8n returns the `role` field and the commands print it (for example `global:owner`); the output change is additive (#40).
+
 - `wf activate` and `wf deactivate` now call n8n's `POST /workflows/{id}/publish` and `/unpublish` routes where they exist, falling back to the deprecated `/activate` and `/deactivate` on older n8n; command names, flags and JSON output are unchanged (#44).
 
 - Behaviour change: credentials from `N8N_API_KEY`, `N8N_EMAIL`, `N8N_PASSWORD` or `--api-key`

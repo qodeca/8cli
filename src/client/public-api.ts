@@ -198,11 +198,13 @@ export class PublicApiClient extends BaseClient {
   // ── Users ───────────────────────────────────────────────────────────────
 
   async listUsers(params?: Record<string, string | number | boolean | undefined>): Promise<User[]> {
-    return this.paginateAll<User>('/api/v1/users', params);
+    // n8n returns `role` only when includeRole=true is sent (#40).
+    return this.paginateAll<User>('/api/v1/users', { ...params, includeRole: true });
   }
 
   async getUser(id: string): Promise<User> {
-    return this.get<User>(`/api/v1/users/${id}`);
+    // n8n returns `role` only when includeRole=true is sent (#40).
+    return this.get<User>(`/api/v1/users/${id}`, { params: { includeRole: true } });
   }
 
   // ── Audit ───────────────────────────────────────────────────────────────
