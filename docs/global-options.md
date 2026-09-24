@@ -114,8 +114,8 @@ delete <id>` deletes the tag. The same goes for `wf activate`, `wf deactivate`, 
 `folder create`, `folder delete` and `folder move` build their preview from the arguments and
 send **no request**, so they do not check that the workflow or folder exists: the ids in the
 preview are `null`, and `folder create` reports the parent by name (`parentFolder`), not as the
-`parentFolderId` the real run returns. They still need email and password configured
-(`ERR_NO_CREDENTIALS`), but no login is sent. `folder sync` is the exception: its preview reads
+`parentFolderId` the real run returns. They still need email, password and URL configured
+(`ERR_NO_CREDENTIALS`, `ERR_NO_URL`), but no login is sent. `folder sync` is the exception: its preview reads
 n8n's folder and workflow lists to compute the target paths, so it does make requests.
 
 Note the spelling split: `wf` and `folder create|delete|move` say `dryRun`; `dt` and

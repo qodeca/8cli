@@ -46,7 +46,7 @@ starting point:
 - Output is JSON on stdout. Errors are JSON on stderr: `{ "error", "code" }`, exit code 1.
   Branch on `code`, not on the `error` text.
 - Before any command that changes or deletes something, run it with `--dry` if it supports it
-  (`wf save|publish|delete`, `dt create|delete|insert`, `folder sync`) and show me the result.
+  (`wf save|publish|delete`, `dt create|delete|insert`, `folder create|delete|move|sync`) and show me the result.
   Other commands ignore `--dry` and make the change – ask me before running them.
 - Never pass an API key or password on the command line; they are in the environment.
 - `wf diff` prints plain text when files differ. `wf publish` exits 0 even when its `errors`
