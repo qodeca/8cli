@@ -10,9 +10,10 @@ describe('source-control', () => {
     expect(r).toFailWithCode('ERR_NOT_SUPPORTED');
   });
 
-  it('status returns a structured error on a free container', async () => {
-    const r = await run8cli(['sc', 'status'], apiEnv());
+  it('status --direction push reaches the license gate', async () => {
+    const r = await run8cli(['sc', 'status', '--direction', 'push'], apiEnv());
     expect(r).toFailWithCode('ERR_SOURCE_CONTROL');
+    expect(errorMessage(r)).toMatch(LICENSE_GATED);
   });
 
   it('pull returns a structured error on a free container', async () => {

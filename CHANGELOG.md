@@ -14,7 +14,7 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed
 
-- `sc status` calls `GET /api/v1/source-control/status` with the required `direction` query param (`--direction <pull|push>`, default `pull`) instead of the nonexistent `/source-control/preferences`, so a Community instance reports the licence error and a licensed one returns the pending-changes list (#39).
+- `sc status` calls `GET /api/v1/source-control/status` with the required `direction` query param (`--direction <pull|push>`, default `pull`) instead of the nonexistent `/source-control/preferences`, so a Community instance reports the licence error and a licensed one returns the pending-changes list. An invalid `--direction` value now fails with the new `ERR_USAGE` code on stderr, exit 1, before any request is sent (#39).
 
 ## [0.1.2] - 2026-06-19
 
