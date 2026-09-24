@@ -33,7 +33,6 @@ Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it 
 
 | Task | Item | Owns |
 |---|---|---|
-| c4fdabbc | #38 (pi) – PR #71, at handoff | scripts/local-n8n/**, its test, docs/runbooks/local-n8n.md |
 | 140e6482 | PR #58 conflict repair 2 (codex/gpt-5.6-terra) – at handoff | CHANGELOG.md (PR #58 branch) |
 | 0e4d1616 | PR #65 conflict repair (codex/gpt-5.6-terra) | README.md (PR #65 branch) |
 | 9a0d20c7 | PR #68 conflict repair (codex/gpt-5.6-terra) | CHANGELOG.md (PR #68 branch) |
