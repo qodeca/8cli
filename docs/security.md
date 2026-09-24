@@ -47,10 +47,6 @@ up in your shell history.
 
 - For every other command, use `N8N_API_KEY` instead of `--api-key`.
 
-> **Known limitation (macOS):** when 8cli stores a secret, it passes the value to the macOS
-> `security` tool as a command-line argument, so it is briefly visible to other local users
-> while that tool runs. On a shared Mac, prefer environment variables.
-
 ## Plain HTTP URLs
 
 8cli refuses to send your API key over plain `http://`, with one exception for your own

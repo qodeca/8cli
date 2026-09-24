@@ -14,8 +14,8 @@ Credentials are stored per URL, in the keychain service `8cli`, under the accoun
 
 **Reading a secret from standard input.** `--value`, `--password` and the global `--api-key`
 accept `-` in these commands: 8cli then reads the secret from standard input and strips one
-trailing newline. This keeps the secret out of your shell history and out of `ps`. It works only
-in the `auth` commands.
+trailing newline. Using stdin avoids putting the literal secret in the command you type. It works
+only in the `auth` commands.
 
 | Subcommand                                      | What it does                                        |
 | ----------------------------------------------- | --------------------------------------------------- |
