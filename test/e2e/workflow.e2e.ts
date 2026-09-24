@@ -113,6 +113,7 @@ describe('wf delete', () => {
       id: wf.id,
       deleted: false,
       wouldUnpublish: false,
+      wouldBeRefused: false,
     });
     // Still present
     const got = await run8cli(['wf', 'get', wf.id], apiEnv());
@@ -289,23 +290,25 @@ describe('wf delete of a published workflow (changed in n8n 2.40, #43)', () => {
     expect(await run8cli(['wf', 'get', wf.id], apiEnv())).toFailWithCode('ERR_WORKFLOW_GET');
   });
 
-  it('--dry on a published workflow says it would unpublish and changes nothing', async () => {
+  it('--dry on a published workflow follows --force and changes nothing', async () => {
     const wf = await createWorkflowFixture({ withTrigger: true });
     expect((await run8cli(['wf', 'activate', wf.id], apiEnv())).exitCode).toBe(0);
 
-    // With and without --force: --dry still previews the same unpublish step and
-    // sends no write request (the --force run must not unpublish behind the preview).
-    for (const args of [
-      ['wf', 'delete', wf.id, '--dry'],
-      ['wf', 'delete', wf.id, '--force', '--dry'],
-    ]) {
-      const dry = await run8cli(args, apiEnv());
+    // The preview says what this run would do: without --force n8n would refuse the
+    // delete; with it the workflow would be unpublished first. Neither sends a write
+    // request (the --force run must not unpublish behind the preview).
+    for (const [args, wouldUnpublish, wouldBeRefused] of [
+      [['wf', 'delete', wf.id, '--dry'], false, true],
+      [['wf', 'delete', wf.id, '--force', '--dry'], true, false],
+    ] as const) {
+      const dry = await run8cli([...args], apiEnv());
       expect(dry.exitCode).toBe(0);
       expect(dry.json).toMatchObject({
         dryRun: true,
         id: wf.id,
         deleted: false,
-        wouldUnpublish: true,
+        wouldUnpublish,
+        wouldBeRefused,
       });
     }
 

@@ -166,10 +166,10 @@ export interface WorkflowDeleteClient {
 }
 
 /** Append the way out to n8n's published-workflow refusal; leave every other error alone. */
-export function withDeleteHint(message: string): string {
+export function withDeleteHint(message: string, id: string): string {
   if (!message.includes(PUBLISHED_DELETE_REFUSAL)) return message;
   return (
-    `${message} Run "8cli wf deactivate <id>" first, ` +
+    `${message} Run "8cli wf deactivate ${id}" first, ` +
     'or pass --force to unpublish and delete in one step.'
   );
 }
@@ -181,8 +181,10 @@ export function withDeleteHint(message: string): string {
  * With `force`, the workflow is unpublished first and then deleted, waiting out the
  * transient state 2.40 leaves while an unpublish settles.
  *
- * `dry` reports which of the two a real run would do and sends no write request; it
- * reads the workflow only to answer `wouldUnpublish` (published workflows need one).
+ * `dry` reports what this run, with these flags, would do and sends no write request. It
+ * reads the workflow to learn whether it is published: with `force` a published workflow
+ * would be unpublished first (`wouldUnpublish`); without it n8n would refuse the delete
+ * (`wouldBeRefused`).
  */
 export async function deleteWorkflow(
   client: WorkflowDeleteClient,
@@ -190,11 +192,13 @@ export async function deleteWorkflow(
   options: { force?: boolean; dry?: boolean } = {},
 ): Promise<Record<string, unknown>> {
   if (options.dry) {
+    const published = await isPublished(client, id);
     return {
       dryRun: true,
       id,
       deleted: false,
-      wouldUnpublish: await isPublished(client, id),
+      wouldUnpublish: published && options.force === true,
+      wouldBeRefused: published && options.force !== true,
     };
   }
 
@@ -213,7 +217,7 @@ async function isPublished(client: WorkflowDeleteClient, id: string): Promise<bo
   try {
     return (await client.getWorkflow(id)).active === true;
   } catch (err) {
-    // The dry run never failed on a missing workflow before `wouldUnpublish` existed, and
+    // The dry run never failed on a missing workflow before it read the workflow, and
     // a workflow that cannot be read is not a published one. Other errors still surface.
     if (err instanceof ApiRequestError && err.statusCode === 404) return false;
     throw err;
@@ -247,6 +251,9 @@ export async function deleteAfterUnpublish(
 /** The transient 2.40 state a delete must wait out, not a real refusal. */
 function isUnpublishSettling(err: unknown): boolean {
   if (!(err instanceof ApiRequestError)) return false;
+  // `Internal server error` is n8n's body for every 500, not only this race, so an
+  // unrelated 500 during a `--force` delete is retried too – bounded by the settle
+  // timeout, after which the original error is reported.
   if (err.statusCode === 500) return err.message.includes(INTERNAL_SERVER_ERROR);
   return err.statusCode === 409 && err.message.includes(STILL_UNPUBLISHING);
 }
@@ -480,7 +487,7 @@ export function registerWorkflowCommands(program: Command): void {
         const message = err instanceof Error ? err.message : String(err);
         // Only the unflagged path keeps n8n's refusal, so only it gets the hint; a
         // `--force` run that still failed already tried the way out.
-        outputError(opts.force ? message : withDeleteHint(message), 'ERR_WORKFLOW_DELETE');
+        outputError(opts.force ? message : withDeleteHint(message, id), 'ERR_WORKFLOW_DELETE');
       }
     });
 

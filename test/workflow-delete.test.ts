@@ -83,6 +83,18 @@ describe('wf delete --force (#43)', () => {
     expect(order).toEqual(['unpublish', 'delete']);
   });
 
+  it('does not delete when the unpublish fails', async () => {
+    const { client, deactivateWorkflow, deleteWorkflow: del } = makeClient();
+    deactivateWorkflow.mockRejectedValue(apiError(403, 'Forbidden'));
+
+    await expect(deleteWorkflow(client, 'wf1', { force: true })).rejects.toMatchObject({
+      statusCode: 403,
+      message: 'Forbidden',
+    });
+    expect(deactivateWorkflow).toHaveBeenCalledTimes(1);
+    expect(del).not.toHaveBeenCalled();
+  });
+
   // The red-without-fix case: a naive unpublish-then-delete rethrows the first 409, so the
   // retry (and the delete) never happen.
   it('waits out the 409 n8n 2.40 leaves while the unpublish settles', async () => {
@@ -141,58 +153,47 @@ describe('wf delete --force (#43)', () => {
 });
 
 describe('wf delete --dry (#43)', () => {
-  it('reports wouldUnpublish for a published workflow and sends no write request', async () => {
-    const { client, getWorkflow, deactivateWorkflow, deleteWorkflow: del } = makeClient();
-    getWorkflow.mockResolvedValue(workflow('wf1', true));
+  // The preview follows the flags: it says what this run would do, not what a delete needs.
+  it.each([
+    { force: false, active: false, wouldUnpublish: false, wouldBeRefused: false },
+    { force: false, active: true, wouldUnpublish: false, wouldBeRefused: true },
+    { force: true, active: false, wouldUnpublish: false, wouldBeRefused: false },
+    { force: true, active: true, wouldUnpublish: true, wouldBeRefused: false },
+  ])(
+    'force=$force, active=$active → wouldUnpublish=$wouldUnpublish, wouldBeRefused=$wouldBeRefused, no write request',
+    async ({ force, active, wouldUnpublish, wouldBeRefused }) => {
+      const { client, getWorkflow, deactivateWorkflow, deleteWorkflow: del } = makeClient();
+      getWorkflow.mockResolvedValue(workflow('wf1', active));
 
-    await expect(deleteWorkflow(client, 'wf1', { dry: true })).resolves.toEqual({
-      dryRun: true,
-      id: 'wf1',
-      deleted: false,
-      wouldUnpublish: true,
-    });
-    expect(deactivateWorkflow).not.toHaveBeenCalled();
-    expect(del).not.toHaveBeenCalled();
-  });
+      await expect(deleteWorkflow(client, 'wf1', { force, dry: true })).resolves.toEqual({
+        dryRun: true,
+        id: 'wf1',
+        deleted: false,
+        wouldUnpublish,
+        wouldBeRefused,
+      });
+      expect(deactivateWorkflow).not.toHaveBeenCalled();
+      expect(del).not.toHaveBeenCalled();
+    },
+  );
 
-  it('reports wouldUnpublish:false for an inactive workflow', async () => {
-    const { client } = makeClient();
+  // Guard: passes with and without the #43 fix. Before the dry run read the workflow it
+  // never failed on a missing one, so `wf delete <missing> --dry` exited 0; that stays true.
+  it.each([false, true])(
+    'reports a plain delete when the workflow does not exist (force=%s)',
+    async (force) => {
+      const { client, getWorkflow } = makeClient();
+      getWorkflow.mockRejectedValue(apiError(404, 'Not Found'));
 
-    await expect(deleteWorkflow(client, 'wf1', { dry: true })).resolves.toEqual({
-      dryRun: true,
-      id: 'wf1',
-      deleted: false,
-      wouldUnpublish: false,
-    });
-  });
-
-  it('still sends no write request when --force is combined with --dry', async () => {
-    const { client, getWorkflow, deactivateWorkflow, deleteWorkflow: del } = makeClient();
-    getWorkflow.mockResolvedValue(workflow('wf1', true));
-
-    await expect(deleteWorkflow(client, 'wf1', { force: true, dry: true })).resolves.toEqual({
-      dryRun: true,
-      id: 'wf1',
-      deleted: false,
-      wouldUnpublish: true,
-    });
-    expect(deactivateWorkflow).not.toHaveBeenCalled();
-    expect(del).not.toHaveBeenCalled();
-  });
-
-  // Guard: passes with and without the #43 fix. Before `wouldUnpublish` existed a dry run
-  // never read the workflow, so `wf delete <missing> --dry` exited 0; that stays true.
-  it('reports wouldUnpublish:false when the workflow does not exist', async () => {
-    const { client, getWorkflow } = makeClient();
-    getWorkflow.mockRejectedValue(apiError(404, 'Not Found'));
-
-    await expect(deleteWorkflow(client, 'missing', { dry: true })).resolves.toEqual({
-      dryRun: true,
-      id: 'missing',
-      deleted: false,
-      wouldUnpublish: false,
-    });
-  });
+      await expect(deleteWorkflow(client, 'missing', { force, dry: true })).resolves.toEqual({
+        dryRun: true,
+        id: 'missing',
+        deleted: false,
+        wouldUnpublish: false,
+        wouldBeRefused: false,
+      });
+    },
+  );
 
   it('surfaces a read error that is not a 404', async () => {
     const { client, getWorkflow } = makeClient();
@@ -208,13 +209,16 @@ describe('withDeleteHint (#43)', () => {
   it("appends the way out to n8n's published-workflow refusal", () => {
     const hinted = withDeleteHint(
       'Cannot delete a published workflow. Unpublish it before deleting.',
+      'H1lrBYWCZUIi7zgE',
     );
 
     expect(hinted).toContain('Cannot delete a published workflow');
-    expect(hinted).toContain('wf deactivate');
+    // The real id, so the command can be copied as is.
+    expect(hinted).toContain('8cli wf deactivate H1lrBYWCZUIi7zgE');
+    expect(hinted).not.toContain('<id>');
   });
 
   it('leaves an unrelated error unchanged', () => {
-    expect(withDeleteHint('Not Found')).toBe('Not Found');
+    expect(withDeleteHint('Not Found', 'wf1')).toBe('Not Found');
   });
 });

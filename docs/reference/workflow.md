@@ -331,7 +331,7 @@ through, with the way out appended:
 
 ```json
 {
-  "error": "Cannot delete a published workflow. Unpublish it before deleting. Run \"8cli wf deactivate <id>\" first, or pass --force to unpublish and delete in one step.",
+  "error": "Cannot delete a published workflow. Unpublish it before deleting. Run \"8cli wf deactivate H1lrBYWCZUIi7zgE\" first, or pass --force to unpublish and delete in one step.",
   "code": "ERR_WORKFLOW_DELETE"
 }
 ```
@@ -340,8 +340,10 @@ With `--force`, 8cli unpublishes the workflow (`POST /workflows/{id}/unpublish`)
 that to settle – 2.40 finishes it asynchronously – and then deletes it. Unpublishing stops the
 workflow's production triggers, which is why it takes the flag.
 
-Honours `--dry`: it reads the workflow and reports whether an unpublish would come first,
-without sending any write request.
+Honours `--dry`: it reads the workflow and reports what this run, with the flags given, would
+do, without sending any write request. For a published workflow, `--dry --force` reports
+`wouldUnpublish: true`; `--dry` without `--force` reports `wouldBeRefused: true`, because the
+real run would be refused. The dry run exits 0 either way.
 
 ```bash
 8cli --dry wf delete H1lrBYWCZUIi7zgE
@@ -352,13 +354,16 @@ without sending any write request.
   "dryRun": true,
   "id": "H1lrBYWCZUIi7zgE",
   "deleted": false,
-  "wouldUnpublish": true
+  "wouldUnpublish": false,
+  "wouldBeRefused": true
 }
 ```
 
-`wouldUnpublish` is `true` when the workflow is currently published (`active`), whether or not
-`--force` was given: it says the delete needs an unpublish step, not that this run will take
-it.
+| Workflow    | `--force` | `wouldUnpublish` | `wouldBeRefused` | The real run                 |
+| ----------- | --------- | ---------------- | ---------------- | ---------------------------- |
+| Unpublished | either    | `false`          | `false`          | deletes it                   |
+| Published   | no        | `false`          | `true`           | fails, `ERR_WORKFLOW_DELETE` |
+| Published   | yes       | `true`           | `false`          | unpublishes, then deletes    |
 
 ```bash
 8cli wf delete H1lrBYWCZUIi7zgE --force
@@ -372,8 +377,10 @@ it.
 ```
 
 **Output:** `{ id, deleted: true }`; with `--dry`,
-`{ dryRun: true, id, deleted: false, wouldUnpublish }`. A dry run on a workflow that does not
-exist still reports `wouldUnpublish: false` rather than failing.
+`{ dryRun: true, id, deleted: false, wouldUnpublish, wouldBeRefused }`. A dry run on a
+workflow that does not exist reports a plain delete (both `false`) rather than failing; any
+other error reading the workflow – a bad key, an unreachable host, a 403 – fails the dry run
+with `ERR_WORKFLOW_DELETE`.
 
 **Errors:** `ERR_WORKFLOW_DELETE` (for example `Not Found`).
 

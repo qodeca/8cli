@@ -35,7 +35,10 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - `wf delete` gains `--force`, which unpublishes a published (active) workflow and then deletes
   it, waiting out n8n 2.40's asynchronous unpublish (a 409/500 the immediate retry clears);
   without the flag the refusal keeps n8n's message and adds a hint to run `wf deactivate` first,
-  and `--dry` now reports `wouldUnpublish` without sending a write request (#43).
+  and the hint names the workflow's id. `--dry` now reports what that run would do –
+  `wouldUnpublish` with `--force`, `wouldBeRefused` without it – without sending a write
+  request; to answer, it reads the workflow, so a dry run can now fail with
+  `ERR_WORKFLOW_DELETE` on a read error other than 404 (#43).
 
 ### Changed
 
