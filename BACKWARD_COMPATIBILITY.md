@@ -30,6 +30,19 @@ n8n-side changes – no 8cli code changed for them.
 Errors are `{ "error": "...", "code": "ERR_..." }` on stderr with exit code 1. Error codes are a
 contract: callers branch on them.
 
+Commander's own usage errors – a missing required option or argument, an option missing its
+argument, an unknown option or command, excess arguments – are errors like any other: they print
+`{ "error": "...", "code": "ERR_USAGE" }` on stderr with exit code 1, where the message is
+commander's with its `error: ` prefix removed. Until this change they printed a plain-text
+`error: ...` line, which an agent parsing stderr as JSON read as a parse failure; routing them
+through `outputError` is the recorded decision for that break (0.x, so allowed – but not silent).
+
+Help display is not an error and keeps its old shape: `--help`, `--version` and `help <command>`
+write to stdout and exit 0, while the bare invocation and a bare command group (`wf`, `dt`, …)
+print help to stderr and exit 1. An unknown command named to `help` is a usage error like any
+other: `8cli help nope` prints `{ "error": "unknown command 'nope'", "code": "ERR_USAGE" }` on
+stderr with exit code 1.
+
 ## 5. Configuration
 
 The resolution order (CLI flags → env vars → config file → keychain → defaults), the environment
