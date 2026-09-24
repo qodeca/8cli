@@ -44,12 +44,14 @@ Queued (2-gate-run ceiling): PR #58 conflict repair (CHANGELOG.md); #40, #41 (pu
 
 | Runner × login | State | Resets |
 |---|---|---|
-| claude × qodeca-priv | unknown (in use) | – |
-| claude × gmail-priv | unknown (in use) | – |
-| claude × eqamana-priv | out (weekly limit) | 2026-09-26 18:00 |
-| claude × westagilelabs-priv | out (weekly limit) | 2026-09-25 09:00 |
-| codex × codex-cli | ok, 17% weekly, 4 tasks | 2026-09-29 14:45 |
-| pi (own accounts) | idle | – |
+| claude × qodeca-priv | ok – 5h 3%, weekly 41% | 5h 17:20, weekly 2026-09-28 19:00 |
+| claude × gmail-priv | ok – 5h 3%, weekly 30% | 5h 17:30, weekly 2026-09-25 20:59 |
+| claude × eqamana-priv | out (weekly 100%) | 2026-09-26 18:00 |
+| claude × westagilelabs-priv | out (weekly 100%) | 2026-09-25 09:00 |
+| codex × codex-cli | ok – weekly 18% | 2026-09-29 14:45 |
+| pi (own accounts) | not reported by read_quota | – |
+
+Read from read_quota at 14:33 (observed 14:22-14:33). claude × default is the reserved leader login, not in any rotation.
 
 ## Owner items
 
