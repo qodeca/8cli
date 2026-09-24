@@ -18,22 +18,20 @@ Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it 
 | #35 | README (badges, demo, logo) | held | needs #36 merged and #37 direction picked |
 | #36 | Scripted demo GIF | PR #48 approved + qa-approved at 634e0db, ready | merge (waits on owner rule) |
 | #37 | Logo and banner | PR #49 design-approved, CI green, ready | BLOCKED: merge denied by auto-mode classifier |
-| #52, #53 | [::1] refused; folder move to root (found by #34 docs) | #52 on PR #54 (review 5d3ab2ef running); #53 held (e2e overlap with PR #50, CHANGELOG with #52) | – |
-| GHSA-h6g4-mq8c-5chp | Private advisory fix (owner added 2026-09-24) | fix fd18e29c running in the private fork | owner publishes the advisory |
+| #52, #53 | [::1] refused; folder move to root (found by #34 docs) | #52 PR #54 approved + qa-approved at de874cd, mergeable; #53 held (e2e overlap with PR #50, CHANGELOG with #52) | – |
+| GHSA-h6g4-mq8c-5chp | Private advisory fix (owner added 2026-09-24) | fix done on the private fork PR | private review, then the owner publishes |
 | #38 | Local n8n creds per worktree vs shared instance (bug) | ready, not dispatched | after #32/#34/#36 stop using the instance (touches scripts/local-n8n) |
 | #39–#45 | 7 defects found by #32 validation (2 high: #39 sc status route, #42 wf publish drops settings) | #45 PR #51 PR #51 APPROVED + qa-approved at 51a55ed, mergeable; #39-#43 held (each edits test/e2e/**, owned by 94c2ff6c); #44 held (workflow.ts overlap) | dispatch after #32 merges |
 
 ## Open pull requests
 
-- #55 (owner, Codex login default -> codex-cli, routing.json): security review a8e9b04c running; engine knows codex-cli.
+- #55 (owner, Codex login default -> codex-cli): security no findings at f922d46, route check ok, CI green – mergeable.
 
 - #46 (xez/b25718f0, #34 docs) opened by the agent BEFORE readiness/handoff; no labels, no review, no phase record. CI 3/3 green. Not mergeable until the task finishes its workflow and is reviewed.
 
 ## Running tasks and file ownership
 
 - e22b046a (pi, PR #46 round 3) owns docs/security.md, scripts/check-docs.mjs, test/check-docs.test.ts
-- fd18e29c (pi, GHSA fix, private fork only) owns src/keychain/macos.ts, one unit test, CHANGELOG.md line
-- 5d3ab2ef (claude/opus qodeca-priv, review PR #54), a8e9b04c (claude/opus qodeca-priv, security PR #55) – read-only
 
 
 
@@ -50,9 +48,20 @@ Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it 
 | codex × default | in use (2 tasks) | – |
 | pi (own accounts) | in use (1 task) | – |
 
+## Running file ownership (09:10)
+
+| Task | Item | Owns |
+|---|---|---|
+| cccaba9c | PR #46 split (codex/gpt-6-sol) | scripts/check-docs.mjs, test/check-docs.test.ts, package.json, .github/workflows/ci.yml, docs/** |
+| a30ad223 | #42 (pi) | src/commands/workflow.ts publish path, CLAUDE.md gotcha 3, test/e2e/workflow*.e2e.ts |
+| 0f189421 | #39 (pi) | src/client/public-api.ts getSourceControlStatus, src/commands/source-control.ts, test/e2e/source-control.e2e.ts |
+| d114f574 | #53 (pi) | src/commands/folder.ts, src/client/internal-api.ts move, test/e2e/folder.e2e.ts |
+
+All four append one CHANGELOG.md line (accepted append-only overlap). Held: #40, #41 (public-api.ts, held by #39); #43, #44 (workflow.ts, held by #42).
+
 ## Owner items
 
-- BLOCKED: leader merge of PR #49 denied by the Claude Code auto-mode classifier even with --allowedTools "Bash(gh pr merge *)". Owner chose "Allow the leader in settings" – owner adds the rule. Mergeable now: #48, #49, #50, #51.
+- BLOCKED: leader merge of PR #49 denied by the Claude Code auto-mode classifier even with --allowedTools "Bash(gh pr merge *)". Owner chose "Allow the leader in settings" – owner adds the rule. #50 merged 09:06 by the leader (owner authorized); the other merges were refused by the classifier. Mergeable now: #48, #49, #51, #54, #55.
 - Delete branch xez/df01cf60 (record deletion is yours; unattended hard stop).
 
 ## Rules that bit

@@ -91,3 +91,12 @@ Owner chose: "Yes, create the draft (Recommended)".
 ## 2026-09-24 08:24 – how the private fix is made (direct question)
 
 Owner chose: "Custom task, fork only (Recommended)" – one task with inline steps and no public handoff; it pushes only to the private fork and opens the PR there. An exception to the workflow-dispatch rule, for this task only.
+
+## 2026-09-24 08:52 – public campaign notes and the private finding (owner, AskUserQuestion)
+Question: the public campaign notes name the code part behind the privately handled finding; what to do?
+Owner: "Leave it, publish soon (Recommended)"
+
+## 2026-09-24 09:05 – leader acts on the pending owner steps (owner, chat)
+Asked: merge the ready PRs (#48, #49, #50, #51, #54, #55); merge the private GHSA-h6g4-mq8c-5chp fix and publish the advisory; PR #46 "split out the checker" (leader's pick) or "round 4".
+Owner: "do all of that yourself, you have my authorization"
+Leader reading: PR #46 takes the leader's recommendation, split out the checker.
