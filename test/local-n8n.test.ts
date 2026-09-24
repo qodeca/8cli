@@ -11,6 +11,7 @@ import {
   mkdtempSync,
   readdirSync,
   readFileSync,
+  realpathSync,
   rmSync,
   statSync,
   symlinkSync,
@@ -127,7 +128,7 @@ describe('local-n8n script', () => {
   });
 
   it('refuses with ERR_GIT_COMMON_DIR when the checkout is not a git repository', () => {
-    const notRepo = mkdtempSync(join(tmpdir(), 'local-n8n-norepo-'));
+    const notRepo = realpathSync(mkdtempSync(join(tmpdir(), 'local-n8n-norepo-')));
     try {
       const script = copyScript(notRepo);
       const result = runStart(script, gitOnlyPath(notRepo));
@@ -358,7 +359,7 @@ function runStart(
     input: '',
     // The ceiling keeps git from searching above the temp directory, so a fixture that is
     // deliberately not a repository cannot accidentally find one.
-    env: isolatedEnv({ PATH: path, GIT_CEILING_DIRECTORIES: tmpdir() }),
+    env: isolatedEnv({ PATH: path, GIT_CEILING_DIRECTORIES: realpathSync(tmpdir()) }),
   });
 }
 
@@ -376,7 +377,7 @@ function runScript(
     const child = spawn(process.execPath, ['--import', 'tsx', script, command], {
       env: isolatedEnv({
         PATH: path,
-        GIT_CEILING_DIRECTORIES: tmpdir(),
+        GIT_CEILING_DIRECTORIES: realpathSync(tmpdir()),
         N8N_LOCAL_PORT: String(port),
       }),
       stdio: ['ignore', 'pipe', 'pipe'],
@@ -389,6 +390,9 @@ function runScript(
     child.on('close', (status) => resolvePromise({ status, stdout, stderr }));
   });
 }
+
+// Fixture dirs are resolved with `realpathSync`: git and the script report real paths, and on
+// macOS the default temp dir (`/var/folders/...`) is a symlink to `/private/var/...`.
 
 /** The API key the fake 8cli accepts; any other key fails `auth verify`. */
 const WORKING_KEY = 'working-key';
@@ -447,7 +451,7 @@ describe('local-n8n incomplete stored credentials', () => {
   let script: string;
 
   beforeEach(() => {
-    dir = mkdtempSync(join(tmpdir(), 'local-n8n-script-'));
+    dir = realpathSync(mkdtempSync(join(tmpdir(), 'local-n8n-script-')));
     repo = join(dir, 'checkout');
     mkdirSync(repo);
     initRepo(repo);
@@ -494,7 +498,7 @@ describe('local-n8n shared credentials across worktrees', () => {
   let worktreeScript: string;
 
   beforeEach(() => {
-    dir = mkdtempSync(join(tmpdir(), 'local-n8n-worktree-'));
+    dir = realpathSync(mkdtempSync(join(tmpdir(), 'local-n8n-worktree-')));
     mainRepo = join(dir, 'main');
     mkdirSync(mainRepo);
     initRepo(mainRepo);
@@ -542,7 +546,7 @@ describe('local-n8n adopting a per-checkout credentials file', () => {
   let port: number;
 
   beforeEach(async () => {
-    dir = mkdtempSync(join(tmpdir(), 'local-n8n-adopt-'));
+    dir = realpathSync(mkdtempSync(join(tmpdir(), 'local-n8n-adopt-')));
     mainRepo = join(dir, 'main');
     mkdirSync(mainRepo);
     initRepo(mainRepo);
