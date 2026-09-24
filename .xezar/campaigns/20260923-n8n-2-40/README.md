@@ -6,7 +6,7 @@ Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it 
 
 ## State
 
-- Base `develop` at c4bbce6. Merges this campaign: 20 (#33, #50, #48, #49, #51, #55, #54, #59, #46, #56, #63, #58, #68, #65, #71, #73, #75, #79, #74, #78). Checkpoints met: 1 (#31 closed).
+- Base `develop` at d2d0001. Merges this campaign: 21 (#33, #50, #48, #49, #51, #55, #54, #59, #46, #56, #63, #58, #68, #65, #71, #73, #75, #79, #74, #78, #80). Checkpoints met: 1 (#31 closed).
 
 ## Work
 
@@ -37,7 +37,7 @@ Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it 
 
 
 
-Running (18:55): 9c5eec45 review + 013a473b acceptance PR #80 (#72); 59668604 review + e54ab1a3 acceptance PR #81 (#76, #77). All read-only. Then release 0.2.0 (owner-authorised).
+Ready for L3 (19:04): PR #81 (#76, #77) repair round 1 (review REQUEST CHANGES at ac87e12: 1 major, 2 minor in docs/validation/n8n-2.40.5.md and test/e2e/COVERAGE.md). Then release 0.2.0 (owner-authorised).
 
 ## Accounts
 
