@@ -120,3 +120,7 @@ Owner chose: "Yes, turn it on". No note given.
 ## 2026-09-24 18:27 – L3 stays the only dispatcher
 
 Owner asked why the leader waits for the pacing loop instead of starting ready work at once. After the reason was explained (one dispatcher prevents double dispatch; cost is about 2 minutes per hand-off), the owner chose, in chat: "ok so let's follow the rule and don't change anything". No change to the leader guide.
+
+## 2026-09-24 18:28 – Release 0.2.0 authorised; hand-off to another machine
+
+Owner, in chat: "when you finish all of the work, ensure everything is commited and pushed as we will be continuing the project on a different machine. As the last part on this machine release new version of 8cli to npmjs". Asked by AskUserQuestion, the owner chose: scope "Finish all 5" (merge PR #74 and PR #78, then fix #72, #76, #77 before release) and version "0.2.0". The release follows the leader-guide release runbook (xez-release, develop -> main by PR, signed tag, GitHub Release; a person approves the protected `release` environment). Last step on this machine: everything committed and pushed.
