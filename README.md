@@ -1,10 +1,3 @@
-<div align="center">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="assets/brand/logo-dark.svg">
-    <img src="assets/brand/logo-light.svg" alt="8cli logo" width="72" height="72">
-  </picture>
-</div>
-
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="assets/brand/banner-dark.svg">
   <img src="assets/brand/banner-light.svg" alt="8cli – AI-first. JSON by default." width="100%">
@@ -23,13 +16,13 @@
 
 <br>
 
-![8cli terminal demo](assets/demo/8cli-demo.gif)
+![8cli terminal demo: auth verify, JSON output by default, --table view, piping into jq, and a --dry delete preview](assets/demo/8cli-demo.gif)
 
 ## Why 8cli?
 
 - **AI-first** – commands return JSON by default; errors are structured JSON on stderr, with no CLI prompts.
 - **Composable** – pipe workflow and execution data through `jq` or other tools.
-- **Secrets handled deliberately** – macOS keychain support; environment variables for other platforms. No secrets in config files.
+- **Secrets handled deliberately** – macOS Keychain support; environment variables on other platforms. No secrets in config files.
 - **Automation-friendly** – inspect workflows, executions, credentials and more from scripts or coding agents.
 
 8cli requires **Node.js 22.22+** and an n8n instance with API access. macOS can store API keys in Keychain; Windows and Linux currently use environment variables.
@@ -40,7 +33,7 @@
 npm install -g @qodeca/8cli
 ```
 
-The package is also available on [npm](https://www.npmjs.com/package/@qodeca/8cli). For development setup, see [Getting started](docs/getting-started.md).
+The package is also available on [npm](https://www.npmjs.com/package/@qodeca/8cli). For a step-by-step first run, see [Getting started](docs/getting-started.md). To work on 8cli itself, see [`CONTRIBUTING.md`](./CONTRIBUTING.md).
 
 ## 60-second quick start
 
@@ -60,29 +53,40 @@ export N8N_URL=https://your-n8n.example.com
 8cli wf list | jq '.[] | {id, name, active}'
 ```
 
-`wf list` returns a JSON array, including `[]` when no workflows exist. Install [`jq`](https://jqlang.github.io/jq/) for the last command. On macOS, you can store the key in Keychain after setting it in the environment: `printf '%s' "$N8N_API_KEY" | 8cli auth set-api-key --value -`. Then `unset N8N_API_KEY`; 8cli will use the stored key. See [Configuration](docs/configuration.md) for other options.
+`wf list` returns a JSON array, including `[]` when no workflows exist. Install [`jq`](https://jqlang.github.io/jq/) for the last command.
+
+### macOS: store the key in Keychain
+
+Optionally, save the key from the environment into Keychain, then remove it from the environment:
+
+```bash
+printf '%s' "$N8N_API_KEY" | 8cli auth set-api-key --value -
+unset N8N_API_KEY
+```
+
+The key is stored per instance URL, so 8cli finds it only while `N8N_URL`, `--url` or `url` in `8cli.json` names that same instance. See [Configuration](docs/configuration.md) for the full lookup order.
 
 ## Command overview
 
-| Group    | Use it for                            | Reference                                          |
-| -------- | ------------------------------------- | -------------------------------------------------- |
-| `auth`   | Set credentials and verify access     | [Auth](docs/reference/auth.md)                     |
-| `config` | Inspect resolved configuration        | [Config](docs/reference/config.md)                 |
-| `wf`     | List, inspect and manage workflows    | [Workflow](docs/reference/workflow.md)             |
-| `exec`   | Inspect and delete executions         | [Execution](docs/reference/execution.md)           |
-| `cred`   | List and manage credentials           | [Credential](docs/reference/credential.md)         |
-| `tag`    | Manage tags                           | [Tag](docs/reference/tag.md)                       |
-| `var`    | Manage variables                      | [Variable](docs/reference/variable.md)             |
-| `proj`   | Manage projects                       | [Project](docs/reference/project.md)               |
-| `user`   | Inspect users                         | [User](docs/reference/user.md)                     |
-| `folder` | Manage folders                        | [Folder](docs/reference/folder.md)                 |
-| `dt`     | Manage data tables and rows           | [Data table](docs/reference/datatable.md)          |
-| `audit`  | Run instance audits                   | [Audit](docs/reference/audit.md)                   |
-| `sc`     | Inspect and pull source control state | [Source control](docs/reference/source-control.md) |
+| Command (alias)         | Use it for                            | Reference                                          |
+| ----------------------- | ------------------------------------- | -------------------------------------------------- |
+| `auth`                  | Set credentials and verify access     | [Auth](docs/reference/auth.md)                     |
+| `config`                | Inspect resolved configuration        | [Config](docs/reference/config.md)                 |
+| `workflow` (`wf`)       | List, inspect and manage workflows    | [Workflow](docs/reference/workflow.md)             |
+| `execution` (`exec`)    | Inspect and delete executions         | [Execution](docs/reference/execution.md)           |
+| `credential` (`cred`)   | List and manage credentials           | [Credential](docs/reference/credential.md)         |
+| `tag`                   | Manage tags                           | [Tag](docs/reference/tag.md)                       |
+| `variable` (`var`)      | Manage variables                      | [Variable](docs/reference/variable.md)             |
+| `project` (`proj`)      | Manage projects                       | [Project](docs/reference/project.md)               |
+| `user`                  | Inspect users                         | [User](docs/reference/user.md)                     |
+| `folder`                | Manage folders                        | [Folder](docs/reference/folder.md)                 |
+| `datatable` (`dt`)      | Manage data tables and rows           | [Data table](docs/reference/datatable.md)          |
+| `audit`                 | Run instance audits                   | [Audit](docs/reference/audit.md)                   |
+| `source-control` (`sc`) | Inspect and pull source control state | [Source control](docs/reference/source-control.md) |
 
-Run `8cli <group> --help` for flags and subcommands. Some groups require n8n Enterprise features or additional credentials; see [Community vs. Enterprise](docs/community-vs-enterprise.md). `sc push` returns `ERR_NOT_SUPPORTED` because n8n's public API has no push endpoint.
+Run `8cli <command> --help` for flags and subcommands. Some groups require n8n Enterprise features or additional credentials; see [Community vs. Enterprise](docs/community-vs-enterprise.md). `sc push` returns `ERR_NOT_SUPPORTED` because n8n's public API has no push endpoint.
 
-For output formats and error codes, see [Output and errors](docs/output-and-errors.md). For examples and recipes, start at the [documentation index](docs/README.md).
+For output formats and error codes, see [Output and errors](docs/output-and-errors.md). For guides, recipes and the full reference, start at the [documentation index](docs/README.md).
 
 ## Disclaimer
 
@@ -111,8 +115,8 @@ terms (your Git author identity is your record).
 
 ## Security
 
-8cli keeps secrets in the OS keychain (never in config files) and refuses plaintext-HTTP URLs
-by default. Report security vulnerabilities **privately** via
+8cli stores secrets in the macOS Keychain or reads them from environment variables – never from
+config files – and refuses plaintext-HTTP URLs by default. Report security vulnerabilities **privately** via
 [GitHub's private advisory reporting](https://github.com/qodeca/8cli/security/advisories/new) –
 see [`SECURITY.md`](./SECURITY.md). Please do not open a public issue for an unfixed vulnerability.
 
