@@ -28,7 +28,9 @@ n8n-side changes – no 8cli code changed for them.
 ## 4. Errors and exit codes
 
 Errors are `{ "error": "...", "code": "ERR_..." }` on stderr with exit code 1. Error codes are a
-contract: callers branch on them.
+contract: callers branch on them. A field may be added – `ERR_RATE_LIMITED` carries `retryAfter`,
+the seconds n8n asked the caller to wait – and an existing field is not removed, renamed or
+retyped. A new code is added; an existing one is never repurposed.
 
 Commander's own usage errors – a missing required option or argument, an option missing its
 argument, an unknown option or command, excess arguments – are errors like any other: they print

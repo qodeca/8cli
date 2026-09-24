@@ -14,6 +14,8 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed
 
+- `folder` commands no longer stall silently when n8n rate-limits the internal login: a `429` on `POST /rest/login` fails at once with `{ "error": "...", "code": "ERR_RATE_LIMITED" }` on stderr, exit 1, carrying the server's `Retry-After` seconds in the message and as a `retryAfter` field, instead of sleeping up to three minutes and blaming the next request. The public API client's `429` retry is unchanged ([#47](https://github.com/qodeca/8cli/issues/47)).
+
 - `wf activate` and `wf deactivate` now call n8n's `POST /workflows/{id}/publish` and `/unpublish` routes where they exist, falling back to the deprecated `/activate` and `/deactivate` on older n8n; command names, flags and JSON output are unchanged (#44).
 
 - Behaviour change: credentials from `N8N_API_KEY`, `N8N_EMAIL`, `N8N_PASSWORD` or `--api-key`

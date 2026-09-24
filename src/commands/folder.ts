@@ -5,7 +5,7 @@ import { Command } from 'commander';
 import { resolve, relative, join, dirname } from 'node:path';
 import { readdirSync, mkdirSync, renameSync, rmSync, existsSync } from 'node:fs';
 import { resolveConfig } from '../config.js';
-import { InternalApiClient } from '../client/internal-api.js';
+import { InternalApiClient, RateLimitedError } from '../client/internal-api.js';
 import type { InternalWorkflow } from '../client/internal-api.js';
 import type { Folder, Config } from '../types.js';
 import { outputError, outputJson } from '../formatters/index.js';
@@ -49,6 +49,9 @@ function assertFolderConfig(
 
 /**
  * Create an authenticated InternalApiClient from resolved config.
+ *
+ * `login()` throws `RateLimitedError` (`ERR_RATE_LIMITED`) when n8n answers 429;
+ * `runFolder` turns it into the structured error (#47).
  */
 async function createInternalClient(config: Config): Promise<InternalApiClient> {
   assertFolderConfig(config);
@@ -184,11 +187,18 @@ function removeEmptyDirs(dir: string, rootDir: string): void {
  * Run a folder command body, routing any thrown error (e.g. login failure or a
  * license-gated internal API response) through the structured `{error,code}`
  * contract instead of letting an ApiRequestError escape as a raw stack trace.
+ *
+ * A rate-limited login gets its own code and the server's `Retry-After` seconds
+ * (#47): reporting it here, at the group's single error boundary, keeps the
+ * command's own code for every other failure and emits exactly one error.
  */
 async function runFolder(code: string, fn: () => Promise<void>): Promise<void> {
   try {
     await fn();
   } catch (err) {
+    if (err instanceof RateLimitedError) {
+      outputError(err.message, 'ERR_RATE_LIMITED', 1, { retryAfter: err.retryAfter });
+    }
     outputError(err instanceof Error ? err.message : String(err), code);
   }
 }
