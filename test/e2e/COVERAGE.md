@@ -67,16 +67,17 @@ defects and the 2.40.5 validation are in `docs/validation/n8n-2.40.5.md`.
 
 ## Unit (right-altitude, not e2e)
 
-| Target                                  | Covered                                                                       | Spec                                        |
-| --------------------------------------- | ----------------------------------------------------------------------------- | ------------------------------------------- |
-| `BaseClient` 429 retry/backoff          | retry-then-succeed, budget-exhausted, Retry-After                             | `test/base-retry.test.ts`                   |
-| `BaseClient.paginateAll` cursor loop    | multi-page concat + cursor forwarding                                         | `test/pagination.test.ts`                   |
-| `dt rows --limit` paging at the 250 cap | `min(limit, 250)` pages, cursor follow, stop + trim, `--limit 10` one request | `test/datatable-rows-limit.test.ts`         |
-| config / formatters / keychain helpers  | pure-function units                                                           | `test/{config,formatters,keychain}.test.ts` |
+| Target                                  | Covered                                                                           | Spec                                        |
+| --------------------------------------- | --------------------------------------------------------------------------------- | ------------------------------------------- |
+| `BaseClient` 429 retry/backoff          | retry-then-succeed, budget-exhausted, Retry-After                                 | `test/base-retry.test.ts`                   |
+| `InternalApiClient` login 429 (#47)     | `ERR_RATE_LIMITED` at once, `Retry-After` carried, no sleep; non-login retry kept | `test/folder-login-rate-limit.test.ts`      |
+| `BaseClient.paginateAll` cursor loop    | multi-page concat + cursor forwarding                                             | `test/pagination.test.ts`                   |
+| `dt rows --limit` paging at the 250 cap | `min(limit, 250)` pages, cursor follow, stop + trim, `--limit 10` one request     | `test/datatable-rows-limit.test.ts`         |
+| config / formatters / keychain helpers  | pure-function units                                                               | `test/{config,formatters,keychain}.test.ts` |
 
 ## Deferred (with rationale)
 
-- **`folder delete`** – gated like the rest of the group, checked by hand. Every folder command logs in afresh and n8n allows 5 logins per minute (#47); `folder.e2e.ts` already spends all 5.
+- **`folder delete`** – gated like the rest of the group, checked by hand. Every folder command logs in afresh and n8n allows 5 logins per minute; since #47 the 6th fails fast with `ERR_RATE_LIMITED` instead of waiting it out, so a 7th case still cannot be added. `folder.e2e.ts` already spends all 5.
 - **Licensed folders / projects happy paths** – require an n8n license. 8cli targets free Community n8n, so the gated-error contract is the correct coverage. `folder sync --dry` no-mutation preview also needs folders (licensed).
 - **`config show` snapshot** – output includes the random container `url` and the masked `apiKey`, neither volatile-by-key; would need `redact.ts` extended to mask them. Asserted by field instead.
 - **Per-command `--table` snapshots** – over-coverage; one formatter assertion (`dt list`) plus the `wf`/`tag` table checks suffice.

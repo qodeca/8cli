@@ -23,12 +23,12 @@ import {
 // {error,code} instead of an uncaught ApiRequestError).
 //
 // Login budget: every folder command logs in afresh (sync even before it checks
-// --dir), and n8n allows 5 logins per minute; the 6th waits out a 60 s
-// Retry-After (#47). This file makes 6 (tree, create, both syncs, two moves):
-// the 6th, the unknown-workflow move, runs last and carries a 90 s timeout to
-// wait out that Retry-After. Do not add more. `folder delete` is deferred for
-// that reason. The `folder --dry` cases below make no request at all, so they
-// spend none of the budget.
+// --dir), and n8n allows 5 logins per minute. Since #47 the 6th does not wait
+// out the 60 s Retry-After: the login fails at once with ERR_RATE_LIMITED. This
+// file still makes 6 (tree, create, both syncs, two moves) and the 6th, the
+// unknown-workflow move, runs last and accepts that code. Do not add more.
+// `folder delete` is deferred for that reason. The `folder --dry` cases below
+// make no request at all, so they spend none of the budget.
 
 describe('folder credential guard', () => {
   it('requires email/password (internal API)', async () => {
@@ -126,14 +126,17 @@ describe('folder sync / move', () => {
     });
   });
 
-  // The 6th login in this file: n8n's 5-per-minute limit makes it wait out a
-  // 60 s Retry-After (#47), hence the longer timeout.
-  it('move returns a structured error for an unknown workflow', { timeout: 90_000 }, async () => {
+  // The 6th login in this file: n8n's 5-per-minute limit answers it with 429,
+  // and #47 makes that fail fast instead of sleeping 60 s. The timeout is only
+  // there to catch a regression that reintroduces the wait.
+  it('move returns a structured error for an unknown workflow', { timeout: 20_000 }, async () => {
     const r = await run8cli(['folder', 'move', uniqueName('nowf'), '--to', 'x'], internalEnv());
     expect(r.exitCode).toBe(1);
-    // ERR_WORKFLOW_NOT_FOUND if the internal workflow list is reachable, else
-    // ERR_FOLDER_MOVE if it is gated – both are the structured-error contract.
-    expect(['ERR_WORKFLOW_NOT_FOUND', 'ERR_FOLDER_MOVE']).toContain(
+    // ERR_RATE_LIMITED when the login budget is already spent (the usual case
+    // here), ERR_WORKFLOW_NOT_FOUND if the internal workflow list is reachable,
+    // else ERR_FOLDER_MOVE if it is gated – all are the structured-error
+    // contract, and none of them may arrive after a 60 s silent wait.
+    expect(['ERR_RATE_LIMITED', 'ERR_WORKFLOW_NOT_FOUND', 'ERR_FOLDER_MOVE']).toContain(
       (JSON.parse(r.stderr) as { code: string }).code,
     );
   });

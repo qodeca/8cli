@@ -37,6 +37,17 @@ command's own code when the login fails:
 }
 ```
 
+n8n allows 5 internal logins per minute per client. The next one is refused **at once** – the
+command does not wait out the `Retry-After` – with the seconds n8n asked for:
+
+```json
+{
+  "error": "n8n rate-limited the login (HTTP 429); retry after 60 seconds.",
+  "code": "ERR_RATE_LIMITED",
+  "retryAfter": 60
+}
+```
+
 ## folder tree
 
 ```text

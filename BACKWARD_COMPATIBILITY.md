@@ -48,7 +48,9 @@ n8n-side changes – no 8cli code changed for them.
 ## 4. Errors and exit codes
 
 Errors are `{ "error": "...", "code": "ERR_..." }` on stderr with exit code 1. Error codes are a
-contract: callers branch on them.
+contract: callers branch on them. A field may be added – `ERR_RATE_LIMITED` carries `retryAfter`,
+the seconds n8n asked the caller to wait – and an existing field is not removed, renamed or
+retyped. A new code is added; an existing one is never repurposed.
 
 `wf delete` on a published workflow keeps n8n's refusal and its `ERR_WORKFLOW_DELETE` code and
 exit status, and now appends a hint naming the way out (`wf deactivate`, or `--force`) (#43).
