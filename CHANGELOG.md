@@ -36,6 +36,14 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   returns the bracketed hostname `[::1]`, which the loopback check did not match. The
   exemption stays narrow – other IPv6 hosts are still refused (#52).
 
+- `wf delete` gains `--force`, which unpublishes a published (active) workflow and then deletes
+  it, waiting out n8n 2.40's asynchronous unpublish (a 409/500 the immediate retry clears);
+  without the flag the refusal keeps n8n's message and adds a hint to run `wf deactivate` first,
+  and the hint names the workflow's id. `--dry` now reports what that run would do –
+  `wouldUnpublish` with `--force`, `wouldBeRefused` without it – without sending a write
+  request; to answer, it reads the workflow, so a dry run can now fail with
+  `ERR_WORKFLOW_DELETE` on a read error other than 404 (#43).
+
 - `dt rows --limit N` no longer fails with `ERR_HTTP_400` when `N` is above 250: it requests
   pages of `min(N, 250)`, follows the cursor and stops once `N` rows are collected, so
   `--limit 500` returns up to 500 rows instead of n8n's `request/query/limit must be <= 250`.

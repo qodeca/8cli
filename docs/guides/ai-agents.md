@@ -102,9 +102,15 @@ with `{`, the agent should re-read `--help`. See
 {
   "dryRun": true,
   "id": "Jr53yjULv3JYJRgF",
-  "deleted": false
+  "deleted": false,
+  "wouldUnpublish": false,
+  "wouldBeRefused": false
 }
 ```
+
+The `wf delete` preview follows the flags given. On a published workflow, `--dry` alone reports
+`wouldBeRefused: true` – the real run would fail – and `--dry --force` reports
+`wouldUnpublish: true` – the real run would unpublish it, then delete it.
 
 The agent shows you this, you agree, and only then does it run the command without `--dry`.
 

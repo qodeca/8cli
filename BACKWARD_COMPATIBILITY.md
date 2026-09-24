@@ -15,6 +15,13 @@ The global options (`--url`, `--api-key`, `--config`, `--table`, `--dry`, `--ver
 `--insecure`) and every subcommand flag. A flag may gain a new value; it may not change the
 meaning of an existing one.
 
+`wf delete` gained `--force` (#43): it unpublishes a published workflow before deleting it. The
+flag is additive – without it `wf delete` still refuses a published workflow rather than
+unpublishing one, and `--dry` keeps its meaning of "send no write request". The `wf delete`
+dry run now reads the workflow (`GET /workflows/{id}`) to learn whether it is published, so,
+unlike before, it can fail with `ERR_WORKFLOW_DELETE` on a read error other than 404 – a bad
+key, an unreachable host, a 403. A missing workflow (404) still previews a plain delete.
+
 ## 3. Output shapes
 
 JSON on stdout: list commands print arrays, get commands print objects, write commands report
@@ -25,6 +32,14 @@ changed. `dt rows --limit` above n8n's 250-row page cap now returns rows instead
 `ERR_HTTP_400`: the CLI pages at `min(limit, 250)` and still prints the same JSON array, trimmed
 to `--limit` (#41); no field changed.
 
+`wf delete --dry` gained two boolean fields that follow the flags given: `wouldUnpublish`
+(`true` when the workflow is published and `--force` was given, so the run would unpublish it
+first) and `wouldBeRefused` (`true` when the workflow is published and `--force` was not given,
+so n8n would refuse the delete). Both are `false` for an unpublished workflow. The dry run still
+exits 0 in every case. With `--force`, the real run reads the workflow and unpublishes it only
+when published; an unpublished workflow gets a plain delete. The normal delete output
+`{ "id", "deleted": true }` is unchanged.
+
 Key order is not part of this contract: a get command passes n8n's response through, so the order
 of the keys follows the n8n version it talks to. Against n8n 2.40.5, `wf get` returns the 2.40.5
 key order, and `dt get` carries the new top-level `sizeBytes` field that 2.40.5 added. Both are
@@ -34,6 +49,9 @@ n8n-side changes – no 8cli code changed for them.
 
 Errors are `{ "error": "...", "code": "ERR_..." }` on stderr with exit code 1. Error codes are a
 contract: callers branch on them.
+
+`wf delete` on a published workflow keeps n8n's refusal and its `ERR_WORKFLOW_DELETE` code and
+exit status, and now appends a hint naming the way out (`wf deactivate`, or `--force`) (#43).
 
 Commander's own usage errors – a missing required option or argument, an option missing its
 argument, an unknown option or command, excess arguments – are errors like any other: they print
