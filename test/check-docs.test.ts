@@ -66,7 +66,7 @@ describe('check-docs link containment', () => {
     );
     const { status, stderr } = run(root);
     expect(status).toBe(1);
-    expect(stderr).toContain('target is outside the repository');
+    expect(stderr).toContain('does not resolve to a file inside the repository');
   });
 
   // Regression: `../../` reached `base/outside.md` through the old unchecked `resolve`.
@@ -74,7 +74,7 @@ describe('check-docs link containment', () => {
     const { root } = fixture('# Page\n\nSee [x](../../outside.md).\n');
     const { status, stderr } = run(root);
     expect(status).toBe(1);
-    expect(stderr).toContain('target is outside the repository');
+    expect(stderr).toContain('does not resolve to a file inside the repository');
   });
 
   // Regression: `existsSync` followed the symlink and accepted it; `realpath` refuses it.
@@ -83,7 +83,7 @@ describe('check-docs link containment', () => {
     symlinkSync(join(base, 'outside.md'), join(root, 'docs', 'escape.md'));
     const { status, stderr } = run(root);
     expect(status).toBe(1);
-    expect(stderr).toContain('target is outside the repository');
+    expect(stderr).toContain('does not resolve to a file inside the repository');
   });
 
   // Regression: the reference-style form went through the same unchecked `resolve`.
@@ -91,7 +91,21 @@ describe('check-docs link containment', () => {
     const { root } = fixture('# Page\n\nSee [x][out].\n\n[out]: ../../outside.md\n');
     const { status, stderr } = run(root);
     expect(status).toBe(1);
-    expect(stderr).toContain('target is outside the repository');
+    expect(stderr).toContain('does not resolve to a file inside the repository');
+  });
+
+  // Regression: discovery followed a symlinked docs directory out of the repository and read
+  // every Markdown file it found there.
+  it('refuses a docs directory that is a symlink outside the repository', () => {
+    const { base, root } = fixture('# Page\n\n');
+    const outside = join(base, 'outside-docs');
+    mkdirSync(outside, { recursive: true });
+    writeFileSync(join(outside, 'secret-name.md'), '# Secret\n\n[x](../nowhere.md)\n');
+    symlinkSync(outside, join(root, 'docs', 'guides'));
+    const { status, stderr } = run(root);
+    expect(status).toBe(1);
+    expect(stderr).toContain('does not resolve to a directory inside the repository');
+    expect(stderr).not.toContain('secret-name');
   });
 
   // Guard test: a target that does not exist is still reported, and never read.
@@ -99,7 +113,7 @@ describe('check-docs link containment', () => {
     const { root } = fixture('# Page\n\nSee [x](../nope.md).\n');
     const { status, stderr } = run(root);
     expect(status).toBe(1);
-    expect(stderr).toContain('(no such file)');
+    expect(stderr).toContain('does not resolve to a file inside the repository');
   });
 });
 
@@ -137,5 +151,27 @@ describe('check-docs bounds', () => {
     const { status, stderr } = run(root);
     expect(status).toBe(1);
     expect(stderr).toContain('over the 500-page limit');
+  });
+
+  // Regression: the heading regex backtracked over a long run of spaces followed by a non-space.
+  it('finishes quickly on a heading with a few thousand spaces', () => {
+    const { root } = fixture(`# a${' '.repeat(3000)}a\n\n# ok\n\n[x](#ok)\n`);
+    const started = Date.now();
+    const { status, stderr } = run(root);
+    const elapsed = Date.now() - started;
+    expect(stderr).toBe('');
+    expect(status).toBe(0);
+    expect(elapsed).toBeLessThan(5000);
+  });
+
+  // Regression: the slug regex rescanned from every `<` when the heading had no `>`.
+  it('finishes quickly on a heading with a few hundred thousand "<"', () => {
+    const { root } = fixture(`# ${'<'.repeat(200000)}\n\n# ok\n\n[x](#ok)\n`);
+    const started = Date.now();
+    const { status, stderr } = run(root);
+    const elapsed = Date.now() - started;
+    expect(stderr).toBe('');
+    expect(status).toBe(0);
+    expect(elapsed).toBeLessThan(5000);
   });
 });

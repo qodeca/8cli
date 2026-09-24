@@ -12,14 +12,16 @@
 // folders (designs, runbooks, validation, …) never count towards coverage.
 // Prints one JSON object on success; lists every problem on stderr and exits 1 otherwise.
 //
-// The page text is contributor-controlled, so the check treats it as untrusted input: link
-// targets are canonicalised with `realpath` (a symlink is followed) and refused when they leave
-// the repository, every read is bounded by a per-file size limit, the run is bounded by page and
-// link counts, and links are parsed in one linear pass instead of a regex that rescans a suffix
-// from every candidate start.
+// The page text is contributor-controlled, so the check treats it as untrusted input: the three
+// discovery roots and every page are canonicalised with `realpath` and refused when they leave
+// the repository, a link target that resolves outside the repository is refused before any
+// filesystem call, an in-repository target whose `realpath` fails or leaves the root is refused
+// with one message, every read is bounded by a per-file size limit, the run is bounded by page
+// and link counts, and links and headings are parsed in one forward pass instead of a regex that
+// rescans a suffix from every candidate start.
 
 import { execFileSync } from 'node:child_process';
-import { existsSync, readdirSync, readFileSync, realpathSync, statSync } from 'node:fs';
+import { readdirSync, readFileSync, realpathSync, statSync } from 'node:fs';
 import { dirname, join, relative, resolve, sep } from 'node:path';
 import process from 'node:process';
 
@@ -36,6 +38,7 @@ const problems = [];
 const MAX_FILE_BYTES = 1024 * 1024; // 1 MiB per Markdown file
 const MAX_PAGES = 500;
 const MAX_LINKS = 5000;
+const MAX_HEADING_CHARS = 2000; // slug work stays bounded even for a hostile heading line
 
 const rel = (file) => relative(root, file);
 
@@ -68,13 +71,64 @@ function readBounded(file) {
 
 // ── User pages ───────────────────────────────────────────────────────────────
 
+const rootPrefix = root.endsWith(sep) ? root : root + sep;
+
+/** Whether a canonical path really sits inside the repository. */
+function insideRoot(candidate) {
+  return candidate === root || candidate.startsWith(rootPrefix);
+}
+
+/** realpath, or undefined when the path cannot be resolved. */
+function realpathOrUndefined(path) {
+  try {
+    return realpathSync(path);
+  } catch {
+    return undefined;
+  }
+}
+
+/**
+ * A discovery root, canonicalised and refused when it leaves the repository. A contributor can
+ * commit `docs`, `docs/reference` or `docs/guides` as a symlink to a directory outside the
+ * checkout; `readdirSync` would then walk that directory and the names and link targets of the
+ * files outside the repository would reach stderr. realpath first, and refuse before any read.
+ */
+function containedRoot(dir) {
+  const canonical = realpathOrUndefined(dir);
+  if (canonical === undefined) return undefined;
+  if (!insideRoot(canonical)) {
+    report(`root: ${rel(dir)} does not resolve to a directory inside the repository`);
+    return undefined;
+  }
+  return canonical;
+}
+
 function markdownIn(dir, recursive) {
-  if (!existsSync(dir)) return [];
+  const canonicalDir = containedRoot(dir);
+  if (canonicalDir === undefined) return [];
   const files = [];
-  for (const entry of readdirSync(dir, { withFileTypes: true })) {
-    const file = join(dir, entry.name);
-    if (entry.isDirectory() && recursive) files.push(...markdownIn(file, true));
-    else if (entry.isFile() && entry.name.endsWith('.md')) files.push(file);
+  for (const entry of readdirSync(canonicalDir, { withFileTypes: true })) {
+    const file = join(canonicalDir, entry.name);
+    if (entry.isDirectory()) {
+      if (recursive) files.push(...markdownIn(file, true));
+      continue;
+    }
+    if (entry.isSymbolicLink()) {
+      // A symlinked page or subdirectory must resolve inside the repository too; one that leaves
+      // it is refused with a problem and never read.
+      const canonical = realpathOrUndefined(file);
+      if (canonical === undefined || !insideRoot(canonical)) {
+        report(`page: ${rel(file)} does not resolve to a file inside the repository`);
+        continue;
+      }
+      if (statSync(canonical).isDirectory()) {
+        if (recursive) files.push(...markdownIn(canonical, true));
+      } else if (entry.name.endsWith('.md')) {
+        files.push(canonical);
+      }
+      continue;
+    }
+    if (entry.isFile() && entry.name.endsWith('.md')) files.push(file);
   }
   return files;
 }
@@ -106,19 +160,53 @@ function withoutCode(text) {
 
 // ── Headings and anchors (GitHub's slug rules) ───────────────────────────────
 
+/** Remove `<...>` spans in one forward pass; a `<` with no `>` after it ends the scan. */
+function stripAngleBrackets(text) {
+  let out = '';
+  let i = 0;
+  while (true) {
+    const open = text.indexOf('<', i);
+    if (open === -1) return out + text.slice(i);
+    out += text.slice(i, open);
+    const close = text.indexOf('>', open + 1);
+    if (close === -1) return out + text.slice(open);
+    i = close + 1;
+  }
+}
+
 function slug(heading) {
-  return heading
-    .toLowerCase()
-    .replace(/<[^>]*>/g, '')
+  return stripAngleBrackets(heading.toLowerCase())
     .replace(/[^\p{L}\p{N}\s_-]/gu, '')
     .replace(/\s/g, '-');
 }
 
+/**
+ * A Markdown ATX heading, parsed from one line with string operations. The previous regex had a
+ * lazy group between two `\s*` quantifiers, so a heading with a long run of spaces followed by a
+ * non-space made it backtrack through every split. The heading text is capped so slug work on a
+ * hostile line stays bounded.
+ */
+function headingOf(line) {
+  let level = 0;
+  while (level < line.length && level < 7 && line[level] === '#') level++;
+  if (level < 1 || level > 6) return undefined;
+  if (level >= line.length || (line[level] !== ' ' && line[level] !== '\t')) return undefined;
+  let text = line
+    .slice(level)
+    .replace(/^\s+/, '')
+    .replace(/[\s#]+$/, '');
+  if (!text) return undefined;
+  if (text.length > MAX_HEADING_CHARS) text = text.slice(0, MAX_HEADING_CHARS);
+  return { level, text };
+}
+
 function headingsOf(text) {
-  return [...withoutCode(text).matchAll(/^(#{1,6})\s+(.+?)\s*#*\s*$/gm)].map((m) => ({
-    level: m[1].length,
-    text: m[2],
-  }));
+  const headings = [];
+  for (const line of withoutCode(text).split('\n')) {
+    const heading = headingOf(line);
+    if (heading !== undefined) headings.push(heading);
+  }
+  return headings;
 }
 
 const anchorCache = new Map();
@@ -201,13 +289,6 @@ function referenceTarget(line) {
   return inlineTarget(line.slice(close + 2));
 }
 
-const rootPrefix = root.endsWith(sep) ? root : root + sep;
-
-/** Whether a canonical path really sits inside the repository. */
-function insideRoot(candidate) {
-  return candidate === root || candidate.startsWith(rootPrefix);
-}
-
 function checkLink(file, target) {
   if (/^[a-z][a-z0-9+.-]*:/i.test(target)) return; // https:, mailto:, …
   const [path, anchor] = target.split('#');
@@ -220,19 +301,24 @@ function checkLink(file, target) {
       report(`link: ${rel(file)} -> ${target} (invalid percent-encoding)`);
       return;
     }
-    // Canonicalise before touching the target: `realpath` follows symlinks, so a target that
-    // resolves outside the repository is refused here, and a target that does not exist is
-    // reported without ever being stat-ed or read.
-    try {
-      resolved = realpathSync(resolve(dirname(file), decoded));
-    } catch {
-      report(`link: ${rel(file)} -> ${target} (no such file)`);
+    // A target that is outside the repository on paper is refused BEFORE any filesystem call:
+    // a realpath or stat on it would tell a contributor whether an arbitrary path exists.
+    // realpath then follows symlinks, so an in-repository path that leaves the root, and one
+    // whose realpath fails, are refused with the same message and no read.
+    const candidate = resolve(dirname(file), decoded);
+    let canonical;
+    if (insideRoot(candidate)) {
+      try {
+        canonical = realpathSync(candidate);
+      } catch {
+        canonical = undefined;
+      }
+    }
+    if (canonical === undefined || !insideRoot(canonical)) {
+      report(`link: ${rel(file)} -> ${target} (does not resolve to a file inside the repository)`);
       return;
     }
-    if (!insideRoot(resolved)) {
-      report(`link: ${rel(file)} -> ${target} (target is outside the repository)`);
-      return;
-    }
+    resolved = canonical;
   }
   if (anchor && statSync(resolved).isFile() && resolved.endsWith('.md')) {
     const anchors = anchorsOf(resolved);
