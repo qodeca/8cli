@@ -37,7 +37,7 @@ Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it 
 
 
 
-Ready for L3 (18:53): PR #80 (#72) full review at 2b25fef; PR #81 (#76, #77) full review at ac87e12. Both CI 3/3, CLEAN, no file overlap. Then release 0.2.0 (owner-authorised).
+Running (18:55): 9c5eec45 review + 013a473b acceptance PR #80 (#72); 59668604 review + e54ab1a3 acceptance PR #81 (#76, #77). All read-only. Then release 0.2.0 (owner-authorised).
 
 ## Accounts
 
