@@ -35,7 +35,9 @@ Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it 
 |---|---|---|
 | e080520d | #40 user role (pi) | src/client/public-api.ts (listUsers/getUser), a unit test, test/e2e/user.e2e.ts, test/e2e/__snapshots__/user-get.json, CHANGELOG.md line |
 
-Queued (2-gate-run ceiling): #41, #72 (src/client/public-api.ts – overlap with #40).
+Held on file overlap (not a ceiling): #41, #72 (src/client/public-api.ts – PR #75); #47 (src/commands/folder.ts – PR #73).
+
+Running (16:36): d0cc85d6 review PR #74 (claude/opus, read-only); a38ac837 review PR #75 (claude/opus, read-only); d7058b7c acceptance PR #73 (claude/opus, read-only).
 
 ## Accounts
 
