@@ -14,6 +14,8 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed
 
+- `wf activate` and `wf deactivate` no longer mistake a missing workflow for a missing route: they fall back from `/publish`/`/unpublish` to the deprecated `/activate`/`/deactivate` only on a `405`, or on a `404` whose body is not n8n's missing-workflow JSON (measured on 2.40.5: `{"message":"You do not have permission to activate this workflow. Ask the owner to share it with you."}`). A bad id now costs one request and keeps its `ERR_WORKFLOW_ACTIVATE` / `ERR_WORKFLOW_DEACTIVATE` error instead of reaching the deprecated route ([#72](https://github.com/qodeca/8cli/issues/72)).
+
 - `folder` commands no longer stall silently when n8n rate-limits the internal login: a `429` on `POST /rest/login` fails at once with `{ "error": "...", "code": "ERR_RATE_LIMITED" }` on stderr, exit 1, carrying the server's `Retry-After` seconds in the message and as a `retryAfter` field, instead of sleeping up to three minutes and blaming the next request. The public API client's `429` retry is unchanged ([#47](https://github.com/qodeca/8cli/issues/47)).
 
 - `user list` and `user get` now send `includeRole=true`, so n8n returns the `role` field and the commands print it (for example `global:owner`); the output change is additive (#40).

@@ -23,6 +23,38 @@ import type {
 const DATA_TABLE_ROWS_PAGE_MAX = 250;
 
 /**
+ * n8n 2.40.5 answers a *missing workflow* on `POST /workflows/{id}/publish` and
+ * `/unpublish` with 404 and this body (measured on a throwaway 2.40.5 container):
+ *
+ *   publish   -> {"message":"You do not have permission to activate this workflow. Ask the owner to share it with you."}
+ *   unpublish -> {"message":"You do not have permission to deactivate this workflow. Ask the owner to share it with you."}
+ *
+ * That is n8n's not-found JSON for these routes, not a missing route, so it must not
+ * trigger the deprecated-route fallback (#72): a bad id would otherwise cost a second
+ * request and, once n8n removes the old routes, end in a misleading route error. n8n's own
+ * body for a route it does not serve is 405 (`POST method not allowed`); a proxy in front of
+ * an older server can answer 404 with any other body.
+ */
+const WORKFLOW_NOT_FOUND: Record<'publish' | 'unpublish', string> = {
+  publish:
+    'You do not have permission to activate this workflow. Ask the owner to share it with you.',
+  unpublish:
+    'You do not have permission to deactivate this workflow. Ask the owner to share it with you.',
+};
+
+/**
+ * Whether a failed current-route request means the route itself is absent, so the deprecated
+ * route should be tried: a 405, or a 404 whose body is not n8n's missing-workflow JSON. Every
+ * other failure – a 404 that is n8n reporting the workflow missing, or a real refusal
+ * (400/403/409) – is a real answer and is surfaced as-is.
+ */
+function isMissingRoute(err: unknown, route: 'publish' | 'unpublish'): boolean {
+  if (!(err instanceof ApiRequestError)) return false;
+  if (err.statusCode === 405) return true;
+  return err.statusCode === 404 && err.message !== WORKFLOW_NOT_FOUND[route];
+}
+
+/**
  * n8n Public API client.
  * Uses X-N8N-API-KEY header for authentication.
  *
@@ -65,15 +97,14 @@ export class PublicApiClient extends BaseClient {
    * (2.25.7, measured on a throwaway container) has no `/publish` route at all and answers
    * 405 "POST method not allowed"; a proxy in front of it can answer 404 instead. So the
    * current route is tried first, and the deprecated one is a fallback only when the route
-   * itself is absent. A real refusal (400/403/409) is not retried.
+   * itself is absent – a 405, or a 404 that is not n8n's missing-workflow JSON (#72). A real
+   * refusal (400/403/409), and a 404 for a workflow that does not exist, are not retried.
    */
   async activateWorkflow(id: string): Promise<Workflow> {
     try {
       return await this.post<Workflow>(`/api/v1/workflows/${id}/publish`);
     } catch (err) {
-      if (!(err instanceof ApiRequestError) || (err.statusCode !== 404 && err.statusCode !== 405)) {
-        throw err;
-      }
+      if (!isMissingRoute(err, 'publish')) throw err;
       return this.post<Workflow>(`/api/v1/workflows/${id}/activate`);
     }
   }
@@ -83,14 +114,13 @@ export class PublicApiClient extends BaseClient {
    *
    * Mirrors `activateWorkflow`: n8n 2.40 added `/unpublish` and deprecated `/deactivate`,
    * and pre-2.40 answers 405 (or 404 behind a proxy) for the route that does not exist yet.
+   * A 404 for a workflow that does not exist is n8n's answer, not a missing route (#72).
    */
   async deactivateWorkflow(id: string): Promise<Workflow> {
     try {
       return await this.post<Workflow>(`/api/v1/workflows/${id}/unpublish`);
     } catch (err) {
-      if (!(err instanceof ApiRequestError) || (err.statusCode !== 404 && err.statusCode !== 405)) {
-        throw err;
-      }
+      if (!isMissingRoute(err, 'unpublish')) throw err;
       return this.post<Workflow>(`/api/v1/workflows/${id}/deactivate`);
     }
   }

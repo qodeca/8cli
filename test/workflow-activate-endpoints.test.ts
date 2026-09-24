@@ -12,6 +12,24 @@ import { ApiRequestError } from '../src/client/base.js';
 // endpoint is tried first and the deprecated one is only a fallback when the route is
 // absent. The live 2.40.5 behaviour is locked e2e by
 // test/e2e/workflow.e2e.ts ("uses the non-deprecated /publish and /unpublish endpoints").
+//
+// Issue #72: n8n 2.40.5 answers a *missing workflow* on `/publish` and `/unpublish` with
+// 404 too, so a bare "404 means the route is absent" rule costs a bad id a second request
+// and, once n8n removes the old routes, would report a route error instead of the
+// workflow-not-found one. The fallback therefore fires on 405, or on a 404 whose body is
+// not n8n's missing-workflow JSON. These exact bodies were measured live on a throwaway
+// n8nio/n8n:2.40.5 container:
+//   POST /api/v1/workflows/doesNotExist123/publish   -> 404 {"message":"You do not have permission to activate this workflow. Ask the owner to share it with you."}
+//   POST /api/v1/workflows/doesNotExist123/unpublish -> 404 {"message":"You do not have permission to deactivate this workflow. Ask the owner to share it with you."}
+const NOT_FOUND = {
+  publish:
+    'You do not have permission to activate this workflow. Ask the owner to share it with you.',
+  unpublish:
+    'You do not have permission to deactivate this workflow. Ask the owner to share it with you.',
+} as const;
+
+type Verb = keyof typeof NOT_FOUND;
+const VERBS = Object.keys(NOT_FOUND) as Verb[];
 
 function jsonResponse(body: unknown, status = 200): Response {
   return new Response(JSON.stringify(body), {
@@ -20,134 +38,104 @@ function jsonResponse(body: unknown, status = 200): Response {
   });
 }
 
+/**
+ * Stub `fetch` so the first request answers `first` and every later request answers 200
+ * with the workflow. Returns the requested URLs in order, so a test can tell whether the
+ * deprecated route was tried.
+ */
+function stubFetch(first: Response, workflow: { id: string; active: boolean }): string[] {
+  const urls: string[] = [];
+  vi.stubGlobal(
+    'fetch',
+    vi.fn(async (url: string | URL) => {
+      urls.push(url.toString());
+      return urls.length === 1 ? first : jsonResponse({ name: 'wf', ...workflow });
+    }),
+  );
+  return urls;
+}
+
 afterEach(() => {
   vi.unstubAllGlobals();
   vi.restoreAllMocks();
 });
 
-describe('PublicApiClient activate/deactivate endpoints (#44)', () => {
-  it('activate calls POST /publish and not the deprecated /activate', async () => {
-    const urls: string[] = [];
-    vi.stubGlobal(
-      'fetch',
-      vi.fn(async (url: string | URL) => {
-        urls.push(url.toString());
-        return jsonResponse({ id: 'wf1', name: 'wf', active: true });
-      }),
-    );
+describe('PublicApiClient activate/deactivate endpoints (#44, #72)', () => {
+  for (const verb of VERBS) {
+    const action = verb === 'publish' ? 'activate' : 'deactivate';
+    const workflow = { id: 'wf1', active: verb === 'publish' };
+    const current = `https://n8n.example.com/api/v1/workflows/wf1/${verb}`;
+    const deprecated = `https://n8n.example.com/api/v1/workflows/wf1/${action}`;
+    const call = (client: PublicApiClient) =>
+      verb === 'publish' ? client.activateWorkflow('wf1') : client.deactivateWorkflow('wf1');
 
-    const client = new PublicApiClient('https://n8n.example.com', 'key');
-    const result = await client.activateWorkflow('wf1');
+    it(`${action} calls POST /${verb} and not the deprecated /${action}`, async () => {
+      const urls = stubFetch(jsonResponse({ name: 'wf', ...workflow }), workflow);
 
-    expect(result).toMatchObject({ id: 'wf1', active: true });
-    expect(urls).toEqual(['https://n8n.example.com/api/v1/workflows/wf1/publish']);
-  });
+      const client = new PublicApiClient('https://n8n.example.com', 'key');
+      const result = await call(client);
 
-  it('deactivate calls POST /unpublish and not the deprecated /deactivate', async () => {
-    const urls: string[] = [];
-    vi.stubGlobal(
-      'fetch',
-      vi.fn(async (url: string | URL) => {
-        urls.push(url.toString());
-        return jsonResponse({ id: 'wf1', name: 'wf', active: false });
-      }),
-    );
+      expect(result).toMatchObject(workflow);
+      expect(urls).toEqual([current]);
+    });
 
-    const client = new PublicApiClient('https://n8n.example.com', 'key');
-    const result = await client.deactivateWorkflow('wf1');
+    it(`${action} falls back to /${action} when /${verb} is not served (405 on n8n 2.25.7)`, async () => {
+      const urls = stubFetch(jsonResponse({ message: 'POST method not allowed' }, 405), workflow);
 
-    expect(result).toMatchObject({ id: 'wf1', active: false });
-    expect(urls).toEqual(['https://n8n.example.com/api/v1/workflows/wf1/unpublish']);
-  });
+      const client = new PublicApiClient('https://n8n.example.com', 'key');
+      const result = await call(client);
 
-  it('activate falls back to /activate when /publish is not served (405 on n8n 2.25.7)', async () => {
-    const urls: string[] = [];
-    vi.stubGlobal(
-      'fetch',
-      vi.fn(async (url: string | URL) => {
-        const href = url.toString();
-        urls.push(href);
-        return href.endsWith('/publish')
-          ? jsonResponse({ message: 'POST method not allowed' }, 405)
-          : jsonResponse({ id: 'wf1', name: 'wf', active: true });
-      }),
-    );
+      expect(result).toMatchObject(workflow);
+      expect(urls).toEqual([current, deprecated]);
+    });
 
-    const client = new PublicApiClient('https://n8n.example.com', 'key');
-    const result = await client.activateWorkflow('wf1');
+    // #72, the regression this file was extended for: a bad id is not a missing route.
+    it(`${action} does not fall back when a 404 body is n8n's missing-workflow JSON (#72)`, async () => {
+      const urls = stubFetch(jsonResponse({ message: NOT_FOUND[verb] }, 404), workflow);
 
-    expect(result).toMatchObject({ active: true });
-    expect(urls).toEqual([
-      'https://n8n.example.com/api/v1/workflows/wf1/publish',
-      'https://n8n.example.com/api/v1/workflows/wf1/activate',
-    ]);
-  });
+      const client = new PublicApiClient('https://n8n.example.com', 'key');
+      const err = await call(client).then(
+        () => undefined,
+        (e: unknown) => e,
+      );
 
-  it('deactivate falls back to /deactivate when /unpublish is not served', async () => {
-    const urls: string[] = [];
-    vi.stubGlobal(
-      'fetch',
-      vi.fn(async (url: string | URL) => {
-        const href = url.toString();
-        urls.push(href);
-        return href.endsWith('/unpublish')
-          ? jsonResponse({ message: 'POST method not allowed' }, 405)
-          : jsonResponse({ id: 'wf1', name: 'wf', active: false });
-      }),
-    );
+      // The workflow-not-found error n8n itself sent; the command maps it to
+      // ERR_WORKFLOW_ACTIVATE / ERR_WORKFLOW_DEACTIVATE exactly as before.
+      expect(err).toBeInstanceOf(ApiRequestError);
+      expect((err as ApiRequestError).statusCode).toBe(404);
+      expect((err as ApiRequestError).message).toBe(NOT_FOUND[verb]);
+      expect(urls).toEqual([current]);
+    });
 
-    const client = new PublicApiClient('https://n8n.example.com', 'key');
-    const result = await client.deactivateWorkflow('wf1');
+    it(`${action} falls back on a 404 whose body is not n8n's missing-workflow JSON`, async () => {
+      // A proxy in front of a server without the route: 404, but not n8n's not-found body.
+      const urls = stubFetch(jsonResponse({ message: 'Not Found' }, 404), workflow);
 
-    expect(result).toMatchObject({ active: false });
-    expect(urls).toEqual([
-      'https://n8n.example.com/api/v1/workflows/wf1/unpublish',
-      'https://n8n.example.com/api/v1/workflows/wf1/deactivate',
-    ]);
-  });
+      const client = new PublicApiClient('https://n8n.example.com', 'key');
+      const result = await call(client);
 
-  it('activate falls back when a proxy answers 404 for the absent /publish route', async () => {
-    const urls: string[] = [];
-    vi.stubGlobal(
-      'fetch',
-      vi.fn(async (url: string | URL) => {
-        const href = url.toString();
-        urls.push(href);
-        return href.endsWith('/publish')
-          ? jsonResponse({ message: 'Not Found' }, 404)
-          : jsonResponse({ id: 'wf1', name: 'wf', active: true });
-      }),
-    );
+      expect(result).toMatchObject(workflow);
+      expect(urls).toEqual([current, deprecated]);
+    });
 
-    const client = new PublicApiClient('https://n8n.example.com', 'key');
-    const result = await client.activateWorkflow('wf1');
-
-    expect(result).toMatchObject({ active: true });
-    expect(urls).toHaveLength(2);
-  });
-
-  // Guard: this passes with and without the #44 fix. It locks the boundary the fallback
-  // must not cross – a real refusal (400/403/409) is not a missing route, so it surfaces
-  // at once with no second request to the deprecated endpoint.
-  it('does not fall back on a real refusal (no trigger node, 400)', async () => {
-    const urls: string[] = [];
-    vi.stubGlobal(
-      'fetch',
-      vi.fn(async (url: string | URL) => {
-        urls.push(url.toString());
-        return jsonResponse(
+    // Guard: passes with and without the #44/#72 fixes. It locks the boundary the fallback
+    // must not cross – a real refusal (400/403/409) is not a missing route, so it surfaces
+    // at once with no second request to the deprecated endpoint.
+    it(`${action} does not fall back on a real refusal (400)`, async () => {
+      const urls = stubFetch(
+        jsonResponse(
           {
-            message:
-              'Workflow cannot be activated because it has no trigger node. At least one trigger, webhook, or polling node is required.',
+            message: `Workflow cannot be ${action}d because it has no trigger node.`,
           },
           400,
-        );
-      }),
-    );
+        ),
+        workflow,
+      );
 
-    const client = new PublicApiClient('https://n8n.example.com', 'key');
-    await expect(client.activateWorkflow('wf1')).rejects.toBeInstanceOf(ApiRequestError);
+      const client = new PublicApiClient('https://n8n.example.com', 'key');
+      await expect(call(client)).rejects.toBeInstanceOf(ApiRequestError);
 
-    expect(urls).toHaveLength(1);
-  });
+      expect(urls).toEqual([current]);
+    });
+  }
 });
