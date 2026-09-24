@@ -12,6 +12,9 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Security
+
+- Security: fix GHSA-h6g4-mq8c-5chp
 ## [0.2.0] - 2026-09-24
 
 ### Added
