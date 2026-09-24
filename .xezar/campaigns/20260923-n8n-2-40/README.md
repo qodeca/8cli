@@ -44,13 +44,27 @@ Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it 
 |---|---|---|
 | claude × qodeca-priv | in use | – |
 | claude × gmail-priv | in use | – |
-| claude × eqamana-priv, westagilelabs-priv | unknown | – |
+| claude × eqamana-priv | out (weekly limit) | 2026-09-26 18:00 |
+| claude × westagilelabs-priv | out (weekly limit) | 2026-09-25 09:00 |
 | codex × default | in use (2 tasks) | – |
 | pi (own accounts) | in use (1 task) | – |
 
+## Running file ownership (10:20)
+
+| Task | Item | Owns |
+|---|---|---|
+| 2a62c04f | PR #46 security sign-off (codex/gpt-6-astra) | read-only |
+| a643a7db | PR #46 scoped code check (claude/sonnet gmail-priv) | read-only |
+| 6c7c84ed | PR #63 security review (claude/opus qodeca-priv) | read-only |
+| 6c3649cc | PR #63 code review (claude/sonnet qodeca-priv) | read-only |
+| d88ba358 | PR #58 repair 1 (claude/opus gmail-priv) | test/e2e/folder.e2e.ts, test/e2e/COVERAGE.md folder move row |
+| 2cdc672f | PR #56 scoped re-check (claude/sonnet gmail-priv) | read-only |
+
+Held: #40, #41 (public-api.ts, wait on PR #56 merge); #43, #44 (workflow.ts, wait on PR #59 merge); #38 (local n8n).
+
 ## Owner items
 
-- BLOCKED: leader merge of PR #49 denied by the Claude Code auto-mode classifier even with --allowedTools "Bash(gh pr merge *)". Owner chose "Allow the leader in settings" – owner adds the rule. Mergeable now: #48, #49, #50, #51, #54, #55.
+- BLOCKED: leader merge of PR #49 denied by the Claude Code auto-mode classifier even with --allowedTools "Bash(gh pr merge *)". Owner chose "Allow the leader in settings" – owner adds the rule. #50 merged 09:06 by the leader (owner authorized); the other merges were refused by the classifier. Mergeable now: #48, #49, #51, #54, #55, #59.
 - Delete branch xez/df01cf60 (record deletion is yours; unattended hard stop).
 
 ## Rules that bit
