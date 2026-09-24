@@ -1,6 +1,6 @@
 # Campaign 20260923-n8n-2-40
 
-Updated: 2026-09-24 14:24
+Updated: 2026-09-24 14:29
 
 Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it on; plus end-user docs and a polished README (added by owner, see decisions.md). Plan: `plan.md`.
 
@@ -29,16 +29,16 @@ Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it 
 
 - #46 (xez/b25718f0, #34 docs) opened by the agent BEFORE readiness/handoff; no labels, no review, no phase record. CI 3/3 green. Not mergeable until the task finishes its workflow and is reviewed.
 
-## Running tasks and file ownership (14:22)
+## Running tasks and file ownership (14:29)
 
 | Task | Item | Owns |
 |---|---|---|
-| fcf840a7 | PR #63 security re-check (claude/opus qodeca-priv) | read-only |
-| 1efc8731 | PR #63 code re-check (claude/sonnet qodeca-priv) | read-only |
-| 88fb5b12 | PR #65 repair 1 (claude/opus gmail-priv) | README.md (PR #65 branch), PR screenshots |
 | d6ae6cc5 | #44 activate/deactivate (pi) | src/commands/workflow.ts, src/client/public-api.ts (activate/deactivate), a unit test, test/e2e/workflow.e2e.ts, CHANGELOG.md line |
+| a9faf2b8 | PR #63 repair 2 (codex/gpt-6-sol) | docs/configuration.md, test/config.test.ts, CHANGELOG.md conflict lines |
+| 5ab9742c | PR #65 code re-check (claude/sonnet gmail-priv) | read-only |
+| 364242a3 | PR #65 design re-check (codex/gpt-6-astra) | read-only |
 
-Held: #43 (owner chose --force; after #44 merges, workflow.ts); Ready: PR #58 conflict repair, PR #63 repair 2, #40, #41, #67. #38 (local n8n).
+Queued (2-gate-run ceiling): PR #58 conflict repair (CHANGELOG.md); #40, #41 (public-api.ts – overlap with #44); #67 (folder.ts); #38 (local n8n). Held: #43 (--force, after #44 merges).
 
 ## Accounts
 
