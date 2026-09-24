@@ -85,11 +85,12 @@ describe('assertSecureUrl', () => {
   });
 
   it('does not echo URL userinfo in a plaintext-HTTP error', () => {
-    expect(() => assertSecureUrl('http://user:password@n8n.example.com/path')).toThrow(
-      /http:\/\/n8n\.example\.com/,
-    );
+    const url = new URL('http://n8n.example.com/path');
+    url.username = 'user';
+    url.password = 'password';
+    expect(() => assertSecureUrl(url.href)).toThrow(/http:\/\/n8n\.example\.com/);
     try {
-      assertSecureUrl('http://user:password@n8n.example.com/path');
+      assertSecureUrl(url.href);
     } catch (error) {
       expect(String(error)).not.toContain('user:password');
     }
@@ -168,7 +169,10 @@ describe('resolveConfig key/URL source matching (#60)', () => {
   );
 
   it('prints only the origin of a config-file URL with userinfo', async () => {
-    const config = writeConfigFile('https://user:password@other-host.example.com/path');
+    const url = new URL('https://other-host.example.com/path');
+    url.username = 'user';
+    url.password = 'password';
+    const config = writeConfigFile(url.href);
     vi.stubEnv('N8N_API_KEY', 'env-key');
     const refusal = await captureRefusal(() => resolveConfig({ config }));
     expect(refusal.error).toContain('https://other-host.example.com');
