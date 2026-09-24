@@ -2,7 +2,10 @@
 // SPDX-FileCopyrightText: 2026 Qodeca sp. z o.o.
 
 import { describe, expect, it } from 'vitest';
-import { apiEnv, json, run8cli } from './setup/helpers.js';
+import { mkdtempSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import { apiEnv, errorMessage, json, run8cli } from './setup/helpers.js';
 
 describe('config show', () => {
   it('reports the resolved url and masks the api key', async () => {
@@ -45,5 +48,34 @@ describe('missing configuration', () => {
   it('reports ERR_NO_URL when no url is resolvable', async () => {
     const r = await run8cli(['wf', 'get', 'x'], { N8N_URL: '', N8N_API_KEY: 'k' });
     expect(r).toFailWithCode('ERR_NO_URL');
+  });
+});
+
+describe('config source mismatch (#60)', () => {
+  /** A cwd holding an 8cli.json that names `url`. */
+  function configFileCwd(url: string): string {
+    const dir = mkdtempSync(join(tmpdir(), '8cli-config-'));
+    writeFileSync(join(dir, '8cli.json'), JSON.stringify({ url }));
+    return dir;
+  }
+
+  it('refuses an env API key when the URL comes from the config file', async () => {
+    const cwd = configFileCwd('https://127.0.0.1:9');
+    const r = await run8cli(['config', 'show'], { N8N_API_KEY: 'env-key' }, { cwd });
+    expect(r).toFailWithCode('ERR_CONFIG_SOURCE_MISMATCH');
+    expect(errorMessage(r)).toContain('N8N_URL');
+  });
+
+  it('refuses before sending a request, not after a network failure', async () => {
+    const cwd = configFileCwd('https://127.0.0.1:9');
+    const r = await run8cli(['wf', 'list'], { N8N_API_KEY: 'env-key' }, { cwd });
+    expect(r).toFailWithCode('ERR_CONFIG_SOURCE_MISMATCH');
+  });
+
+  it('allows the same key when N8N_URL names the host', async () => {
+    const cwd = configFileCwd('https://127.0.0.1:9');
+    const r = await run8cli(['config', 'show'], apiEnv(), { cwd });
+    expect(r.exitCode).toBe(0);
+    expect(json<{ url: string }>(r).url).toBe(apiEnv().N8N_URL);
   });
 });

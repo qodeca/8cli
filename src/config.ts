@@ -4,6 +4,7 @@
 import { existsSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import type { Config } from './types.js';
+import { outputError } from './formatters/index.js';
 import {
   getSecret,
   apiKeyAccount,
@@ -50,6 +51,40 @@ interface ConfigFile {
   workflowDir?: string;
 }
 
+/** Error code for a key and a URL that came from incompatible sources. */
+export const ERR_CONFIG_SOURCE_MISMATCH = 'ERR_CONFIG_SOURCE_MISMATCH';
+
+/** Where the resolved n8n URL came from. */
+export type UrlSource = 'flag' | 'env' | 'config' | 'none';
+
+/** Where the resolved API key came from. */
+export type ApiKeySource = 'flag' | 'env' | 'keychain' | 'none';
+
+/**
+ * The refusal message for an API key that came from a flag or the environment
+ * while the URL came from a config file, or undefined when the pair is allowed.
+ *
+ * A key the user handed 8cli directly was never bound to a host, while an
+ * `8cli.json` found in the current directory can name any host – so the two
+ * must not be combined (#60). A keychain key is looked up per URL and is
+ * unaffected. Exported for testing.
+ */
+export function configSourceMismatch(
+  urlSource: UrlSource,
+  apiKeySource: ApiKeySource,
+  url: string,
+): string | undefined {
+  if (urlSource !== 'config' || (apiKeySource !== 'flag' && apiKeySource !== 'env')) {
+    return undefined;
+  }
+  const key = apiKeySource === 'flag' ? '--api-key' : 'N8N_API_KEY';
+  return (
+    `Refusing to use the API key from ${key} with the URL "${url}" from the config file: ` +
+    'that key was not given for that host. Set N8N_URL too (or pass --url), or store the key ' +
+    'in the keychain for that URL.'
+  );
+}
+
 /**
  * Resolve configuration with priority:
  * CLI flags → env vars → config file → keychain → defaults
@@ -60,9 +95,28 @@ export async function resolveConfig(flags: CliFlags): Promise<Config> {
 
   // Resolve URL: flags → env → config file → default
   const url = (flags.url || process.env.N8N_URL || configFile?.url || '').replace(/\/+$/, '');
+  const urlSource: UrlSource = flags.url
+    ? 'flag'
+    : process.env.N8N_URL
+      ? 'env'
+      : configFile?.url
+        ? 'config'
+        : 'none';
 
   // Reject plaintext-HTTP URLs before any credential is sent over the wire.
   assertSecureUrl(url, flags.insecure);
+
+  // Refuse an API key that was given for no particular host when the URL comes
+  // from a file that names one, before any request can carry the key there.
+  // Emitted here rather than thrown: every command's catch re-labels a thrown
+  // error with its own code, and callers branch on ERR_CONFIG_SOURCE_MISMATCH.
+  const apiKeySource: ApiKeySource = flags.apiKey
+    ? 'flag'
+    : process.env.N8N_API_KEY
+      ? 'env'
+      : 'none';
+  const mismatch = configSourceMismatch(urlSource, apiKeySource, url);
+  if (mismatch) outputError(mismatch, ERR_CONFIG_SOURCE_MISMATCH);
 
   // Resolve API key: flags → env → keychain
   let apiKey = flags.apiKey || process.env.N8N_API_KEY || '';

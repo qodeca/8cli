@@ -12,6 +12,12 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Changed
+
+- Behaviour change: an API key from `N8N_API_KEY` or `--api-key` is now refused with
+  `ERR_CONFIG_SOURCE_MISMATCH` when the URL comes from a config file and no `N8N_URL`/`--url` was
+  given, instead of sending the key to the host named by the file; set `N8N_URL` too.
+
 ## [0.1.2] - 2026-06-19
 
 ### Added
