@@ -73,8 +73,27 @@ describe('assertSecureUrl', () => {
     expect(() => assertSecureUrl('http://127.0.0.1:5678')).not.toThrow();
   });
 
+  it('accepts http on the IPv6 loopback address', () => {
+    // The WHATWG URL parser returns IPv6 hosts in bracketed form (`[::1]`), and
+    // normalises every spelling of the address to that same form.
+    expect(() => assertSecureUrl('http://[::1]:5678')).not.toThrow();
+    expect(() => assertSecureUrl('http://[0:0:0:0:0:0:0:1]:5678')).not.toThrow();
+  });
+
   it('rejects http on remote hosts', () => {
     expect(() => assertSecureUrl('http://n8n.example.com')).toThrow(/insecure/i);
+  });
+
+  it('rejects http on non-loopback IPv6 hosts', () => {
+    expect(() => assertSecureUrl('http://[::2]:5678')).toThrow(/insecure/i);
+    // The loopback exemption stays narrow: IPv4-mapped forms are not accepted.
+    expect(() => assertSecureUrl('http://[::ffff:127.0.0.1]:5678')).toThrow(/insecure/i);
+  });
+
+  it('accepts https regardless of the host family', () => {
+    expect(() => assertSecureUrl('https://n8n.example.com')).not.toThrow();
+    expect(() => assertSecureUrl('https://[::2]:5678')).not.toThrow();
+    expect(() => assertSecureUrl('https://[::1]:5678')).not.toThrow();
   });
 
   it('allows http on remote hosts when insecure override is set', () => {

@@ -124,6 +124,15 @@ The owner drives you with three skills. Name them when relevant; never run them 
 
 A rule `xez-add-rule` adds lands here in the owner's exact words with `(owner <date>)`, and binds you exactly as hard as anything shipped in the template.
 
+## Owner's rules
+
+Standing rules the owner added with `xez-add-rule`, each in their exact words with `(owner <date>)`. Each binds you exactly as hard as anything shipped above.
+
+- After a kit PR merges, fast-forward the primary checkout (`git pull --ff-only`) before the
+  next dispatch (owner 2026-09-24).
+- At the third repair round on the same piece of work, offer "split the helper into its own
+  PR" as one option (owner 2026-09-24).
+
 ## One-page checklist
 
 - [ ] Campaign state read: `README.md`, newest timeline, `parked.md`, whole `decisions.md`.
