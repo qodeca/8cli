@@ -23,6 +23,8 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 - `folder move --to "(root)"` now sends n8n's root sentinel `"0"` instead of `null` ([#53](https://github.com/qodeca/8cli/issues/53)).
 
+- `folder move`, `folder create` and `folder delete` now honour `--dry`: they print a `{ "dryRun": true, ... }` preview and send no request, instead of performing the change; `folder sync` already guarded its local writes ([#67](https://github.com/qodeca/8cli/issues/67)).
+
 - `sc status` calls `GET /api/v1/source-control/status` with the required `direction` query param (`--direction <pull|push>`, default `pull`) instead of the nonexistent `/source-control/preferences`, so a Community instance reports the licence error and a licensed one returns the pending-changes list. An invalid `--direction` value now fails with the new `ERR_USAGE` code on stderr, exit 1, before any request is sent (#39).
 
 - `wf publish` no longer drops workflow settings other than `executionOrder`: it keeps every settings key n8n accepts and drops only the unknown keys n8n rejects (#42).

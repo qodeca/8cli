@@ -29,9 +29,13 @@ interface SyncMove {
 // ── Helpers ────────────────────────────────────────────────────────────────
 
 /**
- * Create an authenticated InternalApiClient from resolved config.
+ * The credentials every folder command needs, checked before a `--dry` preview
+ * as well as before a real call. `--dry` sends no request, but it keeps the
+ * folder group's documented `ERR_NO_CREDENTIALS` / `ERR_NO_URL` contract.
  */
-async function createInternalClient(config: Config): Promise<InternalApiClient> {
+function assertFolderConfig(
+  config: Config,
+): asserts config is Config & { email: string; password: string; url: string } {
   if (!config.email || !config.password) {
     outputError(
       'Email and password required for folder operations. Use `auth set-credentials` or N8N_EMAIL/N8N_PASSWORD env vars.',
@@ -41,6 +45,13 @@ async function createInternalClient(config: Config): Promise<InternalApiClient> 
   if (!config.url) {
     outputError('n8n URL is required. Use --url flag or N8N_URL env var.', 'ERR_NO_URL');
   }
+}
+
+/**
+ * Create an authenticated InternalApiClient from resolved config.
+ */
+async function createInternalClient(config: Config): Promise<InternalApiClient> {
+  assertFolderConfig(config);
 
   const client = new InternalApiClient(config.url, config.verbose);
   await client.login(config.email, config.password);
@@ -227,6 +238,21 @@ export function registerFolderCommands(program: Command): void {
       await runFolder('ERR_FOLDER_CREATE', async () => {
         const parentOpts = program.opts();
         const config = await resolveConfig(parentOpts);
+        assertFolderConfig(config);
+
+        // A dry run is a preview from the arguments: no login, no license-gated
+        // folder list, no create. `parentFolderId` is replaced by the parent's
+        // name because nothing resolved it to an id (#67).
+        if (config.dry) {
+          outputJson({
+            dryRun: true,
+            id: null,
+            name,
+            parentFolder: opts.parent ?? null,
+          });
+          return;
+        }
+
         const client = await createInternalClient(config);
 
         let parentFolderId: string | undefined;
@@ -258,6 +284,14 @@ export function registerFolderCommands(program: Command): void {
       await runFolder('ERR_FOLDER_DELETE', async () => {
         const parentOpts = program.opts();
         const config = await resolveConfig(parentOpts);
+        assertFolderConfig(config);
+
+        // Preview only: no login, no license-gated folder lookup, no delete (#67).
+        if (config.dry) {
+          outputJson({ dryRun: true, deleted: { id: null, name } });
+          return;
+        }
+
         const client = await createInternalClient(config);
 
         const folders = await client.getFolders();
@@ -281,6 +315,20 @@ export function registerFolderCommands(program: Command): void {
       await runFolder('ERR_FOLDER_MOVE', async () => {
         const parentOpts = program.opts();
         const config = await resolveConfig(parentOpts);
+        assertFolderConfig(config);
+
+        // #67: `--dry` used to fall through to the real move. Preview from the
+        // arguments and stop before any request, so a dry run needs neither the
+        // license-gated folder list nor a reachable n8n. The workflow id is
+        // unresolved (null) for the same reason.
+        if (config.dry) {
+          outputJson({
+            dryRun: true,
+            moved: { workflowId: null, workflowName, toFolder: opts.to },
+          });
+          return;
+        }
+
         const client = await createInternalClient(config);
 
         // Find workflow by name (case-insensitive)
@@ -314,6 +362,10 @@ export function registerFolderCommands(program: Command): void {
 
   // ── sync ──────────────────────────────────────────────────────────────
 
+  // `sync` changes local files, not n8n, and every mkdir/rename/rm already sits
+  // behind `if (!dry)` below, so it has no "--dry ignored" gap (#67). Its preview
+  // does need n8n's folder list to compute the target paths, so unlike move /
+  // create / delete it is not request-free.
   folderCmd
     .command('sync')
     .description('Sync local files to match n8n folder structure')
