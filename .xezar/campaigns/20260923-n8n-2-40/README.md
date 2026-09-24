@@ -34,7 +34,7 @@ Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it 
 | Task | Item | Owns |
 |---|---|---|
 | 0e4d1616 | PR #65 conflict repair (codex/gpt-5.6-terra) | README.md (PR #65 branch) |
-| 9a0d20c7 | PR #68 conflict repair (codex/gpt-5.6-terra) | CHANGELOG.md (PR #68 branch) |
+| 9a0d20c7 | PR #68 conflict repair (codex/gpt-5.6-terra) | CHANGELOG.md, src/client/public-api.ts (PR #68 branch) |
 
 Queued: #40, #41 (public-api.ts – overlap with PR #68); ready: #67. Held: #43 (--force, after PR #68 merges). PR #65: browser evidence (dark, 375px) after its conflict repair.
 
