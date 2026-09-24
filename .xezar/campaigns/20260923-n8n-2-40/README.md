@@ -1,6 +1,6 @@
 # Campaign 20260923-n8n-2-40
 
-Updated: 2026-09-24 15:02
+Updated: 2026-09-24 16:19
 
 Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it on; plus end-user docs and a polished README (added by owner, see decisions.md). Plan: `plan.md`.
 
@@ -29,27 +29,29 @@ Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it 
 
 - #46 (xez/b25718f0, #34 docs) opened by the agent BEFORE readiness/handoff; no labels, no review, no phase record. CI 3/3 green. Not mergeable until the task finishes its workflow and is reviewed.
 
-## Running tasks and file ownership (15:02)
+## Running tasks and file ownership (16:19)
 
 | Task | Item | Owns |
 |---|---|---|
-| 354615d5 | PR #71 repair 1 (claude/opus gmail-priv) | scripts/local-n8n/**, test/local-n8n.test.ts, docs/runbooks/local-n8n.md, docs/validation/n8n-2.40.5.md (revert), scripts/demo/record.sh |
 | f534c0a8 | #67 folder --dry (pi) | src/commands/folder.ts, a unit test, test/e2e/folder.e2e.ts (dry-run cases), CHANGELOG.md line |
+| 354615d5 | PR #71 repair 1 (claude/opus gmail-priv) – at handoff | scripts/local-n8n/**, test/local-n8n.test.ts, docs/runbooks/local-n8n.md, scripts/demo/record.sh |
+| 705ea61d | #43 wf delete --force (pi) | src/commands/workflow.ts (wf delete), a unit test, test/e2e/workflow.e2e.ts (delete cases), docs/reference wf delete page, CHANGELOG.md line |
+| 9bf62125 | PR #71 re-check (claude/sonnet qodeca-priv) | read-only |
 
-Ready: #40, #41, #43 (--force), #72.
+Queued (2-gate-run ceiling): #40, #41, #72 (all touch src/client/public-api.ts).
 
 ## Accounts
 
 | Runner × login | State | Resets |
 |---|---|---|
-| claude × qodeca-priv | ok – 5h 3%, weekly 41% | 5h 17:20, weekly 2026-09-28 19:00 |
-| claude × gmail-priv | ok – 5h 3%, weekly 30% | 5h 17:30, weekly 2026-09-25 20:59 |
+| claude × qodeca-priv | ok – 5h 6%, weekly 41% | 5h 17:19, weekly 2026-09-28 18:59 |
+| claude × gmail-priv | unknown (check failed at 16:14) | – |
 | claude × eqamana-priv | out (weekly 100%) | 2026-09-26 18:00 |
-| claude × westagilelabs-priv | out (weekly 100%) | 2026-09-25 09:00 |
-| codex × codex-cli | ok – weekly 18% | 2026-09-29 14:45 |
+| claude × westagilelabs-priv | out (weekly 100%) | 2026-09-25 08:59 |
+| codex × codex-cli | unknown (check failed at 16:13) | weekly was 18% at 14:33 |
 | pi (own accounts) | not reported by read_quota | – |
 
-Read from read_quota at 14:33 (observed 14:22-14:33). claude × default is the reserved leader login, not in any rotation.
+Read from read_quota at 16:19. claude × default is the reserved leader login, not in any rotation.
 
 ## Owner items
 
