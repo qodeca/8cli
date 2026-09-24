@@ -37,7 +37,7 @@ Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it 
 
 Held on file overlap: #72 (src/commands/workflow.ts – PR #74; src/client/public-api.ts – PR #79).
 
-Ready for L3 (17:13): PR #74 acceptance (re-check APPROVE at f348c7b); PR #78 (#47) conflict repair (CHANGELOG only, head feac465); PR #79 (#41) review after CI (head f4a8225). Gate runs 0/2. Filed: #76 (folder --dry docs – waits for PR #78); #77 (user role docs).
+Running (17:15): 5d309494 acceptance PR #74 (codex/gpt-6-sol, read-only); a06d8f4b conflict repair PR #78 (codex/gpt-5.6-terra; CHANGELOG.md); 769f3f97 review PR #79 (claude/opus, read-only). Gate runs 1/2, metered 2/4. Filed: #76 (folder --dry docs – waits for PR #78); #77 (user role docs).
 
 ## Accounts
 
