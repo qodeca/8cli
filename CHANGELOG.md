@@ -12,6 +12,10 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Fixed
+
+- `folder move --to "(root)"` now sends n8n's root sentinel `"0"` instead of `null` ([#53](https://github.com/qodeca/8cli/issues/53)).
+
 ## [0.1.2] - 2026-06-19
 
 ### Added

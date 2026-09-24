@@ -25,6 +25,13 @@ interface InternalProject {
 }
 
 /**
+ * n8n's sentinel for the root folder (`PROJECT_ROOT` in `n8n-workflow`).
+ * `PATCH /rest/workflows/{id}` types `parentFolderId` as a string, so the root
+ * has no `null` spelling on the internal API.
+ */
+const PROJECT_ROOT = '0';
+
+/**
  * n8n internal API client.
  * Uses cookie-based session auth via POST /rest/login.
  */
@@ -229,8 +236,14 @@ export class InternalApiClient extends BaseClient {
 
   /**
    * PATCH /rest/workflows/{id} – move workflow to a folder.
+   *
+   * `null` means the root folder. It goes on the wire as `PROJECT_ROOT` ("0"):
+   * n8n's request schema rejects `null` ("Expected string, received null") and
+   * an omitted field would leave the workflow in its current folder (#53).
    */
   async moveWorkflow(id: string, parentFolderId: string | null): Promise<InternalWorkflow> {
-    return this.patch<InternalWorkflow>(`/rest/workflows/${id}`, { parentFolderId });
+    return this.patch<InternalWorkflow>(`/rest/workflows/${id}`, {
+      parentFolderId: parentFolderId ?? PROJECT_ROOT,
+    });
   }
 }

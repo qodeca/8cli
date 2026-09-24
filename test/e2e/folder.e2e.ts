@@ -7,8 +7,10 @@ import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import {
   apiEnv,
+  createWorkflowFixture,
   errorMessage,
   internalEnv,
+  json,
   LICENSE_GATED,
   run8cli,
   uniqueName,
@@ -62,13 +64,21 @@ describe('folder sync / move', () => {
     expect(errorMessage(r)).toMatch(LICENSE_GATED);
   });
 
-  it('move returns a structured error for an unknown workflow', async () => {
-    const r = await run8cli(['folder', 'move', uniqueName('nowf'), '--to', 'x'], internalEnv());
-    expect(r.exitCode).toBe(1);
-    // ERR_WORKFLOW_NOT_FOUND if the internal workflow list is reachable, else
-    // ERR_FOLDER_MOVE if it is gated — both are the structured-error contract.
-    expect(['ERR_WORKFLOW_NOT_FOUND', 'ERR_FOLDER_MOVE']).toContain(
-      (JSON.parse(r.stderr) as { code: string }).code,
-    );
+  // #53: the root is n8n's PROJECT_ROOT sentinel ("0"), not null. A root move
+  // skips the (gated) folder list and PATCHes the workflow, so on free
+  // Community it succeeds instead of failing n8n's request schema with
+  // "Expected string, received null". This replaces the old unknown-workflow
+  // move check to stay inside the file's 5-logins-per-minute budget (see the
+  // header): the unknown-workflow branch is a local guard, the root wire value
+  // is the regression.
+  it('move to (root) sends the root sentinel and succeeds', async () => {
+    const wf = await createWorkflowFixture();
+    const r = await run8cli(['folder', 'move', wf.name, '--to', '(root)'], internalEnv());
+    expect(r.exitCode).toBe(0);
+    expect(
+      json<{ moved: { workflowId: string; workflowName: string; toFolder: string } }>(r),
+    ).toEqual({
+      moved: { workflowId: wf.id, workflowName: wf.name, toFolder: '(root)' },
+    });
   });
 });
