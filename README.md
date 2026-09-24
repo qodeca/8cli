@@ -1,176 +1,92 @@
-# 8cli
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="assets/brand/banner-dark.svg">
+  <img src="assets/brand/banner-light.svg" alt="8cli – AI-first. JSON by default." width="100%">
+</picture>
 
-[![CI](https://github.com/qodeca/8cli/actions/workflows/ci.yml/badge.svg)](https://github.com/qodeca/8cli/actions/workflows/ci.yml)
-[![npm](https://img.shields.io/npm/v/@qodeca/8cli)](https://www.npmjs.com/package/@qodeca/8cli)
-[![License: GPL-3.0-only](https://img.shields.io/badge/License-GPLv3-blue.svg)](./LICENSE)
-[![Node.js](https://img.shields.io/node/v/@qodeca/8cli)](https://www.npmjs.com/package/@qodeca/8cli)
+<h1 align="center">8cli – n8n from the command line</h1>
 
-An AI-first command-line interface for remote-managing [n8n](https://n8n.io) instances.
-JSON output by default, no interactive prompts, composable with `jq` and other tools –
-designed for both AI agents (such as Claude Code) and humans.
+<div align="center">
+  <strong>Manage n8n from your terminal – with JSON built for agents and scripts.</strong>
+  <br><br>
+  <a href="https://github.com/qodeca/8cli/actions/workflows/ci.yml"><img alt="CI status" src="https://github.com/qodeca/8cli/actions/workflows/ci.yml/badge.svg"></a>
+  <a href="https://www.npmjs.com/package/@qodeca/8cli"><img alt="npm version" src="https://img.shields.io/npm/v/@qodeca/8cli"></a>
+  <a href="LICENSE"><img alt="GPL-3.0-only license" src="https://img.shields.io/badge/license-GPL--3.0--only-blue"></a>
+  <a href="https://nodejs.org/en/download"><img alt="Node.js version" src="https://img.shields.io/node/v/@qodeca/8cli"></a>
+</div>
 
-```bash
-8cli --url https://your-n8n.example.com wf list | jq '.[].name'
-```
+<br>
 
-## Features
+![8cli terminal demo: auth verify, JSON output by default, --table view, piping into jq, and a --dry delete preview](assets/demo/8cli-demo.gif)
 
-- **JSON-native** – every command emits valid JSON to stdout; errors go to stderr as
-  `{ "error": "...", "code": "ERR_..." }` with a non-zero exit code.
-- **Non-interactive** – all input via flags and arguments; safe for scripts, CI, and agents.
-- **Composable** – list commands return arrays, get commands return objects; pipe into `jq`.
-- **Secrets in the OS keychain** – API keys never touch config files.
-- **No build needed to hack on it** – TypeScript run directly via `tsx` in development.
+## Why 8cli?
 
-## Requirements
+- **AI-first** – commands return JSON by default; errors are structured JSON on stderr, with no CLI prompts.
+- **Composable** – pipe workflow and execution data through `jq` or other tools.
+- **Secrets handled deliberately** – macOS Keychain support; environment variables on other platforms. No secrets in config files.
+- **Automation-friendly** – inspect workflows, executions, credentials and more from scripts or coding agents.
 
-- Node.js **22+** (uses native `fetch`)
-- An n8n instance with API access
-- Keychain secret storage is supported on **macOS** only; on Windows/Linux, provide
-  credentials via environment variables (see [Configuration](#configuration-and-credentials))
+8cli requires **Node.js 22.22+** and an n8n instance with API access. macOS can store API keys in Keychain; Windows and Linux currently use environment variables.
 
 ## Install
-
-Published on npm as [`@qodeca/8cli`](https://www.npmjs.com/package/@qodeca/8cli):
 
 ```bash
 npm install -g @qodeca/8cli
 ```
 
-Or run without installing:
+The package is also available on [npm](https://www.npmjs.com/package/@qodeca/8cli). For a step-by-step first run, see [Getting started](docs/getting-started.md). To work on 8cli itself, see [`CONTRIBUTING.md`](./CONTRIBUTING.md).
+
+## 60-second quick start
+
+Create an API key in your n8n instance. In your terminal, paste it after running this command and press Enter. The hidden input keeps it out of shell history:
 
 ```bash
-npx @qodeca/8cli --url https://your-n8n.example.com wf list
+read -rs N8N_API_KEY
 ```
 
-## Quick start
+Then export it and point 8cli at your instance:
 
 ```bash
-# Store an API key in the OS keychain (macOS)
-8cli --url https://your-n8n.example.com auth set-api-key --value <your-api-key>
-
-# ...or pipe the key from stdin so it never appears in your shell history / process list
-printf '%s' "$MY_KEY" | 8cli --url https://your-n8n.example.com auth set-api-key --value -
-
-8cli --url https://your-n8n.example.com auth verify
-
-# List workflows (JSON by default)
-8cli --url https://your-n8n.example.com wf list
-
-# Human-readable table
-8cli --url https://your-n8n.example.com wf list --table
-
-# Compose with jq
-8cli --url https://your-n8n.example.com wf list | jq '.[] | {id, name, active}'
+export N8N_API_KEY
+export N8N_URL=https://your-n8n.example.com
+8cli auth verify
+8cli wf list
+8cli wf list | jq '.[] | {id, name, active}'
 ```
 
-Configuration can also come from environment variables (`N8N_URL`, `N8N_API_KEY`,
-`N8N_EMAIL`, `N8N_PASSWORD`), so the `--url`/`--api-key` flags are optional once they are set.
+`wf list` returns a JSON array, including `[]` when no workflows exist. Install [`jq`](https://jqlang.github.io/jq/) for the last command.
 
-## Commands
+### macOS: store the key in Keychain
 
-| Group            | Alias  | Subcommands                                                                  |
-| ---------------- | ------ | ---------------------------------------------------------------------------- |
-| `auth`           |        | `login`, `logout`, `list`, `verify`, `set-api-key`, `set-credentials`        |
-| `config`         |        | `show`                                                                       |
-| `workflow`       | `wf`   | `list`, `get`, `save`, `publish`, `activate`, `deactivate`, `delete`, `diff` |
-| `execution`      | `exec` | `list`, `get`, `delete`                                                      |
-| `credential`     | `cred` | `list`, `delete`, `transfer`                                                 |
-| `tag`            |        | `list`, `create`, `update`, `delete`                                         |
-| `variable`       | `var`  | `list`, `set`, `delete`                                                      |
-| `project`        | `proj` | `list`, `create`, `update`, `delete`                                         |
-| `user`           |        | `list`, `get`                                                                |
-| `folder`         |        | `tree`, `create`, `delete`, `move`, `sync`                                   |
-| `datatable`      | `dt`   | `list`, `get`, `rows`, `create`, `delete`, `insert`                          |
-| `audit`          |        | `run`                                                                        |
-| `source-control` | `sc`   | `status`, `pull`, `push`\*                                                   |
+Optionally, save the key from the environment into Keychain, then remove it from the environment:
 
-Run `8cli <group> --help` for the options of any group.
-
-\* `sc push` is a stub: n8n's public API has no push endpoint, so the command returns a
-structured `ERR_NOT_SUPPORTED` error. Push from the n8n UI instead – `sc status` and
-`sc pull` work normally.
-
-## Global options
-
-| Flag              | Purpose                                     |
-| ----------------- | ------------------------------------------- |
-| `--url <url>`     | n8n instance URL                            |
-| `--api-key <key>` | API key (overrides keychain)                |
-| `--config <path>` | Config file path                            |
-| `--table`         | Human-readable table output instead of JSON |
-| `--dry`           | Preview changes without applying them       |
-| `--verbose`       | Debug logging to stderr                     |
-| `--insecure`      | Allow plaintext-HTTP URLs (not recommended) |
-| `--version`       | Print the CLI version                       |
-| `--help`          | Show help for any command                   |
-
-## Errors and exit codes
-
-On success, commands print JSON to **stdout** and exit `0`. On failure, they print a
-structured error to **stderr** and exit `1`:
-
-```json
-{ "error": "No API key configured. ...", "code": "ERR_NO_API_KEY" }
+```bash
+printf '%s' "$N8N_API_KEY" | 8cli auth set-api-key --value -
+unset N8N_API_KEY
 ```
 
-The `code` is a stable `ERR_*` identifier (for example `ERR_NO_URL`, `ERR_NO_API_KEY`,
-`ERR_AUTH_VERIFY`, `ERR_WORKFLOW_*`) so scripts and agents can branch on it without parsing
-prose. Each command documents its own codes via `8cli <group> <command> --help`.
+The key is stored per instance URL, so 8cli finds it only while `N8N_URL`, `--url` or `url` in `8cli.json` names that same instance. See [Configuration](docs/configuration.md) for the full lookup order and its `ERR_CONFIG_SOURCE_MISMATCH` refusal when config-file URLs are paired with environment or flag credentials.
 
-## Configuration and credentials
+## Command overview
 
-Configuration is resolved in priority order: **CLI flags → environment variables →
-config file → OS keychain → defaults**. Secrets are **never** written to config files –
-they live in the OS keychain (service name `8cli`).
+| Command (alias)         | Use it for                            | Reference                                          |
+| ----------------------- | ------------------------------------- | -------------------------------------------------- |
+| `auth`                  | Set credentials and verify access     | [Auth](docs/reference/auth.md)                     |
+| `config`                | Inspect resolved configuration        | [Config](docs/reference/config.md)                 |
+| `workflow` (`wf`)       | List, inspect and manage workflows    | [Workflow](docs/reference/workflow.md)             |
+| `execution` (`exec`)    | Inspect and delete executions         | [Execution](docs/reference/execution.md)           |
+| `credential` (`cred`)   | List and manage credentials           | [Credential](docs/reference/credential.md)         |
+| `tag`                   | Manage tags                           | [Tag](docs/reference/tag.md)                       |
+| `variable` (`var`)      | Manage variables                      | [Variable](docs/reference/variable.md)             |
+| `project` (`proj`)      | Manage projects                       | [Project](docs/reference/project.md)               |
+| `user`                  | Inspect users                         | [User](docs/reference/user.md)                     |
+| `folder`                | Manage folders                        | [Folder](docs/reference/folder.md)                 |
+| `datatable` (`dt`)      | Manage data tables and rows           | [Data table](docs/reference/datatable.md)          |
+| `audit`                 | Run instance audits                   | [Audit](docs/reference/audit.md)                   |
+| `source-control` (`sc`) | Inspect and pull source control state | [Source control](docs/reference/source-control.md) |
 
-When the URL comes from a config file, 8cli refuses `N8N_API_KEY`, `N8N_EMAIL`,
-`N8N_PASSWORD` or `--api-key` with `ERR_CONFIG_SOURCE_MISMATCH` before using a credential.
-Set `N8N_URL` or pass `--url` with those credentials, or store credentials in the
-keychain for the file's URL.
+Run `8cli <command> --help` for flags and subcommands. Some groups require n8n Enterprise features or additional credentials; see [Community vs. Enterprise](docs/community-vs-enterprise.md). `sc push` returns `ERR_NOT_SUPPORTED` because n8n's public API has no push endpoint.
 
-- **macOS** – fully supported via the `security` keychain CLI.
-- **Windows / Linux** – keychain backends are stubs and not yet implemented; use the
-  `N8N_API_KEY` (and `N8N_EMAIL` / `N8N_PASSWORD`) environment variables in the meantime.
-
-By default 8cli refuses plaintext-`http://` URLs (except loopback hosts like
-`localhost`) so the API key is never sent in clear text. Pass `--insecure` to override.
-
-### Environment variables
-
-| Variable       | Purpose                                          |
-| -------------- | ------------------------------------------------ |
-| `N8N_URL`      | n8n instance URL                                 |
-| `N8N_API_KEY`  | Public API key (`X-N8N-API-KEY`)                 |
-| `N8N_EMAIL`    | Email for internal API auth (folder commands)    |
-| `N8N_PASSWORD` | Password for internal API auth (folder commands) |
-
-Environment variables are convenient for CI but bypass the keychain – avoid committing them
-to `.env` files or leaving them in shell history. Prefer `auth login` (keychain) for
-day-to-day use, and pipe secrets via `--value -` (stdin) rather than inline flags.
-
-### Config file (`8cli.json`)
-
-A non-secret config file is auto-detected at `8cli.json` (cwd) or `configs/8cli.json`, or
-pass `--config <path>`. It holds only non-secret settings:
-
-```json
-{
-  "url": "https://your-n8n.example.com",
-  "workflowDir": "workflow-files"
-}
-```
-
-### Note on folder commands (internal API)
-
-Most commands use n8n's documented public API (`/api/v1`, `X-N8N-API-KEY` header). The
-**`folder`** commands use n8n's **internal** `/rest` API with cookie/session authentication,
-because the public API does not expose folder information. As a result:
-
-- Folder commands require email/password credentials (`auth set-credentials` or
-  `N8N_EMAIL` / `N8N_PASSWORD`).
-- They depend on undocumented, unversioned endpoints that **may change or break across n8n
-  upgrades**.
+For output formats and error codes, see [Output and errors](docs/output-and-errors.md). For guides, recipes and the full reference, start at the [documentation index](docs/README.md).
 
 ## Disclaimer
 
@@ -199,8 +115,8 @@ terms (your Git author identity is your record).
 
 ## Security
 
-8cli keeps secrets in the OS keychain (never in config files) and refuses plaintext-HTTP URLs
-by default. Report security vulnerabilities **privately** via
+8cli stores secrets in the macOS Keychain or reads them from environment variables – never from
+config files – and refuses plaintext-HTTP URLs by default. Report security vulnerabilities **privately** via
 [GitHub's private advisory reporting](https://github.com/qodeca/8cli/security/advisories/new) –
 see [`SECURITY.md`](./SECURITY.md). Please do not open a public issue for an unfixed vulnerability.
 
