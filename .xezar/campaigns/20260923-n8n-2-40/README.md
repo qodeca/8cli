@@ -6,7 +6,7 @@ Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it 
 
 ## State
 
-- Base `develop` at 27e3398. Merges this campaign: 15 (#33, #50, #48, #49, #51, #55, #54, #59, #46, #56, #63, #58, #68, #65, #71). Checkpoints met: 1 (#31 closed).
+- Base `develop` at 28af672. Merges this campaign: 16 (#33, #50, #48, #49, #51, #55, #54, #59, #46, #56, #63, #58, #68, #65, #71, #73). Checkpoints met: 1 (#31 closed).
 
 ## Work
 
@@ -35,9 +35,9 @@ Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it 
 |---|---|---|
 | e080520d | #40 user role (pi) | src/client/public-api.ts (listUsers/getUser), a unit test, test/e2e/user.e2e.ts, test/e2e/__snapshots__/user-get.json, CHANGELOG.md line |
 
-Held on file overlap (not a ceiling): #41, #72 (src/client/public-api.ts – PR #75); #47 (src/commands/folder.ts – PR #73).
+Held on file overlap (not a ceiling): #41, #72 (src/client/public-api.ts – PR #75).
 
-Running (16:36): d0cc85d6 review PR #74 (claude/opus, read-only); a38ac837 review PR #75 (claude/opus, read-only); d7058b7c acceptance PR #73 (claude/opus, read-only).
+Ready for L3 (16:45): PR #74 repair round 1 (REQUEST CHANGES at ed72579); PR #75 acceptance (APPROVE at 6b9b1e2); #47 bug-fix (folder.ts free after #73). Filed: #76 (folder --dry docs).
 
 ## Accounts
 
