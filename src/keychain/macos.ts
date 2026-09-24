@@ -7,11 +7,15 @@ const SERVICE = '8cli';
 
 /**
  * `security -i` reads its input one line at a time into a fixed 4096-byte
- * buffer. A longer command is split in two, which leaves a half-written item
- * behind and echoes the tail of the payload in an error message, so an
- * oversized value is rejected before anything is spawned.
+ * buffer, so a line of 4095 bytes plus the trailing newline is the most that
+ * fits. The limit is measured in UTF-8 bytes, not UTF-16 code units: a
+ * multi-byte account name (a raw user URL) is longer in bytes than
+ * `String#length` suggests. A longer line is split in two, which leaves a
+ * half-written item behind and echoes the tail of the payload in an error
+ * message, so an oversized command is rejected before anything is spawned.
+ * 4000 is a conservative round number below the 4095-byte ceiling.
  */
-const MAX_SECURITY_COMMAND_LENGTH = 4096;
+export const MAX_LINE_BYTES = 4000;
 
 /**
  * Quote a value for a `security -i` command line. `security -i` parses the
@@ -54,10 +58,10 @@ export function setSecret(account: string, value: string): void {
     '-X',
     quoteForSecurityCommand(hex),
   ].join(' ');
-  if (command.length > MAX_SECURITY_COMMAND_LENGTH) {
+  if (Buffer.byteLength(command + '\n', 'utf8') > MAX_LINE_BYTES) {
     throw new Error(
       `Failed to store secret in keychain: value is too long for the security CLI ` +
-        `(${value.length} bytes)`,
+        `(${Buffer.byteLength(value, 'utf8')} bytes)`,
     );
   }
 
