@@ -14,7 +14,7 @@ Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it 
 |---|---|---|---|
 | #31 | Local n8n 2.40.5 environment | DONE – #33 merged as fb4c612, issue closed | – |
 | #32 | Validate every command on 2.40.5 | PR #50 APPROVED at e8efaee, CI green | merge (waits on owner settings rule); unblocks #39-#43 |
-| #34 | End-user docs in docs/ | PR #46 repair 1 done at 013ae9e | re-review f0bd0691 + security bb1fc7df running |
+| #34 | End-user docs in docs/ | PR #46 repair 1 done at 013ae9e | security REQUEST CHANGES (3 major); re-review f0bd0691 running | repair round 2 folds both verdicts |
 | #35 | README (badges, demo, logo) | held | needs #36 merged and #37 direction picked |
 | #36 | Scripted demo GIF | PR #48 APPROVED at 634e0db | full frame check 8f2955a2 running |
 | #37 | Logo and banner | PR #49 design-approved, CI green, ready | BLOCKED: merge denied by auto-mode classifier |
@@ -28,7 +28,7 @@ Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it 
 ## Running tasks and file ownership
 
 - b632981f (pi/deepseek-flash, PR #51 repair 1) owns src/cli.ts, src/formatters/**, test/cli-usage-errors.test.ts, BACKWARD_COMPATIBILITY.md, CHANGELOG.md
-- bb1fc7df (codex/gpt-6-astra, security PR #46), f0bd0691 (claude/sonnet gmail-priv, re-review PR #46), 8f2955a2 (codex/gpt-6-sol, acceptance PR #48) – read-only
+- f0bd0691 (claude/sonnet gmail-priv, re-review PR #46), 8f2955a2 (codex/gpt-6-sol, acceptance PR #48) – read-only
 
 - PR #50 (#32, not merged) holds docs/validation/**, test/e2e/** until it merges
 
@@ -45,6 +45,7 @@ Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it 
 ## Owner items
 
 - BLOCKED: leader merge of PR #49 denied by the Claude Code auto-mode classifier even with --allowedTools "Bash(gh pr merge *)". Owner chose "Allow the leader in settings" – owner adds the rule. Mergeable now: #49, #50.
+- Keychain argv finding: PR #46 docs/security.md:50-52 publicly described it (public branch, since 013ae9e). Repair 2 removes it; the text stays in git history. Your call pending from parked.md (private advisory or fix in the open).
 - Delete branch xez/df01cf60 (record deletion is yours; unattended hard stop).
 - Parked calls in parked.md.
 
