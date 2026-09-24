@@ -28,12 +28,17 @@ npm run n8n:local -- seed
 Creates the owner user (`owner@example.com`, random password) and a full-scope API key, then
 stores them where 8cli reads them. `start` and `reset` run this for you. No secret is printed.
 
-The credentials go to `.local/xezar/n8n/credentials.env` on every platform. The file is gitignored
-and mode 600 in a mode 700 directory; it is replaced in one step, never rewritten in place, and a
-symlink at that path is refused (`ERR_ENV_FILE_SYMLINK`). Load it before running 8cli:
+The credentials go to `.local/xezar/n8n/credentials.env` in the **main checkout**, on every
+platform. The local n8n container is shared by every git worktree of the repository, so the
+credentials are shared too: a worktree resolves the same file through the git common directory
+rather than keeping its own copy. The file is gitignored and mode 600 in a mode 700 directory; it
+is replaced in one step, never rewritten in place, and a symlink at that path is refused
+(`ERR_ENV_FILE_SYMLINK`). From a worktree, find the main checkout with `dirname "$(git rev-parse
+--path-format=absolute --git-common-dir)"`. Load it before running 8cli:
 
 ```bash
-set -a; . .local/xezar/n8n/credentials.env; set +a
+main_root="$(dirname "$(git rev-parse --path-format=absolute --git-common-dir)")"
+set -a; . "$main_root/.local/xezar/n8n/credentials.env"; set +a
 npx tsx bin/8cli.ts wf list
 ```
 

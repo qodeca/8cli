@@ -8,16 +8,18 @@
 //   npm run n8n:local -- reset   wipe all data, start again, seed
 //   npm run n8n:local -- stop    stop it, keeping the data
 //
-// The seed stores the credentials in a protected env file (mode 600) on every platform.
-// `--store keychain` is refused: the keychain store is disabled until the keychain backend
-// keeps secrets out of process arguments. Same contract as 8cli: one JSON object to stdout,
-// errors as `{ "error", "code" }` to stderr with exit code 1, progress to stderr. No secret
-// is ever printed or passed in process arguments. A spawned 8cli only ever sees a complete
-// set of stored credentials, so its config resolution cannot fall back to the keychain.
+// The seed stores the credentials in a protected env file (mode 600) in the MAIN checkout,
+// shared by every git worktree (the compose project name is fixed, so every worktree targets
+// one container), so the whole repository seeds and reads one instance. `--store keychain` is
+// refused: the keychain store is disabled until the keychain backend keeps secrets out of
+// process arguments. Same contract as 8cli: one JSON object to stdout, errors as
+// `{ "error", "code" }` to stderr with exit code 1, progress to stderr. No secret is ever
+// printed or passed in process arguments. A spawned 8cli only ever sees a complete set of
+// stored credentials, so its config resolution cannot fall back to the keychain.
 
 import { spawnSync } from 'node:child_process';
 import { existsSync, readFileSync } from 'node:fs';
-import { relative, resolve } from 'node:path';
+import { resolve } from 'node:path';
 import {
   childEnv,
   cookieHeader,
@@ -27,6 +29,7 @@ import {
   parseArgs,
   parseEnvFile,
   ScriptError,
+  sharedCredentialsFile,
   storedCredentialsEnv,
   UsageError,
   writeSecretFile,
@@ -35,13 +38,50 @@ import {
 const ROOT = resolve(import.meta.dirname, '../..');
 const COMPOSE_FILE = resolve(import.meta.dirname, 'compose.yaml');
 const CLI_ENTRY = resolve(ROOT, 'bin/8cli.ts');
-const ENV_FILE = resolve(ROOT, '.local/xezar/n8n/credentials.env');
 const OWNER_EMAIL = 'owner@example.com';
 const READY_TIMEOUT_MS = 180_000;
 const REQUEST_TIMEOUT_MS = 15_000;
 
 function progress(message: string): void {
   process.stderr.write(`[local-n8n] ${message}\n`);
+}
+
+/**
+ * The git directory shared by every worktree of this repository. `git rev-parse
+ * --git-common-dir` answers the MAIN repository's git dir even from a linked worktree, so
+ * `sharedCredentialsFile` derives a path that is the same in the main checkout and in every
+ * worktree of it. Resolved lazily, after argument parsing, so the `--store keychain` refusal
+ * still happens before any child process is spawned.
+ */
+function gitCommonDir(): string {
+  const res = spawnSync('git', ['rev-parse', '--path-format=absolute', '--git-common-dir'], {
+    cwd: ROOT,
+    encoding: 'utf-8',
+    stdio: ['ignore', 'pipe', 'pipe'],
+  });
+  if (res.error || res.status !== 0) {
+    throw new ScriptError(
+      'Could not resolve the git common directory, so the shared local-n8n credentials file ' +
+        'cannot be located. Run this from a checkout of the repository.',
+      'ERR_GIT_COMMON_DIR',
+    );
+  }
+  const dir = (res.stdout ?? '').trim();
+  if (dir === '') {
+    throw new ScriptError(
+      'git returned an empty common directory, so the shared local-n8n credentials file ' +
+        'cannot be located. Run this from a checkout of the repository.',
+      'ERR_GIT_COMMON_DIR',
+    );
+  }
+  return dir;
+}
+
+/** The shared credentials file, next to the one instance rather than inside a worktree. */
+let envFileCache: string | undefined;
+function envFile(): string {
+  envFileCache ??= sharedCredentialsFile(gitCommonDir());
+  return envFileCache;
 }
 
 function compose(...args: string[]): void {
@@ -143,7 +183,7 @@ function storeCredentials(creds: {
   email: string;
   password: string;
 }): void {
-  writeSecretFile(ENV_FILE, envFileContent(creds));
+  writeSecretFile(envFile(), envFileContent(creds));
 }
 
 /**
@@ -152,8 +192,9 @@ function storeCredentials(creds: {
  * so a child can never resolve a missing credential from the keychain.
  */
 function storedEnv(): Record<string, string> | undefined {
-  if (!existsSync(ENV_FILE)) return undefined;
-  return storedCredentialsEnv(parseEnvFile(readFileSync(ENV_FILE, 'utf-8')));
+  const file = envFile();
+  if (!existsSync(file)) return undefined;
+  return storedCredentialsEnv(parseEnvFile(readFileSync(file, 'utf-8')));
 }
 
 /** `8cli auth verify` against the instance with the stored credentials. */
@@ -223,7 +264,7 @@ async function seed(url: string): Promise<'created' | 'already'> {
 }
 
 function credentialsLocation(): Record<string, string> {
-  return { store: 'env', envFile: relative(ROOT, ENV_FILE) };
+  return { store: 'env', envFile: envFile() };
 }
 
 async function main(): Promise<void> {

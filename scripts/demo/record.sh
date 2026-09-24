@@ -12,7 +12,6 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
-ENV_FILE="$ROOT/.local/xezar/n8n/credentials.env"
 TAPE="scripts/demo/demo.tape"
 GIF="assets/demo/8cli-demo.gif"
 FRAMES=".local/xezar/demo/frames"
@@ -31,9 +30,11 @@ for tool in vhs ffmpeg jq docker; do
   command -v "$tool" >/dev/null 2>&1 || fail "$tool is not installed" "ERR_NO_$(echo "$tool" | tr '[:lower:]' '[:upper:]')"
 done
 
-npm run -s n8n:local -- start >&2
+# The credentials live with the main checkout (the one n8n instance is shared by every
+# worktree); the script reports the path it wrote, so there is one source of truth for it.
+ENV_FILE="$(npm run -s n8n:local -- start | jq -r '.credentials.envFile // empty')"
 
-[ -f "$ENV_FILE" ] && [ ! -L "$ENV_FILE" ] || fail "local n8n env file missing" "ERR_NO_ENV_FILE"
+[ -n "$ENV_FILE" ] && [ -f "$ENV_FILE" ] && [ ! -L "$ENV_FILE" ] || fail "local n8n env file missing" "ERR_NO_ENV_FILE"
 
 (
   set -a

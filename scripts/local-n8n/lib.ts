@@ -176,6 +176,19 @@ export function childEnv(
 }
 
 /**
+ * The credentials file for the one local n8n instance, derived from the repository's git
+ * common directory. `git rev-parse --git-common-dir` names the MAIN repository's git directory
+ * even from a linked worktree, so its parent is the main checkout: the path is the same in the
+ * main checkout and in every worktree of it. The container is shared by every worktree (compose
+ * project `8cli-local-n8n`), so a worktree-relative path gave each worktree its own credentials
+ * for the same instance — only the first one could seed it, and every other got
+ * `ERR_ALREADY_OWNED` (issue #38).
+ */
+export function sharedCredentialsFile(gitCommonDir: string): string {
+  return join(dirname(gitCommonDir), '.local', 'xezar', 'n8n', 'credentials.env');
+}
+
+/**
  * Write a secret file so no byte of it is ever readable by anyone else: the directory is
  * made 0700, the content goes to a fresh 0600 temp file beside the target (created with
  * O_EXCL, never reused), is fsynced, and is renamed over the target in one step. A

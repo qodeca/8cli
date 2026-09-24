@@ -5,6 +5,7 @@ import { spawnSync } from 'node:child_process';
 import {
   chmodSync,
   cpSync,
+  existsSync,
   lstatSync,
   mkdirSync,
   mkdtempSync,
@@ -27,6 +28,7 @@ import {
   parseArgs,
   parseEnvFile,
   ScriptError,
+  sharedCredentialsFile,
   storedCredentialsEnv,
   UsageError,
   writeSecretFile,
@@ -106,6 +108,21 @@ describe('local-n8n script', () => {
     expect(error.code).toBe('ERR_STORE_DISABLED');
     expect(error.error).toMatch(/keychain store is disabled/);
   });
+
+  it('refuses with ERR_GIT_COMMON_DIR when the checkout is not a git repository', () => {
+    const notRepo = mkdtempSync(join(tmpdir(), 'local-n8n-norepo-'));
+    try {
+      const script = copyScript(notRepo);
+      const result = runStart(script, gitOnlyPath(notRepo));
+      expect(result.status).toBe(1);
+      expect(result.stdout).toBe('');
+      const error = JSON.parse(result.stderr.trim()) as { error: string; code: string };
+      expect(error.code).toBe('ERR_GIT_COMMON_DIR');
+      expect(error.error).toMatch(/git common directory/);
+    } finally {
+      rmSync(notRepo, { recursive: true, force: true });
+    }
+  });
 });
 
 describe('local-n8n localUrl', () => {
@@ -142,6 +159,19 @@ describe('local-n8n cookieHeader', () => {
   it('keeps only the name=value part of each cookie', () => {
     expect(cookieHeader(['n8n-auth=abc; Path=/; HttpOnly', 'other=1; Secure'])).toBe(
       'n8n-auth=abc; other=1',
+    );
+  });
+});
+
+describe('local-n8n sharedCredentialsFile', () => {
+  it('puts the credentials with the main checkout, whatever worktree asks', () => {
+    // The path git reports as the common dir is the MAIN repository's `.git` even when the
+    // script runs in a linked worktree, so its parent is the shared main checkout.
+    expect(sharedCredentialsFile(join('/repo', '.git'))).toBe(
+      join('/repo', '.local', 'xezar', 'n8n', 'credentials.env'),
+    );
+    expect(sharedCredentialsFile(join('/main', '.git'))).toBe(
+      join('/main', '.local', 'xezar', 'n8n', 'credentials.env'),
     );
   });
 });
@@ -202,19 +232,79 @@ describe('local-n8n storedCredentialsEnv', () => {
   }
 });
 
+/**
+ * A PATH that has `git` but neither `docker` nor a keychain helper. The local-n8n script now
+ * asks git for the shared credentials location, so an empty PATH would fail before the refusal
+ * under test; a wrapper is used instead of git's own directory because on Linux that directory
+ * also holds docker. A refusal with ERR_ENV_FILE_INCOMPLETE therefore still proves nothing else
+ * was spawned.
+ */
+function gitOnlyPath(dir: string): string {
+  const bin = join(dir, 'git-only-bin');
+  mkdirSync(bin, { recursive: true });
+  const located = (
+    spawnSync('sh', ['-c', 'command -v git'], { encoding: 'utf-8' }).stdout ?? ''
+  ).trim();
+  if (!located) throw new Error('git is not on PATH');
+  writeFileSync(join(bin, 'git'), `#!/bin/sh\nexec ${JSON.stringify(located)} "$@"\n`, {
+    mode: 0o755,
+  });
+  return bin;
+}
+
+function git(args: string[], cwd: string): void {
+  const res = spawnSync('git', args, { cwd, encoding: 'utf-8' });
+  if (res.status !== 0) throw new Error(`git ${args.join(' ')} failed: ${res.stderr}`);
+}
+
+/** A throwaway git repository so the script can resolve a git common directory. */
+function initRepo(dir: string): void {
+  git(['init', '-q'], dir);
+  git(['config', 'user.email', 'test@example.com'], dir);
+  git(['config', 'user.name', 'Local n8n test'], dir);
+  // A developer's global commit.gpgsign must not make the fixture hang or fail.
+  git(['config', 'commit.gpgsign', 'false'], dir);
+  writeFileSync(join(dir, 'README.md'), '# fixture\n');
+  git(['add', 'README.md'], dir);
+  git(['commit', '-qm', 'init'], dir);
+}
+
+/** Copy the script into a checkout and return its path; the checkout is never the developer's. */
+function copyScript(root: string): string {
+  const scriptDir = join(root, 'scripts', 'local-n8n');
+  mkdirSync(scriptDir, { recursive: true });
+  for (const file of ['local-n8n.ts', 'lib.ts']) {
+    cpSync(resolve(import.meta.dirname, '../scripts/local-n8n', file), join(scriptDir, file));
+  }
+  return join(scriptDir, 'local-n8n.ts');
+}
+
+function runStart(
+  script: string,
+  path: string,
+): { status: number | null; stdout: string; stderr: string } {
+  return spawnSync(process.execPath, ['--import', 'tsx', script, 'start'], {
+    encoding: 'utf-8',
+    input: '',
+    // The ceiling keeps git from searching above the temp directory, so a fixture that is
+    // deliberately not a repository cannot accidentally find one.
+    env: { ...process.env, PATH: path, GIT_CEILING_DIRECTORIES: tmpdir() },
+  });
+}
+
 describe('local-n8n incomplete stored credentials', () => {
   let dir: string;
-  let scriptDir: string;
+  let repo: string;
+  let script: string;
 
   beforeEach(() => {
     dir = mkdtempSync(join(tmpdir(), 'local-n8n-script-'));
-    scriptDir = join(dir, 'scripts', 'local-n8n');
-    mkdirSync(scriptDir, { recursive: true });
-    // A copy of the script whose repository root is this temp directory, so the test reads
+    repo = join(dir, 'checkout');
+    mkdirSync(repo);
+    initRepo(repo);
+    // A copy of the script whose repository root is this temp checkout, so the test reads
     // and writes its own env file, never the developer's `.local/xezar/n8n/credentials.env`.
-    for (const file of ['local-n8n.ts', 'lib.ts']) {
-      cpSync(resolve(import.meta.dirname, '../scripts/local-n8n', file), join(scriptDir, file));
-    }
+    script = copyScript(repo);
   });
 
   afterEach(() => {
@@ -222,7 +312,7 @@ describe('local-n8n incomplete stored credentials', () => {
   });
 
   function writeStoredEnv(values: Record<string, string>): void {
-    const envDir = join(dir, '.local', 'xezar', 'n8n');
+    const envDir = join(repo, '.local', 'xezar', 'n8n');
     mkdirSync(envDir, { recursive: true });
     const content = Object.entries(values)
       .map(([key, value]) => `${key}='${value}'`)
@@ -230,22 +320,11 @@ describe('local-n8n incomplete stored credentials', () => {
     writeFileSync(join(envDir, 'credentials.env'), `${content}\n`);
   }
 
-  function start(): { status: number | null; stdout: string; stderr: string } {
-    return spawnSync(
-      process.execPath,
-      ['--import', 'tsx', join(scriptDir, 'local-n8n.ts'), 'start'],
-      // An empty PATH means neither docker nor a keychain helper can be found, so reaching
-      // one would fail differently. A refusal with ERR_ENV_FILE_INCOMPLETE therefore proves
-      // nothing was spawned.
-      { encoding: 'utf-8', input: '', env: { ...process.env, PATH: '' } },
-    );
-  }
-
   for (const [name, values] of incompleteCredentials) {
     it(`refuses ${name} before spawning any child process`, () => {
       writeStoredEnv(values);
 
-      const result = start();
+      const result = runStart(script, gitOnlyPath(dir));
 
       expect(result.status).toBe(1);
       expect(result.stdout).toBe('');
@@ -257,6 +336,48 @@ describe('local-n8n incomplete stored credentials', () => {
       expect(result.stderr).not.toContain('[local-n8n]');
     });
   }
+});
+
+describe('local-n8n shared credentials across worktrees', () => {
+  let dir: string;
+  let mainRepo: string;
+  let worktree: string;
+  let worktreeScript: string;
+
+  beforeEach(() => {
+    dir = mkdtempSync(join(tmpdir(), 'local-n8n-worktree-'));
+    mainRepo = join(dir, 'main');
+    mkdirSync(mainRepo);
+    initRepo(mainRepo);
+    copyScript(mainRepo);
+    worktree = join(dir, 'worktree');
+    git(['worktree', 'add', '-q', worktree, '-b', 'side'], mainRepo);
+    worktreeScript = copyScript(worktree);
+  });
+
+  afterEach(() => {
+    rmSync(dir, { recursive: true, force: true });
+  });
+
+  it('reads the credentials stored with the main checkout, not its own worktree copy', () => {
+    // Regression, issue #38: the one local n8n instance is shared by every worktree, but the
+    // credentials were resolved under the checkout that ran the command. This worktree found
+    // no file in its own `.local/xezar/n8n/` and went on to Docker (ERR_NO_DOCKER). With the
+    // shared location it reads the main checkout's file and refuses it as incomplete, before
+    // Docker is reached.
+    const envDir = join(mainRepo, '.local', 'xezar', 'n8n');
+    mkdirSync(envDir, { recursive: true });
+    writeFileSync(join(envDir, 'credentials.env'), "N8N_API_KEY=''\n");
+
+    const result = runStart(worktreeScript, gitOnlyPath(dir));
+
+    expect(result.status).toBe(1);
+    expect(result.stdout).toBe('');
+    const error = JSON.parse(result.stderr.trim()) as { error: string; code: string };
+    expect(error.code).toBe('ERR_ENV_FILE_INCOMPLETE');
+    // The worktree never gets a credentials file of its own.
+    expect(existsSync(join(worktree, '.local', 'xezar', 'n8n', 'credentials.env'))).toBe(false);
+  });
 });
 
 describe('local-n8n writeSecretFile', () => {
