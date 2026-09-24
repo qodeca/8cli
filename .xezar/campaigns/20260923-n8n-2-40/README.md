@@ -37,7 +37,7 @@ Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it 
 
 
 
-Ready (19:23): release 0.2.0 from develop at 62214b5 (owner-authorised, decisions.md) – release-prep, then develop -> main PR, signed tag, GitHub Release, owner approves the release environment.
+Running (19:24): 7e337a79 release-prep 0.2.0 (claude/sonnet; package.json, package-lock.json, CHANGELOG.md). Then develop -> main PR, signed tag, GitHub Release, owner approves the release environment.
 
 ## Accounts
 
