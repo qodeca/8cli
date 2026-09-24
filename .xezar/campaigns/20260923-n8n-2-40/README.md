@@ -49,21 +49,22 @@ Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it 
 | codex × default | in use (2 tasks) | – |
 | pi (own accounts) | in use (1 task) | – |
 
-## Running file ownership (10:00)
+## Running file ownership (10:20)
 
 | Task | Item | Owns |
 |---|---|---|
-| 6ae69ca8 | PR #46 repair S-11..S-14 (codex/gpt-6-sol) | docs/** |
-| 8e9cf361 | #60 env key vs config URL (pi) | src/config.ts, test/config.test.ts, test/e2e/config.e2e.ts, 1 CHANGELOG line |
-| d2d19dca | PR #56 repair 1 (claude/opus qodeca-priv) | test/e2e/COVERAGE.md, CHANGELOG #39 line, test/e2e/source-control.e2e.ts |
-| 31153caa | PR #56 design review (claude/opus gmail-priv) | read-only |
-| d6c88403 | PR #59 QA (claude/opus gmail-priv) | read-only; uses the shared local n8n |
+| 2a62c04f | PR #46 security sign-off (codex/gpt-6-astra) | read-only |
+| a643a7db | PR #46 scoped code check (claude/sonnet gmail-priv) | read-only |
+| 6c7c84ed | PR #63 security review (claude/opus qodeca-priv) | read-only |
+| 6c3649cc | PR #63 code review (claude/sonnet qodeca-priv) | read-only |
+| d88ba358 | PR #58 repair 1 (claude/opus gmail-priv) | test/e2e/folder.e2e.ts, test/e2e/COVERAGE.md folder move row |
+| 2cdc672f | PR #56 scoped re-check (claude/sonnet gmail-priv) | read-only |
 
-Held: PR #58 repair (test/e2e/COVERAGE.md, held by d2d19dca); #40, #41 (public-api.ts, wait on PR #56 merge); #43, #44 (workflow.ts, wait on PR #59 merge); #38 (local n8n, in use).
+Held: #40, #41 (public-api.ts, wait on PR #56 merge); #43, #44 (workflow.ts, wait on PR #59 merge); #38 (local n8n).
 
 ## Owner items
 
-- BLOCKED: leader merge of PR #49 denied by the Claude Code auto-mode classifier even with --allowedTools "Bash(gh pr merge *)". Owner chose "Allow the leader in settings" – owner adds the rule. #50 merged 09:06 by the leader (owner authorized); the other merges were refused by the classifier. Mergeable now: #48, #49, #51, #54, #55.
+- BLOCKED: leader merge of PR #49 denied by the Claude Code auto-mode classifier even with --allowedTools "Bash(gh pr merge *)". Owner chose "Allow the leader in settings" – owner adds the rule. #50 merged 09:06 by the leader (owner authorized); the other merges were refused by the classifier. Mergeable now: #48, #49, #51, #54, #55, #59.
 - Delete branch xez/df01cf60 (record deletion is yours; unattended hard stop).
 
 ## Rules that bit
