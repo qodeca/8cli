@@ -6,7 +6,7 @@ Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it 
 
 ## State
 
-- Base `develop` at 62214b5. Merges this campaign: 22 (#33, #50, #48, #49, #51, #55, #54, #59, #46, #56, #63, #58, #68, #65, #71, #73, #75, #79, #74, #78, #80, #81). Checkpoints met: 1 (#31 closed).
+- Base `develop` at 790a081. Merges this campaign: 23 (#33, #50, #48, #49, #51, #55, #54, #59, #46, #56, #63, #58, #68, #65, #71, #73, #75, #79, #74, #78, #80, #81, #82). Checkpoints met: 1 (#31 closed).
 
 ## Work
 
@@ -37,7 +37,7 @@ Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it 
 
 
 
-Running (23:43): 16708821 scoped re-check of release PR #82 at f42b2a0 (claude/sonnet, gmail-priv; repair author claude/opus). Then merge, develop -> main PR, signed tag, GitHub Release, owner approves the release environment.
+Next (23:48): release PR #82 merged as 790a081. Now develop -> main PR (check, e2e, e2e-macos green on main), signed tag v0.2.0, GitHub Release, owner approves the release environment, verify npm.
 
 ## Accounts
 
