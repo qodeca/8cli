@@ -28,7 +28,9 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   are refused with `ERR_CONFIG_SOURCE_MISMATCH` when the URL comes from a config file and no
   `N8N_URL`/`--url` was given, instead of sending them to the host named by the file; set
   `N8N_URL` too.
+- `sc status` calls `GET /api/v1/source-control/status` with the required `direction` query param (`--direction <pull|push>`, default `pull`) instead of the nonexistent `/source-control/preferences`, so a Community instance reports the licence error and a licensed one returns the pending-changes list. An invalid `--direction` value now fails with the new `ERR_USAGE` code on stderr, exit 1, before any request is sent (#39).
 - `wf publish` no longer drops workflow settings other than `executionOrder`: it keeps every settings key n8n accepts and drops only the unknown keys n8n rejects (#42).
+
 - Plain HTTP to the IPv6 loopback address is accepted again without `--insecure`:
   `http://[::1]:5678` is treated like `localhost` and `127.0.0.1`. The WHATWG URL parser
   returns the bracketed hostname `[::1]`, which the loopback check did not match. The
