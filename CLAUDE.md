@@ -80,6 +80,12 @@ src/
 
 CLI flags → env vars → config file → keychain → defaults
 
+Security exception: a config-file URL cannot be combined with `N8N_API_KEY`,
+`N8N_EMAIL`, `N8N_PASSWORD` or `--api-key`. `resolveConfig` exits with
+`ERR_CONFIG_SOURCE_MISMATCH` before keychain lookup or any request. Supply `N8N_URL`
+or `--url` with those credentials, or use credentials stored in the keychain for
+the config-file URL.
+
 | Source      | Example                                                       |
 | ----------- | ------------------------------------------------------------- |
 | CLI flags   | `--url https://n8n.example.com --api-key eyJ...`              |
