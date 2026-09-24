@@ -141,3 +141,4 @@ Owner's words: "When ready work and headroom exist, the leader dispatches at onc
 
 Owner's words: "proceed with the two tasks marked as owner, you have my authorization to take care of them". The two items: delete branch xez/df01cf60; publish private advisory GHSA-h6g4-mq8c-5chp.
 - Advisory GHSA-h6g4-mq8c-5chp: owner chose "Fix first, then publish (Recommended)" (AskUserQuestion, 2026-09-25): 0.2.0 still has the bug (src/keychain/macos.ts passes -w <secret>), so merge the fix, release 0.2.1, then publish with fixed version 0.2.1 and range <= 0.2.0.
+- 0.2.1 release go: covered by the owner's 2026-09-25 choice "Fix first, then publish (Recommended)", whose text said "release 0.2.1 (you approve the npm step again)". The npm approval stays with the owner.

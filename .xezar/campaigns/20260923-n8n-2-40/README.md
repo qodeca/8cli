@@ -6,7 +6,7 @@ Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it 
 
 ## State
 
-- Base `develop` at 790a081. Merges this campaign: 23 (#33, #50, #48, #49, #51, #55, #54, #59, #46, #56, #63, #58, #68, #65, #71, #73, #75, #79, #74, #78, #80, #81, #82). Checkpoints met: 1 (#31 closed).
+- Base `develop` at e8758ed. Merges this campaign: 25 (#33, #50, #48, #49, #51, #55, #54, #59, #46, #56, #63, #58, #68, #65, #71, #73, #75, #79, #74, #78, #80, #81, #82, #83, #84). Checkpoints met: 1 (#31 closed).
 
 ## Work
 
@@ -39,7 +39,7 @@ Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it 
 
 DONE (00:00): 8cli 0.2.0 published – @qodeca/8cli@0.2.0 on npm, dist-tag latest (publish run 36064388870 success after owner approval). Tag v0.2.0 on main c5e7ba4, Release https://github.com/qodeca/8cli/releases/tag/v0.2.0. Hand-off: everything committed and pushed; continue on the other machine from develop.
 
-Running (00:31): bf456f2a scoped re-check of PR #84 at 4146f58 (claude/sonnet, gmail-priv; conflict repair c9ec297b by codex/gpt-5.6-terra resolved CHANGELOG only; net diff vs develop 4 files; CI 3/3 green). Then merge, release 0.2.1, owner approves npm, publish the advisory (fixed 0.2.1, range <= 0.2.0).
+Running (00:38): 48aa3ecd release-prep 0.2.1 (claude/sonnet, qodeca-priv) from develop e8758ed. Owns package.json, package-lock.json, CHANGELOG.md, CITATION.cff, docs/getting-started.md, docs/global-options.md, docs/guides/ci.md. Then independent review, merge, develop -> main PR, signed tag v0.2.1, GitHub Release, owner approves npm, publish advisory (fixed 0.2.1, range <= 0.2.0).
 
 ## Accounts
 
