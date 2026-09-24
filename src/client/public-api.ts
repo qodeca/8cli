@@ -213,8 +213,10 @@ export class PublicApiClient extends BaseClient {
 
   // ── Source control ──────────────────────────────────────────────────────
 
-  async getSourceControlStatus(): Promise<SourceControlStatus> {
-    return this.get<SourceControlStatus>('/api/v1/source-control/preferences');
+  async getSourceControlStatus(direction: 'pull' | 'push'): Promise<SourceControlStatus> {
+    return this.get<SourceControlStatus>('/api/v1/source-control/status', {
+      params: { direction },
+    });
   }
 
   async pullFromSourceControl(force?: boolean): Promise<unknown> {

@@ -1,12 +1,12 @@
 # Campaign 20260923-n8n-2-40
 
-Updated: 2026-09-24 14:17
+Updated: 2026-09-24 14:45
 
 Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it on; plus end-user docs and a polished README (added by owner, see decisions.md). Plan: `plan.md`.
 
 ## State
 
-- Base `develop` at f8b07eb. Merges this campaign: 9 (#33, #50, #48, #49, #51, #55, #54, #59, #46). Checkpoints met: 1 (#31 closed).
+- Base `develop` at 0c53b30. Merges this campaign: 12 (#33, #50, #48, #49, #51, #55, #54, #59, #46, #56, #63, #58). Checkpoints met: 1 (#31 closed).
 
 ## Work
 
@@ -29,23 +29,27 @@ Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it 
 
 - #46 (xez/b25718f0, #34 docs) opened by the agent BEFORE readiness/handoff; no labels, no review, no phase record. CI 3/3 green. Not mergeable until the task finishes its workflow and is reviewed.
 
-## Running tasks and file ownership (14:07)
+## Running tasks and file ownership (14:45)
 
 | Task | Item | Owns |
 |---|---|---|
+| 0e4d1616 | PR #65 conflict repair (codex/gpt-5.6-terra) | README.md (PR #65 branch) |
+| 9a0d20c7 | PR #68 conflict repair (codex/gpt-5.6-terra) | CHANGELOG.md, src/client/public-api.ts (PR #68 branch) |
 
-Ready: PR #65 repair round. Held: #43, #44 (workflow.ts); #40, #41 (public-api.ts, after PR #56 merges); #38 (local n8n); PR #56 QA (Codex slot); PR #58 QA (after conflict repair).
+Queued: #40, #41 (public-api.ts – overlap with PR #68); ready: #67. Held: #43 (--force, after PR #68 merges). PR #65: browser evidence (dark, 375px) after its conflict repair.
 
 ## Accounts
 
 | Runner × login | State | Resets |
 |---|---|---|
-| claude × qodeca-priv | unknown (in use) | – |
-| claude × gmail-priv | unknown (in use) | – |
-| claude × eqamana-priv | out (weekly limit) | 2026-09-26 18:00 |
-| claude × westagilelabs-priv | out (weekly limit) | 2026-09-25 09:00 |
-| codex × codex-cli | ok, 17% weekly, 4 tasks | 2026-09-29 14:45 |
-| pi (own accounts) | idle | – |
+| claude × qodeca-priv | ok – 5h 3%, weekly 41% | 5h 17:20, weekly 2026-09-28 19:00 |
+| claude × gmail-priv | ok – 5h 3%, weekly 30% | 5h 17:30, weekly 2026-09-25 20:59 |
+| claude × eqamana-priv | out (weekly 100%) | 2026-09-26 18:00 |
+| claude × westagilelabs-priv | out (weekly 100%) | 2026-09-25 09:00 |
+| codex × codex-cli | ok – weekly 18% | 2026-09-29 14:45 |
+| pi (own accounts) | not reported by read_quota | – |
+
+Read from read_quota at 14:33 (observed 14:22-14:33). claude × default is the reserved leader login, not in any rotation.
 
 ## Owner items
 
@@ -63,7 +67,7 @@ Ready: PR #65 repair round. Held: #43, #44 (workflow.ts); #40, #41 (public-api.t
 
 ## Loops
 
-L1 938ef26a (*/10), L2 dec6abf1 (:07), L3 5cb982ac (*/30), re-created 14:01. Unattended off. Leader attached to xezar.
+L1 938ef26a (*/10), L2 dec6abf1 (:07), L3 5cb982ac (*/30), re-created 14:01. Unattended ON since 14:24, restarts 0/3. Leader attached to xezar.
 
 ## Restart
 
