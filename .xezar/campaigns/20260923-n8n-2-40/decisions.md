@@ -128,3 +128,7 @@ Owner, in chat: "when you finish all of the work, ensure everything is commited 
 ## 2026-09-24 18:43 – What counts as a gate run
 
 Owner, in chat: "You mentioned only two concurrent implementation tasks but the rule is about gates" and then "Improve the rule so you won't missinterpret it again". The leader had counted every code-change task as a gate run for its whole life, which is stricter than the ceiling says. Owner approved the wording (AskUserQuestion, "Yes, add it"); added to the leader guide's Owner's rules with xez-add-rule.
+
+## 2026-09-24 19:08 – Dependency bumps stay out of 0.2.0
+
+Offered adding the 7 Dependabot PRs to 0.2.0 (dev-only alerts; prod npm audit clean). Owner, in chat: "proceed as planned". Dependency updates go to the next release.
