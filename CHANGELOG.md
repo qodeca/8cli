@@ -12,7 +12,11 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
-## [0.2.0] – 2026-09-24
+## [0.2.0] - 2026-09-24
+
+### Added
+
+- End-user documentation under `docs/` ([#34](https://github.com/qodeca/8cli/issues/34), PR [#46](https://github.com/qodeca/8cli/pull/46)).
 
 ### Fixed
 
