@@ -10,9 +10,10 @@ describe('source-control', () => {
     expect(r).toFailWithCode('ERR_NOT_SUPPORTED');
   });
 
-  it('status returns a structured error on a free container', async () => {
-    const r = await run8cli(['sc', 'status'], apiEnv());
+  it('status --direction push reaches the license gate', async () => {
+    const r = await run8cli(['sc', 'status', '--direction', 'push'], apiEnv());
     expect(r).toFailWithCode('ERR_SOURCE_CONTROL');
+    expect(errorMessage(r)).toMatch(LICENSE_GATED);
   });
 
   it('pull returns a structured error on a free container', async () => {
@@ -27,9 +28,7 @@ describe('source-control', () => {
     expect(errorMessage(r)).toMatch(LICENSE_GATED);
   });
 
-  // sc status calls GET /api/v1/source-control/preferences, which n8n does not
-  // have, so it fails with "not found" instead of the license gate (#39).
-  it.fails('status reaches the license gate, not a missing route (#39)', async () => {
+  it('status reaches the license gate, not a missing route (#39)', async () => {
     const r = await run8cli(['sc', 'status'], apiEnv());
     expect(r).toFailWithCode('ERR_SOURCE_CONTROL');
     expect(errorMessage(r)).toMatch(LICENSE_GATED);
