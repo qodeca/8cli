@@ -108,3 +108,11 @@ Owner: "Fix it in public"
 ## 2026-09-24 09:53 – PR #46 repair round after the split (owner, AskUserQuestion)
 Question: 4 doc fixes (S-11..S-14), then an other-vendor security sign-off. Go ahead?
 Owner: "Yes, repair round (Recommended)"
+
+## 2026-09-24 14:23 – #43 wf delete on a published workflow (owner, AskUserQuestion)
+Question: n8n 2.40.5 refuses to delete a published workflow. Keep the refusal and document it, or add --force?
+Owner: "Add --force (Recommended)" – without a flag keep the refusal with a hint to run `wf deactivate` first; with --force unpublish, then delete; --dry says which it would do.
+
+## 2026-09-24 14:24 – unattended mode on (/xez-unattended-on, AskUserQuestion)
+Contract read back: hard stops – the release go, deleting a record, opening a campaign; decided and parked – account or provider lane switch, scope trim, third repair round; accepted costs – overnight metered (Codex) spend, stops are instructions not enforcement.
+Owner chose: "Yes, turn it on". No note given.

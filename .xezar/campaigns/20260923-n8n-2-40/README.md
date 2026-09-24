@@ -1,12 +1,12 @@
 # Campaign 20260923-n8n-2-40
 
-Updated: 2026-09-24 14:17
+Updated: 2026-09-24 14:36
 
 Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it on; plus end-user docs and a polished README (added by owner, see decisions.md). Plan: `plan.md`.
 
 ## State
 
-- Base `develop` at 289cb21. Merges this campaign: 8 (#33, #50, #48, #49, #51, #55, #54, #59). Checkpoints met: 1 (#31 closed).
+- Base `develop` at c5b41c0. Merges this campaign: 10 (#33, #50, #48, #49, #51, #55, #54, #59, #46, #56). Checkpoints met: 1 (#31 closed).
 
 ## Work
 
@@ -29,27 +29,29 @@ Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it 
 
 - #46 (xez/b25718f0, #34 docs) opened by the agent BEFORE readiness/handoff; no labels, no review, no phase record. CI 3/3 green. Not mergeable until the task finishes its workflow and is reviewed.
 
-## Running tasks and file ownership (14:07)
+## Running tasks and file ownership (14:36)
 
 | Task | Item | Owns |
 |---|---|---|
-| 5bd790cf | PR #46 acceptance (codex/gpt-5.6-terra) | read-only; own n8n container |
-| 6b0bd036 | PR #63 conflict + repair 1 (codex/gpt-6-sol) | src/config.ts, test/config.test.ts, test/e2e/config.e2e.ts, CHANGELOG.md |
-| ba15a2c4 | PR #58 conflict repair (codex/gpt-5.6-terra) | CHANGELOG.md (PR #58 branch) |
-| 0b314c89 | PR #56 conflict repair (codex/gpt-5.6-terra) | CHANGELOG.md (PR #56 branch) |
+| 140e6482 | PR #58 conflict repair 2 (codex/gpt-5.6-terra) | CHANGELOG.md (PR #58 branch) |
+| c4fdabbc | #38 local n8n credentials (pi) | scripts/local-n8n/**, its test, docs/runbooks/local-n8n.md |
+| b8bb8392 | PR #63 re-check 2 (claude/sonnet gmail-priv) | read-only |
+| 9531a09f | PR #63 acceptance (claude/opus qodeca-priv) | read-only |
 
-Held: PR #65 (blocked until PR #46 merges, then repair); #43, #44 (workflow.ts); #40, #41 (public-api.ts, after PR #56 merges); #38 (local n8n); PR #56 QA (Codex slot); PR #58 QA (after conflict repair).
+Queued (2-gate-run ceiling): PR #68 conflict repair (CHANGELOG.md); #40, #41 (public-api.ts – overlap with PR #68); #67 (test/e2e/folder.e2e.ts – overlap with PR #58). Held: #43 (--force, after #44 merges).
 
 ## Accounts
 
 | Runner × login | State | Resets |
 |---|---|---|
-| claude × qodeca-priv | unknown (in use) | – |
-| claude × gmail-priv | unknown (in use) | – |
-| claude × eqamana-priv | out (weekly limit) | 2026-09-26 18:00 |
-| claude × westagilelabs-priv | out (weekly limit) | 2026-09-25 09:00 |
-| codex × codex-cli | ok, 17% weekly, 4 tasks | 2026-09-29 14:45 |
-| pi (own accounts) | idle | – |
+| claude × qodeca-priv | ok – 5h 3%, weekly 41% | 5h 17:20, weekly 2026-09-28 19:00 |
+| claude × gmail-priv | ok – 5h 3%, weekly 30% | 5h 17:30, weekly 2026-09-25 20:59 |
+| claude × eqamana-priv | out (weekly 100%) | 2026-09-26 18:00 |
+| claude × westagilelabs-priv | out (weekly 100%) | 2026-09-25 09:00 |
+| codex × codex-cli | ok – weekly 18% | 2026-09-29 14:45 |
+| pi (own accounts) | not reported by read_quota | – |
+
+Read from read_quota at 14:33 (observed 14:22-14:33). claude × default is the reserved leader login, not in any rotation.
 
 ## Owner items
 
@@ -67,7 +69,7 @@ Held: PR #65 (blocked until PR #46 merges, then repair); #43, #44 (workflow.ts);
 
 ## Loops
 
-L1 938ef26a (*/10), L2 dec6abf1 (:07), L3 5cb982ac (*/30), re-created 14:01. Unattended off. Leader attached to xezar.
+L1 938ef26a (*/10), L2 dec6abf1 (:07), L3 5cb982ac (*/30), re-created 14:01. Unattended ON since 14:24, restarts 0/3. Leader attached to xezar.
 
 ## Restart
 
