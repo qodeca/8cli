@@ -1,6 +1,6 @@
 # Campaign 20260923-n8n-2-40
 
-Updated: 2026-09-24 14:36
+Updated: 2026-09-24 14:45
 
 Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it on; plus end-user docs and a polished README (added by owner, see decisions.md). Plan: `plan.md`.
 
@@ -29,14 +29,16 @@ Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it 
 
 - #46 (xez/b25718f0, #34 docs) opened by the agent BEFORE readiness/handoff; no labels, no review, no phase record. CI 3/3 green. Not mergeable until the task finishes its workflow and is reviewed.
 
-## Running tasks and file ownership (14:36)
+## Running tasks and file ownership (14:45)
 
 | Task | Item | Owns |
 |---|---|---|
-| 140e6482 | PR #58 conflict repair 2 (codex/gpt-5.6-terra) | CHANGELOG.md (PR #58 branch) |
-| c4fdabbc | #38 local n8n credentials (pi) | scripts/local-n8n/**, its test, docs/runbooks/local-n8n.md |
+| 140e6482 | PR #58 conflict repair 2 (codex/gpt-5.6-terra) – at handoff | CHANGELOG.md (PR #58 branch) |
+| 0e4d1616 | PR #65 conflict repair (codex/gpt-5.6-terra) | README.md (PR #65 branch) |
+| 9a0d20c7 | PR #68 conflict repair (codex/gpt-5.6-terra) | CHANGELOG.md (PR #68 branch) |
+| d9d0f192 | PR #71 review (claude/opus qodeca-priv) | read-only |
 
-Queued (2-gate-run ceiling): PR #68 conflict repair (CHANGELOG.md); #40, #41 (public-api.ts – overlap with PR #68); #67 (test/e2e/folder.e2e.ts – overlap with PR #58). Held: #43 (--force, after #44 merges).
+Queued: #40, #41 (public-api.ts – overlap with PR #68); #67 (test/e2e/folder.e2e.ts – overlap with PR #58). Held: #43 (--force, after PR #68 merges). PR #65: browser evidence (dark, 375px) after its conflict repair.
 
 ## Accounts
 
