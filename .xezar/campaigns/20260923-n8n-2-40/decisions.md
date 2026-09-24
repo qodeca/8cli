@@ -91,3 +91,7 @@ Owner chose: "Yes, create the draft (Recommended)".
 ## 2026-09-24 08:24 – how the private fix is made (direct question)
 
 Owner chose: "Custom task, fork only (Recommended)" – one task with inline steps and no public handoff; it pushes only to the private fork and opens the PR there. An exception to the workflow-dispatch rule, for this task only.
+
+## 2026-09-24 08:52 – public campaign notes and the private finding (owner, AskUserQuestion)
+Question: the public campaign notes name the code part behind the privately handled finding; what to do?
+Owner: "Leave it, publish soon (Recommended)"
