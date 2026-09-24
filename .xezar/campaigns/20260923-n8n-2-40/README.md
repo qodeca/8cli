@@ -49,16 +49,17 @@ Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it 
 | codex × default | in use (2 tasks) | – |
 | pi (own accounts) | in use (1 task) | – |
 
-## Running file ownership (09:10)
+## Running file ownership (10:00)
 
 | Task | Item | Owns |
 |---|---|---|
-| cccaba9c | PR #46 split (codex/gpt-6-sol) | scripts/check-docs.mjs, test/check-docs.test.ts, package.json, .github/workflows/ci.yml, docs/** |
-| a30ad223 | #42 (pi) | src/commands/workflow.ts publish path, CLAUDE.md gotcha 3, test/e2e/workflow*.e2e.ts |
-| 0f189421 | #39 (pi) | src/client/public-api.ts getSourceControlStatus, src/commands/source-control.ts, test/e2e/source-control.e2e.ts |
-| d114f574 | #53 (pi) | src/commands/folder.ts, src/client/internal-api.ts move, test/e2e/folder.e2e.ts |
+| 6ae69ca8 | PR #46 repair S-11..S-14 (codex/gpt-6-sol) | docs/** |
+| 8e9cf361 | #60 env key vs config URL (pi) | src/config.ts, test/config.test.ts, test/e2e/config.e2e.ts, 1 CHANGELOG line |
+| d2d19dca | PR #56 repair 1 (claude/opus qodeca-priv) | test/e2e/COVERAGE.md, CHANGELOG #39 line, test/e2e/source-control.e2e.ts |
+| 31153caa | PR #56 design review (claude/opus gmail-priv) | read-only |
+| d6c88403 | PR #59 QA (claude/opus gmail-priv) | read-only; uses the shared local n8n |
 
-All four append one CHANGELOG.md line (accepted append-only overlap). Held: #40, #41 (public-api.ts, held by #39); #43, #44 (workflow.ts, held by #42).
+Held: PR #58 repair (test/e2e/COVERAGE.md, held by d2d19dca); #40, #41 (public-api.ts, wait on PR #56 merge); #43, #44 (workflow.ts, wait on PR #59 merge); #38 (local n8n, in use).
 
 ## Owner items
 
