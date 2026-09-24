@@ -18,6 +18,7 @@ Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it 
 | #35 | README (badges, demo, logo) | held | needs #36 merged and #37 direction picked |
 | #36 | Scripted demo GIF | PR #48 approved + qa-approved at 634e0db, ready | merge (waits on owner rule) |
 | #37 | Logo and banner | PR #49 design-approved, CI green, ready | BLOCKED: merge denied by auto-mode classifier |
+| #52, #53 | [::1] refused; folder move to root (found by #34 docs) | ready, low priority | L3 by least overlap |
 | #38 | Local n8n creds per worktree vs shared instance (bug) | ready, not dispatched | after #32/#34/#36 stop using the instance (touches scripts/local-n8n) |
 | #39–#45 | 7 defects found by #32 validation (2 high: #39 sc status route, #42 wf publish drops settings) | #45 PR #51 PR #51 APPROVED + qa-approved at 51a55ed, mergeable; #39-#43 held (each edits test/e2e/**, owned by 94c2ff6c); #44 held (workflow.ts overlap) | dispatch after #32 merges |
 
@@ -28,7 +29,6 @@ Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it 
 ## Running tasks and file ownership
 
 - c3edf2b2 (pi/deepseek-flash, PR #46 repair 2) owns docs/security.md, docs/reference/auth.md, scripts/check-docs.mjs, one new test
-- a1ec1e39 (claude/sonnet qodeca-priv, file 2 defects) – tracker only
 
 
 - PR #50 (#32, not merged) holds docs/validation/**, test/e2e/** until it merges
