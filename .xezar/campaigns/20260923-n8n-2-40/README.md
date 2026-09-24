@@ -33,7 +33,6 @@ Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it 
 
 | Task | Item | Owns |
 |---|---|---|
-| d6ae6cc5 | #44 activate/deactivate (pi) – PR #68, at handoff | src/commands/workflow.ts, src/client/public-api.ts (activate/deactivate), a unit test, test/e2e/workflow.e2e.ts, CHANGELOG.md line |
 | a9faf2b8 | PR #63 repair 2 (codex/gpt-6-sol) – at handoff | docs/configuration.md, test/config.test.ts, CHANGELOG.md conflict lines |
 | 284c0f45 | PR #65 browser QA (claude/sonnet qodeca-priv) | read-only |
 | 140e6482 | PR #58 conflict repair 2 (codex/gpt-5.6-terra) | CHANGELOG.md (PR #58 branch) |
