@@ -40,7 +40,7 @@ Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it 
 | 88fb5b12 | PR #65 repair 1 (claude/opus gmail-priv) | README.md (PR #65 branch), PR screenshots |
 | d6ae6cc5 | #44 activate/deactivate (pi) | src/commands/workflow.ts, src/client/public-api.ts (activate/deactivate), a unit test, test/e2e/workflow.e2e.ts, CHANGELOG.md line |
 
-Held: #43 (owner decision asked); #40, #41 (public-api.ts, after PR #56 merges); #38 (local n8n).
+Held: #43 (owner chose --force; after #44 merges, workflow.ts); #40, #41 (public-api.ts, after PR #56 merges); #38 (local n8n).
 
 ## Accounts
 
