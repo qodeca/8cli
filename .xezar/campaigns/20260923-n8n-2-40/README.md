@@ -39,7 +39,7 @@ Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it 
 
 DONE (00:00): 8cli 0.2.0 published – @qodeca/8cli@0.2.0 on npm, dist-tag latest (publish run 36064388870 success after owner approval). Tag v0.2.0 on main c5e7ba4, Release https://github.com/qodeca/8cli/releases/tag/v0.2.0. Hand-off: everything committed and pushed; continue on the other machine from develop.
 
-Next (02:10): release PR #85 merged as ce43058; develop -> main PR #86 open, CI running. Then signed tag v0.2.1, GitHub Release, owner approves npm, fix the advisory text (name auth login), publish the advisory (fixed 0.2.1, range <= 0.2.0).
+Next (02:14): release PR #85 merged as ce43058; develop -> main PR #86 merged as 01defdd, main CI running. Then signed tag v0.2.1, GitHub Release, owner approves npm, fix the advisory text (name auth login), publish the advisory (fixed 0.2.1, range <= 0.2.0).
 
 ## Accounts
 
