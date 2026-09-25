@@ -6,7 +6,7 @@ Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it 
 
 ## State
 
-- Base `develop` at e8758ed. Merges this campaign: 25 (#33, #50, #48, #49, #51, #55, #54, #59, #46, #56, #63, #58, #68, #65, #71, #73, #75, #79, #74, #78, #80, #81, #82, #83, #84). Checkpoints met: 1 (#31 closed).
+- Base `develop` at ce43058. Merges this campaign: 26 (#33, #50, #48, #49, #51, #55, #54, #59, #46, #56, #63, #58, #68, #65, #71, #73, #75, #79, #74, #78, #80, #81, #82, #83, #84, #85). Checkpoints met: 1 (#31 closed).
 
 ## Work
 
@@ -39,7 +39,7 @@ Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it 
 
 DONE (00:00): 8cli 0.2.0 published – @qodeca/8cli@0.2.0 on npm, dist-tag latest (publish run 36064388870 success after owner approval). Tag v0.2.0 on main c5e7ba4, Release https://github.com/qodeca/8cli/releases/tag/v0.2.0. Hand-off: everything committed and pushed; continue on the other machine from develop.
 
-Running (02:07): 80b7b360 scoped re-check of release PR #85 at 64f4eef (claude/sonnet, gmail-priv; repair by codex/gpt-6-sol 87ccb787). Then merge, develop -> main PR, signed tag v0.2.1, GitHub Release, owner approves npm, fix the advisory text (name auth login), publish the advisory (fixed 0.2.1, range <= 0.2.0).
+Next (02:10): release PR #85 merged as ce43058; develop -> main PR #86 open, CI running. Then signed tag v0.2.1, GitHub Release, owner approves npm, fix the advisory text (name auth login), publish the advisory (fixed 0.2.1, range <= 0.2.0).
 
 ## Accounts
 
