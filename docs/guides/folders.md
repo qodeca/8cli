@@ -83,8 +83,9 @@ output is not shown here; the shapes are on the [`folder` reference](../referenc
 ```
 
 Folders and workflows are found by **name**, ignoring upper and lower case. Quote names that
-contain spaces. `--to '(root)'` moves a workflow out of every folder (on n8n 2.40.5 Community it
-fails with `Expected string, received null`).
+contain spaces. `--to '(root)'` moves a workflow out of every folder. Since 8cli 0.2.0 it sends
+n8n's root marker (`"0"`) and n8n accepts it, Community included; before, it failed with
+`Expected string, received null`.
 
 ## Mirroring folders on disk
 
