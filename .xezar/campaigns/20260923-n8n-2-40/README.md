@@ -41,6 +41,8 @@ DONE (00:00): 8cli 0.2.0 published – @qodeca/8cli@0.2.0 on npm, dist-tag lates
 
 DONE (10:22): 8cli 0.2.1 published – @qodeca/8cli@0.2.1 on npm, dist-tag latest (run 36076800495 approved by the leader on the owner's instruction). Advisory GHSA-h6g4-mq8c-5chp published (low; affected <= 0.2.0, patched 0.2.1): https://github.com/qodeca/8cli/security/advisories/GHSA-h6g4-mq8c-5chp. Superseded fork PR #1 closed (fix shipped as PR #84). Hand-off: everything committed and pushed.
 
+Running (10:23): 6c1ba637 docs sweep after 0.2.1 (owner ran /erfana:doc-update; row docs-writing, codex/gpt-5.6-terra). Owns CLAUDE.md, AGENTS.md, README.md, CHANGELOG.md, CONTRIBUTING.md, SECURITY.md, BACKWARD_COMPATIBILITY.md, docs/**. Removals only proposed in the PR body – owner decides.
+
 ## Accounts
 
 | Runner × login | State | Resets |
