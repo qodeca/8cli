@@ -21,7 +21,7 @@ npm install --global @qodeca/8cli
 ```
 
 ```text
-0.2.0
+0.2.1
 ```
 
 Or run it without installing:

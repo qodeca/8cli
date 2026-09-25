@@ -156,7 +156,7 @@ jobs:
 
 ## Tips
 
-- Pin the 8cli version in CI (`npm install --global @qodeca/8cli@0.2.0`) so an upgrade does not
+- Pin the 8cli version in CI (`npm install --global @qodeca/8cli@0.2.1`) so an upgrade does not
   change a job's behaviour without you noticing.
 - A failing command prints `{ "error", "code" }` to stderr; CI logs show it as it is.
 - Use `--verbose` when a job fails and you need to see the requests. It never prints the key.
