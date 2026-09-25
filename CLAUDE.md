@@ -6,7 +6,7 @@ AI-first n8n remote management CLI. JSON output by default, no interactive promp
 
 | Detail           | Value                                                                              |
 | ---------------- | ---------------------------------------------------------------------------------- |
-| **Runtime**      | Node.js 22+ (native fetch)                                                         |
+| **Runtime**      | Node.js 22.22+ (native fetch)                                                      |
 | **Language**     | TypeScript (strict, nodenext)                                                      |
 | **Package**      | `@qodeca/8cli` (scoped npm); CLI command stays `8cli`                              |
 | **Entry point**  | `bin/8cli.ts` (dev via `tsx`); built to `dist/bin/8cli.js` (`#!/usr/bin/env node`) |
@@ -99,20 +99,22 @@ Secrets are **never** stored in config files. They live in the OS keychain:
 
 - **Service name**: `8cli`
 - **Account names**: `{url}/api-key`, `{url}/email`, `{url}/password`
-- **macOS**: `security add-generic-password` / `find-generic-password` / `delete-generic-password`
+- **macOS**: stores through `security -i`: an `add-generic-password -U -X <hex>` command is
+  supplied on standard input, so the secret is never a `-w <secret>` process argument; reads
+  use `find-generic-password -w` and deletes use `delete-generic-password`
 - **Windows/Linux**: stubs – not yet implemented
 
 ## Global options
 
-| Flag              | Purpose                          |
-| ----------------- | -------------------------------- |
-| `--url <url>`     | n8n instance URL                 |
-| `--api-key <key>` | API key (overrides keychain)     |
-| `--config <path>` | Config file path                 |
-| `--table`         | Human-readable table output      |
-| `--dry`           | Preview changes without applying |
-| `--verbose`       | Debug logging to stderr          |
-| `--insecure`      | Allow plaintext-HTTP URLs        |
+| Flag              | Purpose                                                      |
+| ----------------- | ------------------------------------------------------------ |
+| `--url <url>`     | n8n instance URL                                             |
+| `--api-key <key>` | API key for the n8n public API                               |
+| `--config <path>` | Config-file path (default: auto-detect)                      |
+| `--table`         | Output a table instead of JSON                               |
+| `--dry`           | Preview changes without applying                             |
+| `--verbose`       | Enable verbose logging to stderr                             |
+| `--insecure`      | Allow plaintext HTTP URLs; the API key travels in clear text |
 
 ## n8n API gotchas
 
@@ -121,7 +123,7 @@ These are already handled in the code but important to know:
 1. `PUT /workflows/{id}` rejects extra fields – only send: `name`, `nodes`, `connections`, `settings`, `staticData`
 2. `active` is read-only on PUT – always strip from publish payload
 3. Settings accepts n8n's known keys (`executionOrder`, `timezone`, `saveDataSuccessExecution`, `errorWorkflow`, …) – the schema is strict, so only an unknown key is rejected (`Unrecognized key(s) in object: '<key>'`). `publish` keeps the known keys and drops the unknown ones
-4. Public API doesn't expose folder info – internal API (cookie auth) needed for folders
+4. Folder commands use the internal API (cookie auth), not the public API
 5. Execution data needs `?includeData=true` query param on GET
 
 ## Two API clients

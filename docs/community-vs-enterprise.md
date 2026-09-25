@@ -8,20 +8,20 @@ it and 8cli reports the refusal as a normal error.
 
 Tested against n8n 2.40.5 Community with no license.
 
-| Group            | Community | What you see on Community                                                                  |
-| ---------------- | --------- | ------------------------------------------------------------------------------------------ |
-| `auth`, `config` | Yes       | Works (these are local; `auth verify` calls n8n)                                           |
-| `wf`             | Yes       | Works                                                                                      |
-| `exec`           | Yes       | Works                                                                                      |
-| `cred`           | Yes       | Works; `cred transfer` needs a second project, which needs a license                       |
-| `tag`            | Yes       | Works                                                                                      |
-| `user`           | Yes       | Works                                                                                      |
-| `dt`             | Yes       | Works                                                                                      |
-| `audit`          | Yes       | Works                                                                                      |
-| `var`            | **No**    | `Your license does not allow for feat:variables…`                                          |
-| `proj`           | **No**    | `Your license does not allow for feat:projectRole:admin…`                                  |
-| `folder`         | **No**    | `Plan lacks license for this feature`                                                      |
-| `sc`             | **No**    | `sc status`: `not found`; `sc pull`: `Your license does not allow for feat:sourceControl…` |
+| Group            | Community | What you see on Community                                            |
+| ---------------- | --------- | -------------------------------------------------------------------- |
+| `auth`, `config` | Yes       | Works (these are local; `auth verify` calls n8n)                     |
+| `wf`             | Yes       | Works                                                                |
+| `exec`           | Yes       | Works                                                                |
+| `cred`           | Yes       | Works; `cred transfer` needs a second project, which needs a license |
+| `tag`            | Yes       | Works                                                                |
+| `user`           | Yes       | Works                                                                |
+| `dt`             | Yes       | Works                                                                |
+| `audit`          | Yes       | Works                                                                |
+| `var`            | **No**    | `Your license does not allow for feat:variables…`                    |
+| `proj`           | **No**    | `Your license does not allow for feat:projectRole:admin…`            |
+| `folder`         | **No**    | `Plan lacks license for this feature`                                |
+| `sc`             | **No**    | `Your license does not allow for feat:sourceControl…`                |
 
 ## What the refusals look like
 
@@ -67,28 +67,9 @@ code; the message is n8n's.
 }
 ```
 
-**Source control.** `sc status` does not mention a license. n8n answers `not found`, because
-the source-control endpoint is not there without the feature:
-
-```bash
-8cli sc status
-```
-
-```json
-{
-  "error": "not found",
-  "code": "ERR_SOURCE_CONTROL"
-}
-```
-
-`sc pull` names the license:
-
-```json
-{
-  "error": "Your license does not allow for feat:sourceControl. To enable feat:sourceControl, please upgrade to a license that supports this feature.",
-  "code": "ERR_SOURCE_CONTROL"
-}
-```
+**Source control.** `sc status` and `sc pull` fail with `ERR_SOURCE_CONTROL` and an error message
+that names the license. On n8n 2.40.5 `sc pull` answered
+`Your license does not allow for feat:sourceControl. …`.
 
 ## Telling a license refusal from a real failure
 
@@ -103,8 +84,7 @@ that command. In a script:
 }
 ```
 
-`sc status` on Community says only `not found`; treat `not found` from `sc status` as "source
-control is not available here".
+`sc status` and `sc pull` give the normal source-control license refusal on Community.
 
 ## Licensed editions
 

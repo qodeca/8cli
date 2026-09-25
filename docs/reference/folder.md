@@ -3,8 +3,8 @@
 Shows and changes the folders workflows live in, and mirrors them into your local workflow
 files.
 
-> **Uses n8n's internal API, with a password.** n8n's public API has no folders, so these
-> commands log in the way the n8n web app does, with an email and password. Set `N8N_EMAIL` and
+> **Uses n8n's internal API, with a password.** These commands log in the way the n8n web app
+> does, with an email and password. Set `N8N_EMAIL` and
 > `N8N_PASSWORD` (or, on macOS, `auth set-credentials`). The API key is not used. Read
 > [folder commands and the internal API](../guides/folders.md) before you rely on them.
 
@@ -171,12 +171,22 @@ On Community, with a folder name:
 }
 ```
 
-With `--to '(root)'`, n8n 2.40.5 Community answers with a validation error instead:
+With `--to '(root)'` 8cli skips the folder lookup and sends n8n's root marker (`"0"`), which n8n
+accepts on Community too. Before 8cli 0.2.0 this failed with `Expected string, received null`.
+On Community this was checked with a workflow already at the root; taking a workflow out of a real
+folder needs a licensed n8n and was not run for these docs.
+
+```bash
+8cli folder move 'New order webhook' --to '(root)'
+```
 
 ```json
 {
-  "error": "Expected string, received null",
-  "code": "ERR_FOLDER_MOVE"
+  "moved": {
+    "workflowId": "<id>",
+    "workflowName": "New order webhook",
+    "toFolder": "(root)"
+  }
 }
 ```
 

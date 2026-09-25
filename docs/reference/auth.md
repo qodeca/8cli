@@ -12,6 +12,10 @@ Credentials are stored per URL, in the keychain service `8cli`, under the accoun
 `<url>/api-key`, `<url>/email` and `<url>/password`. The URL comes from the global `--url` or
 `N8N_URL` – not from `8cli.json`.
 
+On macOS, storage sends an `add-generic-password -U -X <hex>` command to `security -i` on
+standard input. The secret is encoded as hexadecimal data in that command, never passed as a
+`-w <secret>` process argument.
+
 **Reading a secret from standard input.** `--value`, `--password` and the global `--api-key`
 accept `-` in these commands: 8cli then reads the secret from standard input and strips one
 trailing newline. Using stdin avoids putting the literal secret in the command you type. It works

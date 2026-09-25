@@ -3,42 +3,37 @@
 Reads the status of n8n's Git-based source control and pulls changes into n8n. Pushing is not
 possible through n8n's public API.
 
-> **Needs a licensed n8n with source control set up.** On the Community edition `sc status`
-> answers `not found` and `sc pull` names the missing license, as shown below. The success
+> **Needs a licensed n8n with source control set up.** On the Community edition `sc status` and
+> `sc pull` fail with `ERR_SOURCE_CONTROL` and an error message that names the license. The success
 > output is n8n's own response, passed through; it was not run for these docs. See
 > [Community and Enterprise n8n](../community-vs-enterprise.md).
 
 | Subcommand                | What it does                                    |
 | ------------------------- | ----------------------------------------------- |
-| [`sc status`](#sc-status) | Show the source-control settings                |
+| [`sc status`](#sc-status) | List the changes waiting to be pulled or pushed |
 | [`sc pull`](#sc-pull)     | Pull the connected Git branch into n8n          |
 | [`sc push`](#sc-push)     | Always fails: not supported by n8n's public API |
 
 ## sc status
 
 ```text
-8cli sc status
+8cli sc status [--direction <pull|push>]
 ```
 
-No options.
+| Option                     | Required | Meaning                                           |
+| -------------------------- | -------- | ------------------------------------------------- |
+| `--direction <pull\|push>` | No       | Which changes to list: `pull` (default) or `push` |
 
-**Output:** n8n's source-control preferences object, passed through (the connected repository,
-branch and similar settings).
+Calls n8n's `GET /api/v1/source-control/status` with the chosen direction. An invalid
+`--direction` value fails with `ERR_USAGE` before any request is sent.
 
-On Community n8n answers `not found`, without mentioning a license:
+**Output:** n8n's status response, passed through: the list of changes that a pull (or a push)
+would move between n8n and the connected Git branch.
 
-```bash
-8cli sc status
-```
+On Community, `sc status` (with either direction) fails with `ERR_SOURCE_CONTROL` and an error
+message that names the license.
 
-```json
-{
-  "error": "not found",
-  "code": "ERR_SOURCE_CONTROL"
-}
-```
-
-**Errors:** `ERR_SOURCE_CONTROL`.
+**Errors:** `ERR_SOURCE_CONTROL`, `ERR_USAGE`.
 
 ## sc pull
 
@@ -56,20 +51,8 @@ Ignores `--dry`.
 
 **Output:** n8n's pull result, passed through.
 
-On Community:
-
-```bash
-8cli sc pull
-```
-
-```json
-{
-  "error": "Your license does not allow for feat:sourceControl. To enable feat:sourceControl, please upgrade to a license that supports this feature.",
-  "code": "ERR_SOURCE_CONTROL"
-}
-```
-
-`8cli sc pull --force` returns the same.
+On Community, `sc pull` and `sc pull --force` fail with `ERR_SOURCE_CONTROL` and an error message
+that names the license.
 
 **Errors:** `ERR_SOURCE_CONTROL`.
 

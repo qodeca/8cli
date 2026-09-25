@@ -17,7 +17,7 @@ added in the future.)
 
 ## Prerequisites
 
-- Node.js **22+** (the CLI uses native `fetch`)
+- Node.js **22.22+** (the CLI uses native `fetch`)
 - npm
 
 ## Local setup
