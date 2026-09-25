@@ -41,7 +41,7 @@ DONE (00:00): 8cli 0.2.0 published – @qodeca/8cli@0.2.0 on npm, dist-tag lates
 
 DONE (10:22): 8cli 0.2.1 published – @qodeca/8cli@0.2.1 on npm, dist-tag latest (run 36076800495 approved by the leader on the owner's instruction). Advisory GHSA-h6g4-mq8c-5chp published (low; affected <= 0.2.0, patched 0.2.1): https://github.com/qodeca/8cli/security/advisories/GHSA-h6g4-mq8c-5chp. Superseded fork PR #1 closed (fix shipped as PR #84). Hand-off: everything committed and pushed.
 
-Running (10:34): dc92b451 full review of docs PR #87 at 0716eae (claude/opus, qodeca-priv; author codex/gpt-5.6-terra 6c1ba637; 14 docs files, CI 3/3 green, no removals proposed, no status content found). Then merge and final hand-off.
+Running (10:44): a9a0b540 repair round 1 of docs PR #87 (claude/opus, gmail-priv; author codex/gpt-5.6-terra) – review dc92b451 REQUEST CHANGES: 1 major (sc status --direction undocumented), 3 minor, 3 nits. Docs only. Then scoped re-check, merge, final hand-off. Follow-up: scripts/local-n8n/lib.ts:57 message stale after 0.2.1.
 
 ## Accounts
 
