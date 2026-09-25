@@ -184,7 +184,7 @@ The error code is the code of the command you ran (here `ERR_WORKFLOW_LIST`). Se
 ```
 
 ```text
-0.2.0
+0.2.1
 ```
 
 `--help` works at every level: `8cli --help`, `8cli wf --help`, `8cli wf save --help`. Help and

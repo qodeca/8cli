@@ -12,6 +12,12 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.2.1] - 2026-09-25
+
+### Security
+
+- On macOS, `auth login`, `auth set-api-key` and `auth set-credentials` no longer pass the secret to the `security` tool as a command-line argument, where other local processes could read it (advisory GHSA-h6g4-mq8c-5chp, low). Upgrade recommended for macOS users.
+
 ## [0.2.0] - 2026-09-24
 
 ### Added
@@ -137,7 +143,8 @@ First public release.
 - Windows/Linux keychain stubs fail with an actionable message instead of silently no-opping.
 - Vulnerability reporting via GitHub private reporting (`SECURITY.md`).
 
-[unreleased]: https://github.com/qodeca/8cli/compare/v0.2.0...HEAD
+[unreleased]: https://github.com/qodeca/8cli/compare/v0.2.1...HEAD
+[0.2.1]: https://github.com/qodeca/8cli/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/qodeca/8cli/compare/v0.1.2...v0.2.0
 [0.1.2]: https://github.com/qodeca/8cli/compare/v0.1.1...v0.1.2
 [0.1.1]: https://github.com/qodeca/8cli/compare/v0.1.0...v0.1.1

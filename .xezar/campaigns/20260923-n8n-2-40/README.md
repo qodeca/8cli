@@ -1,12 +1,12 @@
 # Campaign 20260923-n8n-2-40
 
-Updated: 2026-09-24 19:35
+Updated: 2026-09-25 00:00
 
 Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it on; plus end-user docs and a polished README (added by owner, see decisions.md). Plan: `plan.md`.
 
 ## State
 
-- Base `develop` at 790a081. Merges this campaign: 23 (#33, #50, #48, #49, #51, #55, #54, #59, #46, #56, #63, #58, #68, #65, #71, #73, #75, #79, #74, #78, #80, #81, #82). Checkpoints met: 1 (#31 closed).
+- Base `develop` at ce43058. Merges this campaign: 26 (#33, #50, #48, #49, #51, #55, #54, #59, #46, #56, #63, #58, #68, #65, #71, #73, #75, #79, #74, #78, #80, #81, #82, #83, #84, #85). Checkpoints met: 1 (#31 closed).
 
 ## Work
 
@@ -37,25 +37,26 @@ Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it 
 
 
 
-Next (23:48): release PR #82 merged as 790a081. develop -> main PR #83 open, CI running (check, e2e, e2e-macos green on main), signed tag v0.2.0, GitHub Release, owner approves the release environment, verify npm.
+DONE (00:00): 8cli 0.2.0 published – @qodeca/8cli@0.2.0 on npm, dist-tag latest (publish run 36064388870 success after owner approval). Tag v0.2.0 on main c5e7ba4, Release https://github.com/qodeca/8cli/releases/tag/v0.2.0. Hand-off: everything committed and pushed; continue on the other machine from develop.
+
+Next (02:10): release PR #85 merged as ce43058; develop -> main PR #86 open, CI running. Then signed tag v0.2.1, GitHub Release, owner approves npm, fix the advisory text (name auth login), publish the advisory (fixed 0.2.1, range <= 0.2.0).
 
 ## Accounts
 
 | Runner × login | State | Resets |
 |---|---|---|
-| claude × qodeca-priv | ok – 5h 13%, weekly 43% | 5h 22:50, weekly 2026-09-28 19:00 |
-| claude × gmail-priv | ok – 5h 9%, weekly 31% | 5h 22:59, weekly 2026-09-25 20:59 |
+| claude × qodeca-priv | ok – 5h 1%, weekly 45% | 5h 03:49, weekly 2026-09-28 18:59 |
+| claude × gmail-priv | ok – 5h 0%, weekly 33% | 5h 04:30, weekly 2026-09-25 21:00 |
 | claude × eqamana-priv | out (weekly 100%) | 2026-09-26 17:59 |
-| claude × westagilelabs-priv | out (weekly 100%) | 2026-09-25 08:59 |
-| codex × codex-cli | ok – weekly 20% | weekly 2026-09-29 14:45 |
+| claude × westagilelabs-priv | out (weekly 100%) | 2026-09-25 09:00 |
+| codex × codex-cli | ok – weekly 24% | weekly 2026-09-29 14:45 |
 | pi (own accounts) | not reported by read_quota | – |
 
-Read from read_quota at 19:33. claude × default is the reserved leader login, not in any rotation.
+Read from read_quota at 00:25. claude × default is the reserved leader login, not in any rotation.
 
 ## Owner items
 
 - BLOCKED: leader merge of PR #49 denied by the Claude Code auto-mode classifier even with --allowedTools "Bash(gh pr merge *)". Owner chose "Allow the leader in settings" – owner adds the rule. #50 merged 09:06 by the leader (owner authorized); the other merges were refused by the classifier. Merged 10:44 by the owner: #48, #49, #51, #55 (and #50 at 09:06). #54 and #59 have merge conflicts (DIRTY) – conflict repair.
-- Delete branch xez/df01cf60 (record deletion is yours; unattended hard stop).
 
 ## Rules that bit
 
