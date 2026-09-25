@@ -16,7 +16,7 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Security
 
-- On macOS, `auth set-api-key` and `auth set-credentials` no longer pass the secret to the `security` tool as a command-line argument, where other local processes could read it (advisory GHSA-h6g4-mq8c-5chp, low). Upgrade recommended for macOS users.
+- On macOS, `auth login`, `auth set-api-key` and `auth set-credentials` no longer pass the secret to the `security` tool as a command-line argument, where other local processes could read it (advisory GHSA-h6g4-mq8c-5chp, low). Upgrade recommended for macOS users.
 
 ## [0.2.0] - 2026-09-24
 
