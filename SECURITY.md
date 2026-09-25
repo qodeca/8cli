@@ -50,5 +50,5 @@ organisation. This is a last resort. It is not a second place to report.
 ## What this project promises
 
 Secrets are never written to config files. On macOS, 8cli can store them in the OS keychain;
-callers can also provide them through environment variables. The CLI never prompts, and HTTPS is
-the default.
+callers can also provide them through environment variables. The CLI never prompts, errors go to
+stderr as structured JSON, and HTTPS is the default.
