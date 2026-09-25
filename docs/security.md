@@ -15,8 +15,8 @@ To report a vulnerability in 8cli, follow the [security policy](../SECURITY.md).
 - **The macOS keychain** – service `8cli`, one entry per URL. See
   [configuration](configuration.md#the-macos-keychain).
 
-On macOS, 8cli supplies a `security add-generic-password -U -X <hex>` command to
-`security -i` on standard input. The secret is hex-encoded in that input; it is never passed as
+On macOS, 8cli runs `security -i` and sends it an `add-generic-password -s 8cli -a <account> -U
+-X <hex>` command on standard input. The secret is hex-encoded in that input; it is never passed as
 a `-w <secret>` process argument.
 
 ## What 8cli prints
