@@ -6,7 +6,7 @@ Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it 
 
 ## State
 
-- Base `develop` at ce43058. Merges this campaign: 26 (#33, #50, #48, #49, #51, #55, #54, #59, #46, #56, #63, #58, #68, #65, #71, #73, #75, #79, #74, #78, #80, #81, #82, #83, #84, #85). Checkpoints met: 1 (#31 closed).
+- Base `develop` at e8cf1b3. Merges this campaign: 28 (#33, #50, #48, #49, #51, #55, #54, #59, #46, #56, #63, #58, #68, #65, #71, #73, #75, #79, #74, #78, #80, #81, #82, #83, #84, #85, #86, #87). Checkpoints met: 1 (#31 closed).
 
 ## Work
 
@@ -41,7 +41,7 @@ DONE (00:00): 8cli 0.2.0 published – @qodeca/8cli@0.2.0 on npm, dist-tag lates
 
 DONE (10:22): 8cli 0.2.1 published – @qodeca/8cli@0.2.1 on npm, dist-tag latest (run 36076800495 approved by the leader on the owner's instruction). Advisory GHSA-h6g4-mq8c-5chp published (low; affected <= 0.2.0, patched 0.2.1): https://github.com/qodeca/8cli/security/advisories/GHSA-h6g4-mq8c-5chp. Superseded fork PR #1 closed (fix shipped as PR #84). Hand-off: everything committed and pushed.
 
-Running (11:04): 69b51dc2 other-vendor review of PR #87 repair at 3d3a96d (codex/gpt-6-sol; PR is risk-high, repair and re-check were both claude). 6092a276 (claude/sonnet) APPROVE. Then merge, final hand-off. Follow-up: scripts/local-n8n/lib.ts:57 message stale after 0.2.1.
+DONE (11:13): docs PR #87 merged as e8cf1b3 (69b51dc2 codex/gpt-6-sol APPROVE, 1 minor non-blocking: docs/reference/folder.md:11 Community warning vs root-move exception). Nothing running. Hand-off ready. Open follow-ups: docs/reference/folder.md:11 wording; Follow-up: scripts/local-n8n/lib.ts:57 message stale after 0.2.1.
 
 ## Accounts
 
