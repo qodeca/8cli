@@ -39,7 +39,7 @@ Goal: 8cli validated against n8n 2.40.5, with a long-running local n8n to do it 
 
 DONE (00:00): 8cli 0.2.0 published – @qodeca/8cli@0.2.0 on npm, dist-tag latest (publish run 36064388870 success after owner approval). Tag v0.2.0 on main c5e7ba4, Release https://github.com/qodeca/8cli/releases/tag/v0.2.0. Hand-off: everything committed and pushed; continue on the other machine from develop.
 
-BLOCKED (02:17): owner approves the protected release environment for publish run https://github.com/qodeca/8cli/actions/runs/36076800495 (v0.2.1). Done: #84 -> e8758ed, #85 -> ce43058, #86 -> main 01defdd (CI 3/3 green), signed tag v0.2.1 (verified), Release https://github.com/qodeca/8cli/releases/tag/v0.2.1. After approval: verify npm 0.2.1, set advisory range <= 0.2.0 and patched 0.2.1, publish GHSA-h6g4-mq8c-5chp.
+DONE (10:22): 8cli 0.2.1 published – @qodeca/8cli@0.2.1 on npm, dist-tag latest (run 36076800495 approved by the leader on the owner's instruction). Advisory GHSA-h6g4-mq8c-5chp published (low; affected <= 0.2.0, patched 0.2.1): https://github.com/qodeca/8cli/security/advisories/GHSA-h6g4-mq8c-5chp. Superseded fork PR #1 closed (fix shipped as PR #84). Hand-off: everything committed and pushed.
 
 ## Accounts
 
