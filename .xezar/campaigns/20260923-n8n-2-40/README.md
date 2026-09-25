@@ -48,11 +48,11 @@ BLOCKED (02:17): owner approves the protected release environment for publish ru
 | claude × qodeca-priv | ok – 5h 1%, weekly 45% | 5h 03:49, weekly 2026-09-28 18:59 |
 | claude × gmail-priv | ok – 5h 0%, weekly 33% | 5h 04:30, weekly 2026-09-25 21:00 |
 | claude × eqamana-priv | out (weekly 100%) | 2026-09-26 17:59 |
-| claude × westagilelabs-priv | out (weekly 100%) | 2026-09-25 09:00 |
+| claude × westagilelabs-priv | ok – weekly 0% (reset) | weekly 2026-10-02 09:00 |
 | codex × codex-cli | ok – weekly 24% | weekly 2026-09-29 14:45 |
 | pi (own accounts) | not reported by read_quota | – |
 
-Read from read_quota at 00:25. claude × default is the reserved leader login, not in any rotation.
+Read from read_quota at 10:00. claude × default is the reserved leader login, not in any rotation.
 
 ## Owner items
 
