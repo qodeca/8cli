@@ -67,27 +67,9 @@ code; the message is n8n's.
 }
 ```
 
-**Source control.** `sc status` and `sc pull` both name the missing license:
-
-```bash
-8cli sc status
-```
-
-```json
-{
-  "error": "Your license does not allow for feat:sourceControl. To enable feat:sourceControl, please upgrade to a license that supports this feature.",
-  "code": "ERR_SOURCE_CONTROL"
-}
-```
-
-`sc pull` names the license:
-
-```json
-{
-  "error": "Your license does not allow for feat:sourceControl. To enable feat:sourceControl, please upgrade to a license that supports this feature.",
-  "code": "ERR_SOURCE_CONTROL"
-}
-```
+**Source control.** `sc status` and `sc pull` fail with `ERR_SOURCE_CONTROL` and an error message
+that names the license. On n8n 2.40.5 `sc pull` answered
+`Your license does not allow for feat:sourceControl. …`.
 
 ## Telling a license refusal from a real failure
 
@@ -102,7 +84,7 @@ that command. In a script:
 }
 ```
 
-Both source-control commands give the normal source-control licence refusal on Community.
+`sc status` and `sc pull` give the normal source-control license refusal on Community.
 
 ## Licensed editions
 

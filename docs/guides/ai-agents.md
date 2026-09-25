@@ -51,7 +51,7 @@ starting point:
 - Never pass an API key or password on the command line; they are in the environment.
 - `wf diff` prints plain text when files differ. `wf publish` exits 0 even when its `errors`
   array is not empty – always check it.
-- `var`, `proj`, `folder` and `sc` need a licensed n8n; a licence refusal from them is not a
+- `var`, `proj`, `folder` and `sc` need a licensed n8n; a license refusal from them is not a
   bug.
 ```
 
