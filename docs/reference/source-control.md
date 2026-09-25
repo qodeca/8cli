@@ -3,8 +3,8 @@
 Reads the status of n8n's Git-based source control and pulls changes into n8n. Pushing is not
 possible through n8n's public API.
 
-> **Needs a licensed n8n with source control set up.** On the Community edition `sc status`
-> answers `not found` and `sc pull` names the missing license, as shown below. The success
+> **Needs a licensed n8n with source control set up.** On the Community edition both commands
+> name the missing license, as shown below. The success
 > output is n8n's own response, passed through; it was not run for these docs. See
 > [Community and Enterprise n8n](../community-vs-enterprise.md).
 
@@ -25,7 +25,7 @@ No options.
 **Output:** n8n's source-control preferences object, passed through (the connected repository,
 branch and similar settings).
 
-On Community n8n answers `not found`, without mentioning a license:
+On Community n8n names the missing license:
 
 ```bash
 8cli sc status
@@ -33,7 +33,7 @@ On Community n8n answers `not found`, without mentioning a license:
 
 ```json
 {
-  "error": "not found",
+  "error": "Your license does not allow for feat:sourceControl. To enable feat:sourceControl, please upgrade to a license that supports this feature.",
   "code": "ERR_SOURCE_CONTROL"
 }
 ```

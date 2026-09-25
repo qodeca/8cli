@@ -12,10 +12,9 @@ n8n has two APIs:
 | **Public API**   | `/api/v1/...` | An API key (`X-N8N-API-KEY`)          | Yes, it is documented           | Everything but folders |
 | **Internal API** | `/rest/...`   | Email and password → a session cookie | No, it serves n8n's own web app | `folder` commands only |
 
-n8n's public API has no folders at all. The only way to read or change them is the internal API
-that n8n's own web app uses. So the `folder` commands log in exactly like a browser does: they
-send your email and password to `/rest/login`, keep the session cookie, and use it for the
-folder requests.
+8cli's folder implementation uses the internal API that n8n's own web app uses. The `folder`
+commands log in exactly like a browser does: they send your email and password to `/rest/login`,
+keep the session cookie, and use it for the folder requests.
 
 ## What that means for you
 

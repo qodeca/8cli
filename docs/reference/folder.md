@@ -3,8 +3,8 @@
 Shows and changes the folders workflows live in, and mirrors them into your local workflow
 files.
 
-> **Uses n8n's internal API, with a password.** n8n's public API has no folders, so these
-> commands log in the way the n8n web app does, with an email and password. Set `N8N_EMAIL` and
+> **Uses n8n's internal API, with a password.** These commands log in the way the n8n web app
+> does, with an email and password. Set `N8N_EMAIL` and
 > `N8N_PASSWORD` (or, on macOS, `auth set-credentials`). The API key is not used. Read
 > [folder commands and the internal API](../guides/folders.md) before you rely on them.
 

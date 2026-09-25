@@ -183,9 +183,9 @@ it; any other file **creates** a new workflow, and n8n gives it a new ID.
 With neither option, it publishes every `.json` file in `workflowDir`. `--file` wins over `--id`.
 There is no `--dir`: set `workflowDir` in `8cli.json` if your files live elsewhere.
 
-What is sent: only `name`, `nodes`, `connections`, `staticData`, and `settings.executionOrder`.
-Everything else in the file (`active`, `tags`, other settings, `id`, dates) is left out, because
-n8n's API refuses it. Publishing does not activate or deactivate a workflow.
+What is sent: `name`, `nodes`, `connections`, `staticData`, and `settings` keys that n8n accepts.
+Unknown settings keys, and all other file fields (`active`, `tags`, `id`, dates), are left out
+because n8n's API rejects them. Publishing does not activate or deactivate a workflow.
 
 Honours `--dry`: reports what it would update and create, without sending anything.
 

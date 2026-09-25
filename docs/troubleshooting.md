@@ -122,7 +122,7 @@ The status must be one of n8n's values: `canceled`, `crashed`, `error`, `new`, `
 
 ## Licensed features
 
-### `Your license does not allow for feat:…`, `Plan lacks license for this feature`, or `not found` from `sc status`
+### `Your license does not allow for feat:…` or `Plan lacks license for this feature`
 
 Your n8n is the Community edition. Variables, projects, folders and source control need a
 licensed n8n. See [Community and Enterprise n8n](community-vs-enterprise.md).

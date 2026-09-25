@@ -144,8 +144,9 @@ Then publish:
 Without `--id`, `wf publish` sends **every** file in the folder. **Always read `errors`**: a file
 n8n rejects is listed there and the exit code is still 0.
 
-What publish sends: the name, nodes, connections, static data and the `executionOrder` setting.
-It does not change whether the workflow is active, and it does not send tags or other settings.
+What publish sends: the name, nodes, connections, static data and every settings key that n8n
+accepts. It drops unknown settings, does not change whether the workflow is active, and does not
+send tags.
 
 ## 5. Save again after publishing
 

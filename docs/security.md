@@ -15,6 +15,10 @@ To report a vulnerability in 8cli, follow the [security policy](../SECURITY.md).
 - **The macOS keychain** – service `8cli`, one entry per URL. See
   [configuration](configuration.md#the-macos-keychain).
 
+On macOS, 8cli supplies a `security add-generic-password -U -X <hex>` command to
+`security -i` on standard input. The secret is hex-encoded in that input; it is never passed as
+a `-w <secret>` process argument.
+
 ## What 8cli prints
 
 - `config show` masks the API key (first four and last four characters, for example
@@ -63,8 +67,8 @@ you control, and prefer putting n8n behind HTTPS.
 
 ## Folder commands use a password
 
-Folder commands cannot use the API key, because n8n does not expose folders in its public API.
-They log in to n8n's internal API with an email and password, like the browser does. That
+Folder commands use n8n's internal API rather than the public API. They log in with an email and
+password, like the browser does. That
 password gives full user access, not a scoped API key. Use a dedicated n8n user for automation
 where you can. See [folder commands and the internal API](guides/folders.md).
 

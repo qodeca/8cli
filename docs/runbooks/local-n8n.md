@@ -7,7 +7,7 @@ source control) answer with the gated error, not as working features.
 - Image: `n8nio/n8n:2.40.5`, pinned by digest in `scripts/local-n8n/compose.yaml` (the same pin
   as the e2e suite in `test/e2e/setup/global.ts`).
 - URL: `http://localhost:5678`, bound to loopback only. Set `N8N_LOCAL_PORT` to use another port.
-- Needs: Docker with Compose, Node.js 22+, `npm install` done.
+- Needs: Docker with Compose, Node.js 22.22+, `npm install` done.
 
 ## Start
 
@@ -42,8 +42,7 @@ npx tsx bin/8cli.ts wf list
 ```
 
 `--store env` is accepted and is the default. `--store keychain` is refused with
-`ERR_STORE_DISABLED`: the keychain store is disabled until the keychain backend keeps secrets out
-of process arguments.
+`ERR_STORE_DISABLED`: the local-n8n helper supports environment-file storage only.
 
 ### Moving from a per-checkout file
 
