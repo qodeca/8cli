@@ -42,7 +42,9 @@ npx tsx bin/8cli.ts wf list
 ```
 
 `--store env` is accepted and is the default. `--store keychain` is refused with
-`ERR_STORE_DISABLED`: the local-n8n helper supports environment-file storage only.
+`ERR_STORE_DISABLED` and the message "The keychain store is disabled until the keychain backend
+keeps secrets out of process arguments; use the env file store (--store env, the default)". The
+helper supports environment-file storage only.
 
 ### Moving from a per-checkout file
 
