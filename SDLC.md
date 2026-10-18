@@ -25,7 +25,7 @@ them in the same pull request. Until then, the stricter rule applies.
 1. **Evidence, not claims.** A stage is done when its evidence exists: the command and its
    output, the test run, the screenshot, the pull request comment that names the commit. Never
    invent a run id, a commit sha, a file path or a check result.
-2. **Fail closed.** A check that could not run, or whose result nobody read, is *unavailable*,
+2. **Fail closed.** A check that could not run, or whose result nobody read, is _unavailable_,
    and unavailable blocks the merge (§ The merge policy).
 3. **A model never approves its own work.** Self-review is a status report, never a verdict.
 4. **Every verdict names its head.** A review, a QA verdict, a design verdict and a gate run each
@@ -42,15 +42,15 @@ them in the same pull request. Until then, the stricter rule applies.
 
 ## Roles
 
-| Role | Who | Owns |
-|---|---|---|
-| Owner | The person who owns the project | The owner-only decisions below, every release, deploy and promotion |
-| Leader | One coordinating agent session (pipeline projects only) | Picking and dispatching work, merging, the campaign record. It coordinates and never implements |
-| Author | A person or an agent | The change, from claim to a merge-ready pull request |
-| Reviewer | A different model from the author | An approve or request-changes verdict on a named head |
-| QA | Independent of the author | Exercising a user-visible change and the QA verdict |
-| Designer | A person or a design step | The flow and its states before code, and the design verdict |
-| Maintainer | The owner, unless the profile names someone else | Branch protection, labels, config and this file; arbitrates when gates conflict |
+| Role       | Who                                                     | Owns                                                                                            |
+| ---------- | ------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| Owner      | The person who owns the project                         | The owner-only decisions below, every release, deploy and promotion                             |
+| Leader     | One coordinating agent session (pipeline projects only) | Picking and dispatching work, merging, the campaign record. It coordinates and never implements |
+| Author     | A person or an agent                                    | The change, from claim to a merge-ready pull request                                            |
+| Reviewer   | A different model from the author                       | An approve or request-changes verdict on a named head                                           |
+| QA         | Independent of the author                               | Exercising a user-visible change and the QA verdict                                             |
+| Designer   | A person or a design step                               | The flow and its states before code, and the design verdict                                     |
+| Maintainer | The owner, unless the profile names someone else        | Branch protection, labels, config and this file; arbitrates when gates conflict                 |
 
 Committed process text names roles, not people: assignments change. The profile may name the
 owner.
@@ -148,23 +148,23 @@ is visible and becomes work.
 A change passes these phases in order. Each one settles one thing and records one disposition:
 done, skipped with the reason, or blocked with what it waits for.
 
-| Phase | Settles | Marked by |
-|---|---|---|
-| Discovery (optional) | The product context, and whether to build anything at all | A product brief or a routed brief |
-| Intake | The ticket meets the Definition of Ready | One category, one `priority-*`, one `risk-*`; `needs-design` when UI is in scope |
-| Triage | The issue is real, still unfixed on the base branch, and not claimed or covered by an open pull request | Confirmed, or closed as no-action |
-| Claim | Who works on it, so others back off | `in-progress`, assignee and a claim comment |
-| Analysis and plan | Acceptance criteria, each with an ID and the authority that accepted it; the files in scope; how each criterion will be proven; the size estimate | The plan or phase record |
-| Design (flagged work only) | The flow and its states, before code | `design` → `design-approved` or `design-failed`; `skip-design` with a reason |
-| Author | The change, its tests and the self-review, on its own branch | `in-progress` |
-| Gates | The full gate, green on the head | Gate evidence that names the head |
-| Pull request | A ready, fully labelled pull request | `review` |
-| Review | An independent verdict on the head | `changes-requested`, or approval → `merge-queue` |
-| QA | The change works for a user | `needs-qa` → `qa` → `qa-approved` or `qa-failed`; `skip-qa` with a reason |
-| Merge | The change lands on the base branch | `merge-queue`, then the merge |
-| Acceptance | Each criterion is shown met | Criterion evidence |
-| Post-merge | The tracker matches what merged | Fixed issues closed, follow-ups filed |
-| Release | The owner's go, then a tagged release | Tag and release notes |
+| Phase                      | Settles                                                                                                                                           | Marked by                                                                        |
+| -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
+| Discovery (optional)       | The product context, and whether to build anything at all                                                                                         | A product brief or a routed brief                                                |
+| Intake                     | The ticket meets the Definition of Ready                                                                                                          | One category, one `priority-*`, one `risk-*`; `needs-design` when UI is in scope |
+| Triage                     | The issue is real, still unfixed on the base branch, and not claimed or covered by an open pull request                                           | Confirmed, or closed as no-action                                                |
+| Claim                      | Who works on it, so others back off                                                                                                               | `in-progress`, assignee and a claim comment                                      |
+| Analysis and plan          | Acceptance criteria, each with an ID and the authority that accepted it; the files in scope; how each criterion will be proven; the size estimate | The plan or phase record                                                         |
+| Design (flagged work only) | The flow and its states, before code                                                                                                              | `design` → `design-approved` or `design-failed`; `skip-design` with a reason     |
+| Author                     | The change, its tests and the self-review, on its own branch                                                                                      | `in-progress`                                                                    |
+| Gates                      | The full gate, green on the head                                                                                                                  | Gate evidence that names the head                                                |
+| Pull request               | A ready, fully labelled pull request                                                                                                              | `review`                                                                         |
+| Review                     | An independent verdict on the head                                                                                                                | `changes-requested`, or approval → `merge-queue`                                 |
+| QA                         | The change works for a user                                                                                                                       | `needs-qa` → `qa` → `qa-approved` or `qa-failed`; `skip-qa` with a reason        |
+| Merge                      | The change lands on the base branch                                                                                                               | `merge-queue`, then the merge                                                    |
+| Acceptance                 | Each criterion is shown met                                                                                                                       | Criterion evidence                                                               |
+| Post-merge                 | The tracker matches what merged                                                                                                                   | Fixed issues closed, follow-ups filed                                            |
+| Release                    | The owner's go, then a tagged release                                                                                                             | Tag and release notes                                                            |
 
 `blocked` and `do-not-merge` stop any phase, and only a person clears them. `ci-monitoring` means
 a finished run still owes a CI-result comment; it is not a claim and blocks nobody. Pipeline
@@ -231,13 +231,13 @@ a look, not enforced blindly.
 
 The full label set lives in the project's label file (the profile names it). The rules:
 
-| Group | Labels | Exclusivity |
-|---|---|---|
-| Pipeline | `review`, `changes-requested`, `qa`, `qa-failed`, `design`, `design-failed`, `merge-queue`, `blocked`, `do-not-merge` | One at a time: where the pull request sits |
-| Category | `bug`, `feature`, `refactor`, `security`, `dependencies`, `documentation` | Additive |
-| Meta | `needs-qa`, `skip-qa`, `qa-approved`, `qa-self-verified`, `needs-design`, `skip-design`, `design-approved`, `in-progress`, `ci-monitoring` | Additive |
-| Priority | `priority-low`, `priority-medium`, `priority-high`, `priority-extreme` | One; unset reads as medium |
-| Risk | `risk-low`, `risk-medium`, `risk-high` | One; unset reads as medium |
+| Group    | Labels                                                                                                                                     | Exclusivity                                |
+| -------- | ------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------ |
+| Pipeline | `review`, `changes-requested`, `qa`, `qa-failed`, `design`, `design-failed`, `merge-queue`, `blocked`, `do-not-merge`                      | One at a time: where the pull request sits |
+| Category | `bug`, `feature`, `refactor`, `security`, `dependencies`, `documentation`                                                                  | Additive                                   |
+| Meta     | `needs-qa`, `skip-qa`, `qa-approved`, `qa-self-verified`, `needs-design`, `skip-design`, `design-approved`, `in-progress`, `ci-monitoring` | Additive                                   |
+| Priority | `priority-low`, `priority-medium`, `priority-high`, `priority-extreme`                                                                     | One; unset reads as medium                 |
+| Risk     | `risk-low`, `risk-medium`, `risk-high`                                                                                                     | One; unset reads as medium                 |
 
 Priority is how urgent the work is; risk is how dangerous the change is to ship. A one-line fix
 for an outage can be `priority-extreme` and `risk-low`. A pull request inherits both from its
@@ -375,7 +375,7 @@ Every pull request gets an independent review against `CODE_REVIEW.md`:
 - **Independence.** The reviewer is a different model from the one that wrote or repaired the
   work. A `risk-high` change, or one that touches a trust boundary, is reviewed by a different
   **vendor** (for example, work Claude wrote is reviewed by a non-Claude model). When no
-  other-vendor reviewer is available, that review is *unavailable*: record it, and the change
+  other-vendor reviewer is available, that review is _unavailable_: record it, and the change
   merges only if the owner accepts the same-vendor review in writing.
 - **Verdict.** The reviewer approves or requests changes, nothing in between, on a named head.
   Severities are blocker, major, minor and nit. Blocker and major block the merge; a security
@@ -506,10 +506,10 @@ fixed becomes an issue.
 
 Every check a merge depends on ends in one of three words. There is no fourth.
 
-| Word | Meaning | Merge |
-|---|---|---|
-| **passed** | The check ran and was satisfied | Allowed |
-| **refused** | The check ran and was not satisfied | Blocked |
+| Word            | Meaning                                                | Merge   |
+| --------------- | ------------------------------------------------------ | ------- |
+| **passed**      | The check ran and was satisfied                        | Allowed |
+| **refused**     | The check ran and was not satisfied                    | Blocked |
 | **unavailable** | The check did not run, or its result could not be read | Blocked |
 
 Unavailable is not a soft pass: a missing label, an API that returned an error, a scanner that
@@ -625,14 +625,14 @@ The file kinds and their rules are in `.xezar/docs/campaign-notes.md`.
 
 ### This project
 
-| Fact | Value |
-|---|---|
-| Product | 8cli (`@qodeca/8cli`): an AI-first CLI to manage n8n instances remotely – JSON output by default, no prompts, structured errors on stderr |
-| Stack | TypeScript (strict, nodenext), Node 22.22+, commander, Vitest, testcontainers with Docker for e2e, ESLint and Prettier; GPL-3.0-only with REUSE/SPDX headers and a CLA |
-| Tracker | GitHub issues and pull requests, `qodeca/8cli` |
-| Pipeline | Xezar. The leader is the session started with `scripts/xezar-leader.sh`; its rules are in `.xezar/docs/leader-guide.md` |
-| Machine sources | `.xezar/pipeline/config.json`, `.xezar/pipeline/labels.json`, `.xezar/routing.json`, `.xezar/loops.json` |
-| Owner's words recorded in | The live campaign's `decisions.md` |
+| Fact                      | Value                                                                                                                                                                  |
+| ------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Product                   | 8cli (`@qodeca/8cli`): an AI-first CLI to manage n8n instances remotely – JSON output by default, no prompts, structured errors on stderr                              |
+| Stack                     | TypeScript (strict, nodenext), Node 22.22+, commander, Vitest, testcontainers with Docker for e2e, ESLint and Prettier; GPL-3.0-only with REUSE/SPDX headers and a CLA |
+| Tracker                   | GitHub issues and pull requests, `qodeca/8cli`                                                                                                                         |
+| Pipeline                  | Xezar. The leader is the session started with `scripts/xezar-leader.sh`; its rules are in `.xezar/docs/leader-guide.md`                                                |
+| Machine sources           | `.xezar/pipeline/config.json`, `.xezar/pipeline/labels.json`, `.xezar/routing.json`, `.xezar/loops.json`                                                               |
+| Owner's words recorded in | The live campaign's `decisions.md`                                                                                                                                     |
 
 ### Branches
 
@@ -653,12 +653,12 @@ and both e2e suites, so a green local gate is not a green pull request. Required
 
 ### Gates in this project
 
-| Gate | State |
-|---|---|
-| QA gate | On. QA means running the CLI against a real n8n (the e2e image) and checking output and exit codes |
-| Design gate | Awake. UI in scope: command names, flags, help text, JSON output shapes and exit codes. Designs: `docs/designs/<feature>/README.md` with the headings in `docs/designs/README.md` |
-| Deploy | Asleep: 8cli is published to npm by a release, not deployed |
-| Performance budgets, localisation | Asleep (`[]`) |
+| Gate                              | State                                                                                                                                                                             |
+| --------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| QA gate                           | On. QA means running the CLI against a real n8n (the e2e image) and checking output and exit codes                                                                                |
+| Design gate                       | Awake. UI in scope: command names, flags, help text, JSON output shapes and exit codes. Designs: `docs/designs/<feature>/README.md` with the headings in `docs/designs/README.md` |
+| Deploy                            | Asleep: 8cli is published to npm by a release, not deployed                                                                                                                       |
+| Performance budgets, localisation | Asleep (`[]`)                                                                                                                                                                     |
 
 ### Trust boundaries
 
@@ -697,24 +697,24 @@ The core asks for these guards (§ Agent permissions and guards, § Untrusted in
 review). "To check" means nobody has verified it here yet: treat it as not in place until someone
 records the evidence and updates this row.
 
-| Guard | State |
-|---|---|
-| Branch rules block force push and deleting the base and release branches | Partly: `develop` is protected, but without admin enforcement |
-| Hook or permission rule blocks recursive deletes outside the worktree and schema drops | To check |
-| Agents use a short-lived, branch-scoped token, never a full-access login | To check |
-| No deploy, signing, registry or production credentials in agent sessions | To check |
-| Required checks accept results only from the CI app | To check |
-| Unattended runs in a sandbox with a network allowlist | To check |
-| Approved MCP servers and agent tools listed here | To check |
-| Cost, turn and wall-clock caps per unattended run | Not set; the owner sets the numbers |
-| One-step stop and token revocation | To check |
-| Security stage rejects hidden Unicode in agent instruction files | To check |
-| CI workflow rules (read-only token, pinned actions, no `pull_request_target` checkout) | To check |
-| Script that flags changes to tests, fixtures, gate scripts and CI workflows | To check |
-| Minimum package age; install scripts off | Not set; the owner sets the minimum age |
-| Mutation tool, property-test library, clone detector | Not named yet |
-| No agent attribution in commits and pull requests | Yes: the owner's Claude Code setting adds no co-author line |
-| Setup and smoke-check command | Not named yet |
+| Guard                                                                                  | State                                                         |
+| -------------------------------------------------------------------------------------- | ------------------------------------------------------------- |
+| Branch rules block force push and deleting the base and release branches               | Partly: `develop` is protected, but without admin enforcement |
+| Hook or permission rule blocks recursive deletes outside the worktree and schema drops | To check                                                      |
+| Agents use a short-lived, branch-scoped token, never a full-access login               | To check                                                      |
+| No deploy, signing, registry or production credentials in agent sessions               | To check                                                      |
+| Required checks accept results only from the CI app                                    | To check                                                      |
+| Unattended runs in a sandbox with a network allowlist                                  | To check                                                      |
+| Approved MCP servers and agent tools listed here                                       | To check                                                      |
+| Cost, turn and wall-clock caps per unattended run                                      | Not set; the owner sets the numbers                           |
+| One-step stop and token revocation                                                     | To check                                                      |
+| Security stage rejects hidden Unicode in agent instruction files                       | To check                                                      |
+| CI workflow rules (read-only token, pinned actions, no `pull_request_target` checkout) | To check                                                      |
+| Script that flags changes to tests, fixtures, gate scripts and CI workflows            | To check                                                      |
+| Minimum package age; install scripts off                                               | Not set; the owner sets the minimum age                       |
+| Mutation tool, property-test library, clone detector                                   | Not named yet                                                 |
+| No agent attribution in commits and pull requests                                      | Yes: the owner's Claude Code setting adds no co-author line   |
+| Setup and smoke-check command                                                          | Not named yet                                                 |
 
 ### Deviations from the core
 
